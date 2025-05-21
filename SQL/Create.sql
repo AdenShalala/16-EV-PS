@@ -32,18 +32,20 @@ CREATE TABLE Sensor (
 
 CREATE TABLE Timestamp (
 	sensor_id VARCHAR(50),
-    time_stamp DECIMAL,
+    sequence_number BIGINT,
+    time_stamp VARCHAR(30),
     FOREIGN KEY (sensor_id) REFERENCES SENSOR (sensor_id)
 );
 
 CREATE TABLE Sensor_signal (
 	sensor_id VARCHAR(50),
+    sequence_number BIGINT,
     signal_output DECIMAL,
     FOREIGN KEY (sensor_id) REFERENCES SENSOR (sensor_id)
 );
 
 CREATE TABLE Point_of_interest (
 	sensor_id VARCHAR(50),
-    point_of_interest_time_stamp DECIMAL,
+    point_of_interest_time_stamp VARCHAR(30),
     FOREIGN KEY (sensor_id) REFERENCES SENSOR (sensor_id)
 );

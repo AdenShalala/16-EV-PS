@@ -71,7 +71,16 @@ def create_database():
                 sensor_type = sensor.getAttribute('Type')
                 pressure_tolerance = sensor.getElementsByTagName('PressureTolerance')[0].firstChild.nodeValue
                 signal_output = sensor.getElementsByTagName('Signal')[0].firstChild.nodeValue
+                signalnums = signal_output.replace("[", "")
+                signalnums = signalnums.replace("]", "")
+                signalList = signalnums.split(';')
                 time_stamp = sensor.getElementsByTagName('Timestamp')[0].firstChild.nodeValue
+                timenums = time_stamp.replace("[", "")
+                timenums = timenums.replace("]", "")
+                timeList = timenums.split(" ")
                 point_of_interest = sensor.getElementsByTagName('PointsOfInterest')[0].firstChild.nodeValue
+                poinums = point_of_interest.replace("[", "")
+                poinums = poinums.replace("]", "")
+                poiList = poinums.split(" ")
 
 create_database()
