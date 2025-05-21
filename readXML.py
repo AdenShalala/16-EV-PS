@@ -2,7 +2,6 @@ import signal
 from xml.dom.minidom import parse
 
 def XMLInsert():
-    x=1
     dom = parse('DummyPatientData.xml')
     users = dom.getElementsByTagName('Users')[0]
     for user in users.getElementsByTagName('User'):
