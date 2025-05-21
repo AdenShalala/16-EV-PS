@@ -7,16 +7,16 @@ CREATE TABLE User (
     weight BIGINT,
     amputation_type VARCHAR(40),
     socket_type VARCHAR(30),
-    first_fitting DATE,
-    hours_per_week BIGINT,
-    distance_per_week DECIMAL
+    first_fitting VARCHAR(10),
+    hours_per_week VARCHAR(30),
+    distance_per_week VARCHAR(30)
 );
 
 CREATE TABLE Activity (
 	activity_id VARCHAR(50) PRIMARY KEY,
     user_id VARCHAR(50),
-    end_time DATETIME,
-    start_time DATETIME,
+    end_time VARCHAR(30),
+    start_time VARCHAR(30),
     activity_type VARCHAR(20),
     FOREIGN KEY (user_id) REFERENCES User (user_id)
 );

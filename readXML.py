@@ -1,3 +1,4 @@
+import signal
 from xml.dom.minidom import parse
 
 def XMLInsert():
