@@ -24,5 +24,8 @@ def XMLInsert():
                 signal_output = sensor.getElementsByTagName('Signal')[0].firstChild.nodeValue
                 time_stamp = sensor.getElementsByTagName('Timestamp')[0].firstChild.nodeValue
                 point_of_interest = sensor.getElementsByTagName('PointsOfInterest')[0].firstChild.nodeValue
+    signalnums = signal_output.replace("[","")
+    signalnums = signalnums.replace("]","")
+    signalList = signalnums.split(';')
 
 XMLInsert()
