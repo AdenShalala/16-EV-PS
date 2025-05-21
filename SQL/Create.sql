@@ -26,7 +26,7 @@ CREATE TABLE Sensor (
     activity_id VARCHAR(50),
     location VARCHAR(60),
     sensor_type VARCHAR(20),
-    pressure_tolerance DECIMAL,
+    pressure_tolerance VARCHAR(30),
     FOREIGN KEY (activity_id) REFERENCES Activity (activity_id)
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE Timestamp (
 CREATE TABLE Sensor_signal (
 	sensor_id VARCHAR(50),
     sequence_number BIGINT,
-    signal_output DECIMAL,
+    signal_output VARCHAR(30),
     FOREIGN KEY (sensor_id) REFERENCES SENSOR (sensor_id)
 );
 

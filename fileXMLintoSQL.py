@@ -1,3 +1,4 @@
+from calendar import c
 from sqlite3 import DatabaseError
 from venv import create
 import mysql.connector as sql
@@ -67,9 +68,12 @@ def create_database():
             cursor.execute("INSERT INTO Activity VALUES (%s, %s, %s, %s, %s)", 
                       (activity_id, user_id, end_time, start_time, activity_type))
             for sensor in activity.getElementsByTagName('Sensor'):
+                sensor_id = str(uuid.uuid4())
                 location = sensor.getAttribute('Location')
                 sensor_type = sensor.getAttribute('Type')
                 pressure_tolerance = sensor.getElementsByTagName('PressureTolerance')[0].firstChild.nodeValue
+                cursor.execute("INSERT INTO Sensor VALUES (%s, %s, %s, %s, %s)",
+                      (sensor_id, activity_id, location, sensor_type, pressure_tolerance))
                 signal_output = sensor.getElementsByTagName('Signal')[0].firstChild.nodeValue
                 signalnums = signal_output.replace("[", "")
                 signalnums = signalnums.replace("]", "")
@@ -82,5 +86,16 @@ def create_database():
                 poinums = point_of_interest.replace("[", "")
                 poinums = poinums.replace("]", "")
                 poiList = poinums.split(" ")
+                for i in range(len(signalList)):
+                    cursor.execute("INSERT INTO Timestamp VALUES (%s, %s, %s)",
+                                  (sensor_id, i, timeList[i]))
+                    database.commit()
+                    cursor.execute("INSERT INTO Sensor_signal VALUES (%s, %s, %s)",
+                                   (sensor_id, i, signalList[i]))
+                    database.commit()
+                for poi in poiList:
+                    cursor.execute("INSERT INTO Point_of_interest VALUES (%s, %s)",
+                                   (sensor_id, poi))
+                    database.commit()
 
 create_database()
