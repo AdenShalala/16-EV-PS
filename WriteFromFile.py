@@ -8,10 +8,10 @@ def header():
 def writeFile():
     ui.page_title("SocketFit Dashboard")
     header()
-    with ui.grid(rows=10, columns=5).classes('w-full h-800px'):
-        with ui.card().classes('col-span-1 row-span-10 border border-[#2C25B2]') as patients:
+    with ui.row().classes('w-full'):
+        with ui.card().classes('w-1/5 border border-[#2C25B2]') as patients:
             ui.label("Write to Database from File")
-        with ui.card().classes('col-span-4 row-span-10 border rounded-md border-[#2C25B2] justify-center items-center') as main:
+        with ui.card().classes('w-3/4 border rounded-md border-[#2C25B2] justify-center items-center') as main:
             ui.upload(on_upload=lambda e: ui.notify(f'Uploaded {e.name}')).classes('max-w-full')
             ui.input("Database Choice").classes('border rounded-md border-[#2C25B2]')
             ui.input(placeholder='Height Column Name Here...').classes('border rounded-md border-[#3545FF]')
