@@ -7,6 +7,7 @@ def header():
 
 @ui.page('/userInformation')
 def main():
+    ui.page_title("SocketFit Dashboard")
     header()
     with ui.row().classes('w-full'):
         ui.label("User").classes('text-xl font-semibold ml-[21%]')

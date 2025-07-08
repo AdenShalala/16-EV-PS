@@ -9,6 +9,7 @@ def header():
 
 @ui.page('/login')
 def login():
+    ui.page_title("SocketFit Dashboard")
     header()
     with ui.row().classes('w-full h-full justify-center items-center'):
         with ui.card().classes('w-[300px] border rounded-md border-[#2C25B2]'):
@@ -17,5 +18,5 @@ def login():
             ui.button('Login', on_click=Homepage.mainNavigate, color='#FFB030').classes('w-full text-white')
             ui.button('Login as IT Admin', color='#3545FF', on_click=DatabaseConfig.navigateConfig).classes('w-full text-white')
 
-ui.run()
+ui.run(favicon="SocketFit logo.png")
 ui.navigate.to('/login')

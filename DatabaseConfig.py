@@ -7,6 +7,7 @@ def header():
 
 @ui.page('/config')
 def config():
+    ui.page_title("SocketFit Dashboard")
     header()
     with ui.grid(rows=10, columns=5).classes('w-full h-800px'):
         with ui.card().classes('col-span-1 row-span-10 border border-[#2C25B2]') as patients:

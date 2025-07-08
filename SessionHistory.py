@@ -6,6 +6,7 @@ def header():
 
 @ui.page('/sessionHistory')
 def sessionHistory():
+    ui.page_title("SocketFit Dashboard")
     header()
     activityList = ['All']
     with ui.row().classes('w-full'):

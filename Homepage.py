@@ -9,6 +9,7 @@ def header():
 
 @ui.page('/main')
 def main():
+    ui.page_title("SocketFit Dashboard")
     genderList = ['All', 'Male', 'Female', 'Prefer not to say']
     amputationTypeList = ['All']
     header()
@@ -56,5 +57,5 @@ def main():
 def mainNavigate():
     ui.navigate.to('/main')
 
-ui.run()
+ui.run(favicon="SocketFit Logo.png") 
 ui.navigate.to('/main')
