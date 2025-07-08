@@ -1,5 +1,5 @@
-CREATE TABLE User (
-	user_id VARCHAR(50) PRIMARY KEY,
+CREATE TABLE Patient (
+	patient_id VARCHAR(50) PRIMARY KEY,
     clinician_id VARCHAR(50),
     month_year_birth VARCHAR(10),
     gender VARCHAR(20),
@@ -14,11 +14,11 @@ CREATE TABLE User (
 
 CREATE TABLE Activity (
 	activity_id VARCHAR(50) PRIMARY KEY,
-    user_id VARCHAR(50),
+    patient_id VARCHAR(50),
     end_time VARCHAR(30),
     start_time VARCHAR(30),
     activity_type VARCHAR(20),
-    FOREIGN KEY (user_id) REFERENCES User (user_id)
+    FOREIGN KEY (patient_id) REFERENCES Patient (patient_id)
 );
 
 CREATE TABLE Sensor (

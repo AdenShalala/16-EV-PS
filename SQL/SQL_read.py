@@ -46,7 +46,7 @@ def read_patients_by_clinician_id(clinician_id: str):
     db = database_connect()
     cursor = db.cursor()
 
-    cursor.execute("SELECT user_id FROM User WHERE clinician_id = %s;", (clinician_id,))
+    cursor.execute("SELECT patient_id FROM Patient WHERE clinician_id = %s;", (clinician_id,))
 
     patient_id_list = cursor.fetchall()
 
@@ -54,7 +54,7 @@ def read_patients_by_clinician_id(clinician_id: str):
         return None
     
     for patient_id in patient_id_list:
-        cursor.execute("SELECT activity_id FROM Activity WHERE user_id = %s;", (patient_id[0],))
+        cursor.execute("SELECT activity_id FROM Activity WHERE patient_id = %s;", (patient_id[0],))
         patient_activity_list = cursor.fetchall()
 
         for activity_id in patient_activity_list:

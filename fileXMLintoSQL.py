@@ -44,7 +44,7 @@ def create_database():
     dom = parse('DummyPatientData.xml')
     users = dom.getElementsByTagName('Users')[0]
     for user in users.getElementsByTagName('User'):
-        user_id = str(uuid.uuid4())
+        patient_id = str(uuid.uuid4())
         clinician_id = user.getAttribute('ClinicianID')
         month_year_birth = user.getElementsByTagName('MonthYearOfBirth')[0].firstChild.nodeValue
         gender = user.getElementsByTagName('Gender')[0].firstChild.nodeValue
@@ -56,8 +56,8 @@ def create_database():
         hours_per_week = user.getElementsByTagName('FirstProsthesisFitted')[0].firstChild.nodeValue
         distance_per_week = user.getElementsByTagName('DistancePerWeek_km')[0].firstChild.nodeValue
         cursor = database.cursor()
-        cursor.execute("INSERT INTO User VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
-                      (user_id, clinician_id, month_year_birth, gender, height, weight, 
+        cursor.execute("INSERT INTO Patient VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                      (patient_id, clinician_id, month_year_birth, gender, height, weight, 
                       amputation_type, socket_type, first_fitted, hours_per_week, distance_per_week))
         database.commit()
         for activity in user.getElementsByTagName('Activity'):
@@ -66,7 +66,7 @@ def create_database():
             start_time = activity.getAttribute('StartTime')
             activity_type = activity.getAttribute('Type')
             cursor.execute("INSERT INTO Activity VALUES (%s, %s, %s, %s, %s)", 
-                      (activity_id, user_id, end_time, start_time, activity_type))
+                      (activity_id, patient_id, end_time, start_time, activity_type))
             for sensor in activity.getElementsByTagName('Sensor'):
                 sensor_id = str(uuid.uuid4())
                 location = sensor.getAttribute('Location')
