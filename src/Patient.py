@@ -3,7 +3,7 @@ from sqlite3 import Date
 from dataclasses import dataclass
 
 @dataclass
-class User:
+class Patient:
     clinician_id: str
     month_year_birth: Date
     gender: str
