@@ -57,5 +57,5 @@ def main():
 def mainNavigate():
     ui.navigate.to('/main')
 
-ui.run(storage_secret='this is the very secret key', favicon="SocketFit Logo.png") 
+# ui.run(storage_secret='this is the very secret key', favicon="SocketFit Logo.png") 
 ui.navigate.to('/main')

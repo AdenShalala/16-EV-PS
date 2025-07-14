@@ -36,4 +36,4 @@ def activity():
 def navigateActivity():
     ui.navigate.to('/activity')
 
-ui.run()
+# ui.run(storage_secret='this is the very secret key')
