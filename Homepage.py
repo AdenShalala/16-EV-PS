@@ -2,7 +2,7 @@ from nicegui import ui
 import elements
 import UserInformation
 import Login
-import Activity
+import ActivityPage
 
 def header():
     elements.header()
@@ -52,10 +52,10 @@ def main():
             with ui.grid(columns=4).classes('w-full gap-6'):
                 ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2]')
     ui.button('test', on_click=UserInformation.navigate)
-    ui.button('activity', on_click=Activity.navigateActivity)
+    ui.button('activity', on_click=ActivityPage.navigateActivity)
 
 def mainNavigate():
     ui.navigate.to('/main')
 
-ui.run(favicon="SocketFit Logo.png") 
+ui.run(storage_secret='this is the very secret key', favicon="SocketFit Logo.png") 
 ui.navigate.to('/main')

@@ -1,4 +1,4 @@
-from nicegui import ui
+from nicegui import ui, app
 import Homepage
 import DatabaseConfig
 
@@ -13,10 +13,10 @@ def login():
     header()
     with ui.row().classes('w-full h-full justify-center items-center'):
         with ui.card().classes('w-[300px] border rounded-md border-[#2C25B2]'):
-            ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF]')
+            app.storage.user['clinid'] = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF]')
             ui.input(placeholder='Password').classes('w-full border rounded-md border-[#3545FF]')
             ui.button('Login', on_click=Homepage.mainNavigate, color='#FFB030').classes('w-full text-white')
             ui.button('Login as IT Admin', color='#3545FF', on_click=DatabaseConfig.navigateConfig).classes('w-full text-white')
 
-ui.run(favicon="SocketFit logo.png")
+ui.run(storage_secret='this is the very secret key', favicon="SocketFit logo.png")
 ui.navigate.to('/login')

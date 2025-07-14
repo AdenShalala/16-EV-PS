@@ -4,6 +4,18 @@ import elements
 def header():
     elements.header()
 
+def on_tree_select(e):
+    label_to_path = {
+        'User Information': '/userInformation',
+        'Session History': '/sessionHistory',
+    }
+
+    selected_label = e.value
+    if selected_label in label_to_path:
+        ui.navigate.to(label_to_path[selected_label])
+    else:
+        ui.notify(f'Selected: {selected_label}')
+
 @ui.page('/sessionHistory')
 def sessionHistory():
     ui.page_title("SocketFit Dashboard")
@@ -13,7 +25,38 @@ def sessionHistory():
         ui.label("User History").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[800px]'):
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
-            ui.label("User Records")
+            ui.link('Patients', '/main').classes('text-black text-xl no-underline cursor-pointer')
+            current_page = 'User Information'
+            with ui.expansion(text="User Records"):
+                with ui.expansion(text='User Information'):
+                    ui.label("here")
+                ui.label('Session History').classes('font-bold')
+
+            tree_data = [
+                {
+                    'id': 'User Records',
+                    'children': [
+                        {
+                            'id': 'User Information',
+                            'label': f'User Information'
+                        },
+                        {
+                            'id': 'Session History',
+                            'label': f'<b>Session History</b>'
+                        }
+                    ]
+                }
+            ]
+
+            tree = ui.tree(
+                tree_data, 
+                label_key='label', 
+                # default_value=current_page,
+                on_select=on_tree_select
+            )
+            ui.label('User Records').classes('font-bold text-xl')
+            ui.link('User Information', '/userInformation').classes('text-black no-underline cursor-pointer')
+            ui.label("Session History").classes('font-bold')
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             ui.label("Filters:")
             with ui.grid(columns=11).classes('w-full'):
