@@ -11,7 +11,7 @@ load_dotenv()
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~#
-#      Database Init    #
+#     Database Init     #
 #~~~~~~~~~~~~~~~~~~~~~~~#
 
 def database_connect(): 
