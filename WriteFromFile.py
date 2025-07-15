@@ -22,5 +22,5 @@ def writeFile():
 def navigateFile():
     ui.navigate.to('/writeFile')
 
-ui.run()
+# ui.run()
 ui.navigate.to('/writeFile')

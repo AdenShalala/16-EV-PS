@@ -46,3 +46,6 @@ def config():
 
 def navigateConfig():
     ui.navigate.to('/config')
+
+# ui.run()
+ui.navigate.to('/config')

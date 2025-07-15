@@ -4,7 +4,7 @@ import SessionHistory
 
 def header():
     elements.header()
-
+    
 @ui.page('/userInformation')
 def main():
     ui.page_title("SocketFit Dashboard")
@@ -13,7 +13,8 @@ def main():
         ui.label("User").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[800px]'):
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
-            ui.label("User Records")
+            ui.label("User Information").classes('font-bold')
+            ui.link('Session History', '/sessionHistory').classes('text-black no-underline cursor-pointer')
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             with ui.row():
                 with ui.row().classes('w-2/5 items-start'):
