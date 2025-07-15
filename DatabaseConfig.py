@@ -1,6 +1,9 @@
 from nicegui import ui
 import elements
-import WriteFromFile
+import WriteFromFile 
+import os
+from fileXMLintoSQL import create_database;
+import asyncio;
 
 def header():
     elements.header()
@@ -14,25 +17,31 @@ def config():
             ui.label("Database Configuration")
             ui.label("Write to Database From File")
         with ui.card().classes('w-3/4 border rounded-md border-[#2C25B2] justify-center items-center') as main:
-            # ui.input("Database Choice").classes('border rounded-md border-[#2C25B2]')
-            
-            def handle_database_upload(e):
-                content = e.content.read().decode('utf-8')
-                print("Uploaded content:", content)
-                ui.notify(f'File "{e.name}" uploaded successfully!')
-                
+
+            async def handle_database_upload(e):
+                try:
+                    xml_content = e.content.read().decode('utf-8')
+                    ui.notify("File uploaded, processing in background...")
+
+                    await asyncio.to_thread(create_database, xml_content)
+                    ui.notify("Data inserted successfully!")
+
+                except Exception as err:
+                    ui.notify(f"Failed to handle file: {str(err)}")
 
             ui.upload(
-                label='Drag and drop or browse for Datebase',
+                label='Drag and drop or browse for XML file',
                 on_upload=handle_database_upload,
                 auto_upload=True,
                 max_files=1,
             ).props('accept=".xml"').style('color: #3545FF; text-transform: none;').classes('rounded-md px-4 py-2')
-            # ui.button("Browse computer for files", color="#FFB030", on_click= upload_txt_file()) 
+
+            # Input placeholders (optional, can be removed if unused)
             ui.input(placeholder='Height Column Name Here...').classes('border rounded-md border-[#3545FF]')
             ui.input(placeholder='Weight Column Name Here...').classes('border rounded-md border-[#3545FF]')
             ui.input(placeholder='Age Column Name Here...').classes('border rounded-md border-[#3545FF]')
             ui.input(placeholder='Gender Column Name Here...').classes('border rounded-md border-[#3545FF]')
+
     ui.button('next', on_click=WriteFromFile.navigateFile)
 
 def navigateConfig():

@@ -2,14 +2,15 @@ from calendar import c
 from sqlite3 import DatabaseError
 from venv import create
 import mysql.connector as sql
-from xml.dom.minidom import parse
+from xml.dom.minidom import parseString
 from dotenv import load_dotenv
 import os
 import uuid
 
 load_dotenv()
 
-def create_database():
+# Accepts xml content as a parameter to parse and insert into the database
+def create_database(xml_content: str):
     # Connect to the database
     database = sql.connect(
         host = os.getenv('MYSQL_HOST'), 
@@ -33,6 +34,8 @@ def create_database():
 
     database.close()
 
+    print(f"Parsing XML from uploaded xml file")
+
     database = sql.connect(
         host = os.getenv('MYSQL_HOST'), 
         user = os.getenv('MYSQL_USER'), 
@@ -41,7 +44,8 @@ def create_database():
         database = os.getenv('MYSQL_DATABASE')
     )
 
-    dom = parse('DummyPatientData.xml')
+    # added parseString to parse the content of uploaded xml file content which is a string.
+    dom = parseString(xml_content)
     users = dom.getElementsByTagName('Users')[0]
     for user in users.getElementsByTagName('User'):
         patient_id = str(uuid.uuid4())
@@ -97,5 +101,7 @@ def create_database():
                     cursor.execute("INSERT INTO Point_of_interest VALUES (%s, %s)",
                                    (sensor_id, poi))
                     database.commit()
+            print("XML data inserted successfully.")
 
-create_database()
+if __name__ == "__main__":
+    create_database()
