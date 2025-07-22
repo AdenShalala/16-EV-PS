@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Patient:
+    patient_id: str
     clinician_id: str
     month_year_birth: Date
     gender: str

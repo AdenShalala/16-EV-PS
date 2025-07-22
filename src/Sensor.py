@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Sensor:
+    sensor_id: str
     #Until Enums are sorted, these will be stored as Strings for the sake of immediate construction.
     #location: Enum
     location: str

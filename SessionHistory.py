@@ -98,6 +98,23 @@ def sessionHistory():
                         ui.label('Pressure').classes('col-span-2')
                         ui.label('').classes('col-span-2')
                         ui.label('').classes('col-span-2')
+                    #This is an example of how these details would be listed.
+                    #It would be 'for activity in activities:'
+                    for i in range(1, 6):
+                        with ui.grid(columns=23).classes('border-[2px] border-[#2C25B2] rounded'):
+                            ui.label('').classes('col-span-1')
+                            ui.label(f'This is row {i}').classes('col-span-2')
+                            ui.label('').classes('col-span-2')
+                            ui.label(f'Where patient {i} is').classes('col-span-2')
+                            ui.label('').classes('col-span-2')
+                            ui.label(f'Data chunk {i}').classes('col-span-2')
+                            ui.label('').classes('col-span-2')
+                            ui.label(f'Duration {i}').classes('col-span-2')
+                            ui.label('').classes('col-span-2')
+                            ui.label(f'Pressure {i}').classes('col-span-2')
+                            ui.button('View Activity').props('flat').classes(
+                                      'col-span-4 text-white text-sm px-3 py-1 rounded-md bg-[#FFB030]'
+                                     )
                 ui.space()
 
 
