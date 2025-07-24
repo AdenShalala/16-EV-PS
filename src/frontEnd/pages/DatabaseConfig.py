@@ -1,6 +1,8 @@
 from nicegui import ui
 import elements
 import WriteFromFile
+import os
+import sys
 
 # state variable
 selected_db_type = 'MySQL'  # default

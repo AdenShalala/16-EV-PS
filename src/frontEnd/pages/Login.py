@@ -5,7 +5,7 @@ import DatabaseConfig
 def header():
     with ui.header().style('background-color: #FFFFFF'):
         with ui.row().classes('w-full justify-center items-center'):
-            ui.image('SocketFitDashboard.png').classes('h-[40px] w-[140px]')
+            ui.image('src\\frontEnd\\assets\SocketFitDashboard.png').classes('h-[40px] w-[140px]')
 
 @ui.page('/login')
 def login():

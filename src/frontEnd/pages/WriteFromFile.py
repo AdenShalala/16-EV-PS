@@ -1,7 +1,10 @@
 from nicegui import ui
 import elements
-from fileXMLintoSQL import create_database;
-import asyncio;
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'backEnd', 'databases', 'SQL')))
+from fileXMLintoSQL import create_database
+import asyncio
 
 def header():
     elements.header()
