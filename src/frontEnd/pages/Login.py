@@ -5,7 +5,7 @@ import DatabaseConfig
 def header():
     with ui.header().style('background-color: #FFFFFF'):
         with ui.row().classes('w-full justify-center items-center'):
-            ui.image('SocketFitDashboard.png').classes('h-[40px] w-[140px]')
+            ui.image('src\\frontEnd\\assets\SocketFitDashboard.png').classes('h-[40px] w-[140px]')
 
 @ui.page('/login')
 def login():
@@ -22,5 +22,5 @@ def login():
             ui.button('Login', on_click=checkLogin, color='#FFB030').classes('w-full text-white')
             ui.button('Login as IT Admin', color='#3545FF', on_click=DatabaseConfig.navigateConfig).classes('w-full text-white')
 
-ui.run(storage_secret='this is the very secret key', favicon="SocketFit logo.png")
+ui.run(storage_secret='this is the very secret key', favicon="src\\frontEnd\\assets\\SocketFit Logo.png")
 ui.navigate.to('/login')

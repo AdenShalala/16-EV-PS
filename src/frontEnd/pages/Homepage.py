@@ -3,14 +3,17 @@ import elements
 import UserInformation
 import Login
 import ActivityPage
-import SQL.SQL_read
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'backEnd', 'databases', 'SQL'))
+from SQL_read import read_patients_by_clinician_id
 
 def header():
     elements.header()
 
 @ui.page('/main')
 def main():
-    patients = SQL.SQL_read.read_patients_by_clinician_id(app.storage.user.get('clinid'))
+    patients = read_patients_by_clinician_id(app.storage.user.get('clinid'))
     app.storage.user['patients'] = patients
     patients = None
     # print(app.storage.user.get('patients'))

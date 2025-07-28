@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import mysql.connector
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'classes'))
 from Patient import Patient
 from Activity import Activity
 from Sensor import Sensor
