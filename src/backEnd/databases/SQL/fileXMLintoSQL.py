@@ -29,7 +29,7 @@ def create_database(xml_content: str):
     cursor.execute("USE " + str(os.getenv('MYSQL_DATABASE')) + ';')
 
     # Create tables
-    with open(os.path.join(os.path.dirname(__file__), "SQL/Create.sql"),  'r') as f:
+    with open(os.path.join(os.path.dirname(__file__), "Create.sql"),  'r') as f:
         cursor.execute(f.read())
 
     database.close()
@@ -102,6 +102,9 @@ def create_database(xml_content: str):
                                    (sensor_id, poi))
                     database.commit()
             print("XML data inserted successfully.")
+
+def amWorking():
+    print("Am working")
 
 if __name__ == "__main__":
     create_database()
