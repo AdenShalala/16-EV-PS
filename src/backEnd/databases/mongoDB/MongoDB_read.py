@@ -6,9 +6,9 @@ from datetime import datetime
 
 # class files are under src folder
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
-from Patient import Patient
-from Activity import Activity
-from Sensor import Sensor
+from src.Patient import Patient
+from src.Activity import Activity
+from src.Sensor import Sensor
 
 load_dotenv()
 

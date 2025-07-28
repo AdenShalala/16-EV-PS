@@ -44,7 +44,10 @@ def placeholder_column_inputs(container):
         ui.input(placeholder='Age Column Name Here...').classes('border rounded-md border-[#3545FF]')
         ui.input(placeholder='Gender Column Name Here...').classes('border rounded-md border-[#3545FF]')
 
-# def show_inputs_based_on_db(db_type):
-#     """Update inputs dynamically based on selected DB"""
-#     ui.clean()
-#     config()
+def navigateConfig():
+    ui.navigate.to('/config')
+
+def show_inputs_based_on_db(db_type):
+    """Update inputs dynamically based on selected DB"""
+    ui.clean()
+    config()
