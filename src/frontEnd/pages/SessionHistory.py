@@ -1,9 +1,15 @@
 from nicegui import ui, app
 import elements
+import ActivityPage
 from datetime import datetime
+from functools import partial
 
 def header():
     elements.header()
+
+def activitypass(act):
+    app.storage.user['activity'] = act
+    ActivityPage.navigateActivity()
 
 def on_tree_select(e):
     label_to_path = {
@@ -137,7 +143,7 @@ def sessionHistory():
                             ui.label(f'Pressure ').classes('col-span-2')
                             ui.button('View Activity').props('flat').classes(
                                       'col-span-4 text-white text-sm px-3 py-1 rounded-md bg-[#FFB030]'
-                                     )
+                                     ).on_click(partial(activitypass, activity))
                 ui.space()
 
 
