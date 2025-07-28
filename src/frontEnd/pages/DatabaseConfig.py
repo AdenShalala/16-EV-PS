@@ -25,7 +25,7 @@ def config():
                     label='Database Choice',
                     options=['MySQL', 'MongoDB', 'InfluxDB'],
                     value='MySQL',
-                    on_change=lambda e: show_inputs_based_on_db(e.value)
+                    #on_change=lambda e: show_inputs_based_on_db(e.value)
                 ).classes('rounded-md border border-[#2C25B2] px-4 py-2 text-md')
             with ui.row().classes('items-center gap-4'):
                 ui.button(
