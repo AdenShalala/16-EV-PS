@@ -2,7 +2,7 @@ from nicegui import ui
 import elements
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'backEnd', 'databases', 'SQL')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL')))
 from fileXMLintoSQL import create_database
 import asyncio
 
