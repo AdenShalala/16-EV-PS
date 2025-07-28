@@ -5,7 +5,7 @@ import Login
 import ActivityPage
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'backEnd', 'databases', 'SQL'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL'))
 from SQL_read import read_patients_by_clinician_id
 
 def header():
