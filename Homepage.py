@@ -1,14 +1,21 @@
-from nicegui import ui
+from nicegui import ui, app
 import elements
 import UserInformation
 import Login
 import ActivityPage
+import SQL.SQL_read
 
 def header():
     elements.header()
 
 @ui.page('/main')
 def main():
+    patients = SQL.SQL_read.read_patients_by_clinician_id(app.storage.user.get('clinid'))
+    app.storage.user['patients'] = patients
+    patients = None
+    # print(app.storage.user.get('patients'))
+    
+    # print(app.storage.user.get('clinid'))
     ui.page_title("SocketFit Dashboard")
     genderList = ['All', 'Male', 'Female', 'Prefer not to say']
     amputationTypeList = ['All']
@@ -16,7 +23,7 @@ def main():
     with ui.row().classes('w-full'):
         ui.label("Welcome").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[500px]'):
-        with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
+        with ui.card().classes('w-1/5 h-full border border-[#2C25B2]'):
             ui.label("Patients")
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             with ui.row().classes('w-full'):
@@ -48,9 +55,18 @@ def main():
                     ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#3545FF]')
 
                 ui.select(value=amputationTypeList[0], options=amputationTypeList).classes('col-span-2 border rounded-md border-[#3545FF]')
+            def test(patient):
+                print(patient.month_year_birth)
 
             with ui.grid(columns=4).classes('w-full gap-6'):
-                ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2]')
+                for patient in app.storage.user.get('patients'):
+                    app.storage.user['gender'] = patient.gender
+                    print(app.storage.user.get('gender'))
+                    app.storage.user['dob'] = patient.month_year_birth
+                    with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2]').on('click', lambda: UserInformation.navigatePatient(patient)):
+                        ui.label('User').classes('text-xl')
+                        ui.label(app.storage.user.get('dob'))
+                        ui.label(app.storage.user.get('gender'))
     ui.button('test', on_click=UserInformation.navigate)
     ui.button('activity', on_click=ActivityPage.navigateActivity)
 
