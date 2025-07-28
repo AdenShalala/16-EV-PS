@@ -5,8 +5,13 @@ import Login
 import ActivityPage
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL'))
-from SQL_read import read_patients_by_clinician_id
+sql_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL'))
+if sql_path not in sys.path:
+    sys.path.insert(0, sql_path)
+try:
+    from SQL_read import read_patients_by_clinician_id
+except ImportError as e:
+    raise ImportError(f"Could not import 'SQL_read'. Make sure 'SQL_read.py' exists in {sql_path}. Original error: {e}")
 
 def header():
     elements.header()
