@@ -12,15 +12,7 @@ def activitypass(act):
     app.storage.user['activity'] = act
     ActivityPage.navigateActivity()
 
-# def on_tree_select(e):
-#     label_to_path = {
-#         'User Information': '/userInformation',
-#         'Session History': '/sessionHistory',
-#     }
 
-#     selected_label = e.value
-#     if selected_label in label_to_path:
-#         ui.navigate.to(label_to_path[selected_label])
 
 @ui.page('/sessionHistory')
 def sessionHistory():
@@ -43,7 +35,6 @@ def sessionHistory():
                 {
                     'id': 'User Records',
                     'label': 'User Records',
-                    'selectable': False,
                     'children': [
                         {
                             'id': 'User Information',

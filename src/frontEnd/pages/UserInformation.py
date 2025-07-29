@@ -26,7 +26,6 @@ def main():
                 {
                     'id': 'User Records',
                     'label': 'User Records',
-                    'selectable': False,
                     'children': [
                         {
                             'id': 'User Information',

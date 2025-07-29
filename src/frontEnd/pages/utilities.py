@@ -8,6 +8,7 @@ def bold(text):
 
 def on_tree_select(e):
     label_to_path = {
+        'User Records': '/main',
         'User Information': '/userInformation',
         'Session History': '/sessionHistory',
     }
