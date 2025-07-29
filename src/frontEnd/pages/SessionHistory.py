@@ -3,6 +3,7 @@ import elements
 import ActivityPage
 from datetime import datetime
 from functools import partial
+from utilities import bold, on_tree_select
 
 def header():
     elements.header()
@@ -11,20 +12,19 @@ def activitypass(act):
     app.storage.user['activity'] = act
     ActivityPage.navigateActivity()
 
-def on_tree_select(e):
-    label_to_path = {
-        'User Information': '/userInformation',
-        'Session History': '/sessionHistory',
-    }
+# def on_tree_select(e):
+#     label_to_path = {
+#         'User Information': '/userInformation',
+#         'Session History': '/sessionHistory',
+#     }
 
-    selected_label = e.value
-    if selected_label in label_to_path:
-        ui.navigate.to(label_to_path[selected_label])
-    else:
-        ui.notify(f'Selected: {selected_label}')
+#     selected_label = e.value
+#     if selected_label in label_to_path:
+#         ui.navigate.to(label_to_path[selected_label])
 
 @ui.page('/sessionHistory')
 def sessionHistory():
+    app.storage.user['current_page'] = '/sessionHistory'
     patient = app.storage.user.get('patient')
     ui.page_title("SocketFit Dashboard")
     header()
@@ -36,24 +36,22 @@ def sessionHistory():
         ui.label("User History").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[800px]'):
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
-            ui.link('Patients', '/main').classes('text-black text-xl no-underline cursor-pointer')
-            current_page = 'User Information'
-            with ui.expansion(text="User Records"):
-                with ui.expansion(text='User Information'):
-                    ui.label("here")
-                ui.label('Session History').classes('font-bold')
+
+            current_page = app.storage.user.get('current_page', '')
 
             tree_data = [
                 {
                     'id': 'User Records',
+                    'label': 'User Records',
+                    'selectable': False,
                     'children': [
                         {
                             'id': 'User Information',
-                            'label': f'User Information'
+                            'label': bold('User Information') if current_page == '/userInformation' else 'User Information'
                         },
                         {
                             'id': 'Session History',
-                            'label': f'<b>Session History</b>'
+                            'label': bold('Session History') if current_page == '/sessionHistory' else 'Session History'
                         }
                     ]
                 }
@@ -64,10 +62,7 @@ def sessionHistory():
                 label_key='label', 
                 # default_value=current_page,
                 on_select=on_tree_select
-            )
-            ui.label('User Records').classes('font-bold text-xl')
-            ui.link('User Information', '/userInformation').classes('text-black no-underline cursor-pointer')
-            ui.label("Session History").classes('font-bold')
+            ).expand(['User Records'])
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             ui.label("Filters:")
             with ui.grid(columns=11).classes('w-full'):

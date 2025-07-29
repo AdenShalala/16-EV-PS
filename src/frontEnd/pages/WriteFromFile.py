@@ -2,8 +2,9 @@ from nicegui import ui
 import elements
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'backEnd', 'databases', 'SQL')))
 from fileXMLintoSQL import create_database
+
 import asyncio
 
 def header():
@@ -41,7 +42,7 @@ def writeFile():
             ui.input(placeholder='Weight Column Name Here...').classes('border rounded-md border-[#3545FF]')
             ui.input(placeholder='Age Column Name Here...').classes('border rounded-md border-[#3545FF]')
             ui.input(placeholder='Gender Column Name Here...').classes('border rounded-md border-[#3545FF]')
-
+            
 def navigateFile():
     ui.navigate.to('/writeFile')
 
