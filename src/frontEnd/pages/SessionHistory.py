@@ -20,10 +20,15 @@ def sessionHistory():
     patient = app.storage.user.get('patient')
     ui.page_title("SocketFit Dashboard")
     header()
-    activityList = []
+    app.storage.user['activityList'] = []
     for activity in patient.activities:
-        activityList.append(activity)
+        app.storage.user['activityList'].append(activity)
     activityNameList = ['All']
+    app.storage.user['actTypeList'] = ['All']
+    for app.storage.user['activity'] in app.storage.user.get('activityList'):
+        # print(activity.type)
+        app.storage.user['actTypeList'].append(activity.type)
+        # print(app.storage.user.get('actTypeList'))
     with ui.row().classes('w-full'):
         ui.label("User History").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[800px]'):
@@ -68,7 +73,7 @@ def sessionHistory():
                 # ui.label('').classes('col-span-1')
             with ui.grid(columns=11).classes('w-full'):
                 # ui.label('').classes('col-span-1')
-                ui.select(options=activityNameList, value=activityNameList[0]).classes('col-span-2 w-full border rounded-md border-[#3545FF]')
+                ui.select(options=app.storage.user.get('actTypeList'), value=app.storage.user.get('actTypeList', [])[0]).classes('col-span-2 w-full border rounded-md border-[#3545FF]')
                 ui.label('').classes('col-span-1')
                 ui.number(label="Min", placeholder="Min").classes('col-span-1 w-full border rounded-md border-[#3545FF]')
                 ui.number(label="Max", placeholder="Max").classes('col-span-1 w-full border rounded-md border-[#3545FF]')
@@ -98,38 +103,52 @@ def sessionHistory():
                     #This is an example of how these details would be listed.
                     #It would be 'for activity in activities:'
                     # for i in range(1, 6):
-                    for activity in activityList:
-                        dt_str1 = activity.start_time
-                        dt_str2 = activity.end_time
+                    for app.storage.user['activity'] in app.storage.user.get('activityList'):
+                        app.storage.user['dt_str1'] = app.storage.user.get('activity').start_time
+                        app.storage.user['dt_str2'] = app.storage.user.get('activity').end_time
 
                         dt_format = "%d-%b-%Y %H:%M:%S"
 
-                        dt1 = datetime.strptime(dt_str1, dt_format)
-                        dt2 = datetime.strptime(dt_str2, dt_format)
+                        dt1 = datetime.strptime(app.storage.user.get('dt_str1'), dt_format)
+                        dt2 = datetime.strptime(app.storage.user.get('dt_str2'), dt_format)
 
-                        duration = dt2 - dt1
+                        # app.storage.user['duration'] = dt2 - dt1
+                        total_seconds = int((dt2 - dt1).total_seconds())
+                        app.storage.user['total_seconds'] = total_seconds
 
-                        total_seconds = int(duration.total_seconds())
+                        # app.storage.user['total_seconds'] = int(app.storage.user.get('duration').total_seconds())
 
-                        hours = total_seconds // 3600
-                        minutes = (total_seconds % 3600) // 60
-                        seconds = total_seconds % 60
+                        app.storage.user['hours'] = app.storage.user.get('total_seconds') // 3600
+                        app.storage.user['minutes'] = (app.storage.user.get('total_seconds') % 3600) // 60
+                        app.storage.user['seconds'] = app.storage.user['total_seconds'] % 60
 
-                        print(f"Duration: {hours} hours, {minutes} minutes, {seconds} seconds")
-                        with ui.grid(columns=23).classes('border-[2px] border-[#2C25B2] rounded'):
+                        app.storage.user['minSensor'] = None
+                        app.storage.user['maxSensor'] = None
+                        for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
+                            for app.storage.user['signal'] in app.storage.user.get('sensor').signal:
+                                if app.storage.user.get('minSensor') == None or float(app.storage.user.get('signal')) < float(app.storage.user.get('minSensor')):
+                                    app.storage.user['minSensor'] = round(float(app.storage.user.get('signal')), 1)
+                                if app.storage.user.get('maxSensor') == None or float(app.storage.user.get('signal')) > float(app.storage.user.get('maxSensor')):
+                                    app.storage.user['maxSensor'] = round(float(app.storage.user.get('signal')), 1)
+
+                        print(app.storage.user.get('minSensor'))
+                        print(app.storage.user.get('maxSensor'))
+
+                        print(f"Duration: {app.storage.user.get('hours')} hours, {app.storage.user.get('minutes')} minutes, {app.storage.user.get('seconds')} seconds")
+                        with ui.grid(columns=23).classes('border-[2px] border-[#2C25B2] rounded items-center'):
                             ui.label('').classes('col-span-1')
                             ui.label(f'This is row ').classes('col-span-2')
                             ui.label('').classes('col-span-2')
-                            ui.label(activity.start_time).classes('col-span-2')
+                            ui.label(app.storage.user.get('activity').start_time).classes('col-span-2')
                             ui.label('').classes('col-span-2')
-                            ui.label(activity.type).classes('col-span-2')
+                            ui.label(app.storage.user.get('activity').type).classes('col-span-2')
                             ui.label('').classes('col-span-2')
-                            ui.label(f'{hours}h{minutes}m{seconds}s').classes('col-span-2')
+                            ui.label(f'{app.storage.user.get('hours')}h{app.storage.user.get('minutes')}m{app.storage.user.get('seconds')}s').classes('col-span-2')
                             ui.label('').classes('col-span-2')
-                            ui.label(f'Pressure ').classes('col-span-2')
+                            ui.label(f"{app.storage.user.get('minSensor')} - {app.storage.user.get('maxSensor')}").classes('col-span-2')
                             ui.button('View Activity').props('flat').classes(
-                                      'col-span-4 text-white text-sm px-3 py-1 rounded-md bg-[#FFB030]'
-                                     ).on_click(partial(activitypass, activity))
+                                      'col-span-4 text-white text-sm px-3 py-1 rounded-3xl bg-[#FFB030] h-1/2'
+                                     ).on_click(partial(activitypass, app.storage.user.get('activity')))
                 ui.space()
 
 
