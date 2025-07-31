@@ -3,7 +3,8 @@ import elements
 import ActivityPage
 from datetime import datetime
 from functools import partial
-from utilities import bold, on_tree_select
+from utilities import session_tree
+from collections import OrderedDict
 
 def header():
     elements.header()
@@ -33,32 +34,7 @@ def sessionHistory():
         ui.label("User History").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[800px]'):
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
-
-            current_page = app.storage.user.get('current_page', '')
-
-            tree_data = [
-                {
-                    'id': 'User Records',
-                    'label': 'User Records',
-                    'children': [
-                        {
-                            'id': 'User Information',
-                            'label': bold('User Information') if current_page == '/userInformation' else 'User Information'
-                        },
-                        {
-                            'id': 'Session History',
-                            'label': bold('Session History') if current_page == '/sessionHistory' else 'Session History'
-                        }
-                    ]
-                }
-            ]
-
-            tree = ui.tree(
-                tree_data, 
-                label_key='label', 
-                # default_value=current_page,
-                on_select=on_tree_select
-            ).expand(['User Records'])
+            session_tree()
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             ui.label("Filters:")
             with ui.grid(columns=11).classes('w-full'):

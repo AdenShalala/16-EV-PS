@@ -5,7 +5,7 @@ import Login
 import ActivityPage
 import os
 import sys
-from utilities import bold,on_tree_select
+from utilities import session_tree
 
 sql_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL'))
 if sql_path not in sys.path:
@@ -35,30 +35,9 @@ def main():
         ui.label("Welcome").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[500px]'):
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]'):
-            current_page = app.storage.user.get('current_page', '')
-            tree_data = [
-                {
-                    'id': 'User Records',
-                    'label': bold('User Records'),
-                    'children': [
-                        {
-                            'id': 'User Information',
-                            'label': bold('User Information') if current_page == '/userInformation' else 'User Information'
-                        },
-                        {
-                            'id': 'Session History',
-                            'label': bold('Session History') if current_page == '/sessionHistory' else 'Session History'
-                        }
-                    ]
-                }
-            ]
-
-            tree = ui.tree(
-                tree_data, 
-                label_key='label', 
-                # default_value=current_page,
-                on_select=on_tree_select
-            ).expand(['User Records'])
+            ## Tree with users needed
+            # session_tree()
+            print('working')
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             with ui.row().classes('w-full'):
                 ui.label("Select User to View Users Information").classes('text-lg font-bold')
