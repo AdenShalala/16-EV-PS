@@ -43,13 +43,15 @@ def activityPage():
             else:
                 timer.deactivate()
                 play_pause_icon.set_name('play_circle')
-
-        with ui.button(color='#FFB030').classes('rounded-md text-white flex items-center gap-3 w-200px ml-[10%]').on_click(toggle_play) as btn:
-            with ui.row().classes('w-full h-full text-align-middle'):
-                with ui.column().classes('text-left'):
-                    ui.label('Activity')
-                    ui.label(f'{app.storage.user.get('hours'):02}:{app.storage.user.get('minutes'):02}:{app.storage.user.get('seconds'):02}')
-                play_pause_icon = ui.icon('play_circle').classes('w-16 h-16 ml-4')
+        
+        with ui.button(color='#FFB030').classes('rounded-md text-white flex justify-between w-[230px] mr-[4%] p-2 right').on_click(toggle_play):
+            with ui.grid(columns=2).classes('w-full'):
+                with ui.column().classes('gap-0 items-start w-full'):
+                    ui.label('Activity').classes('text-sm leading-tight m-0')
+                    ui.label(f"{app.storage.user.get('hours'):02}:{app.storage.user.get('minutes'):02}:{app.storage.user.get('seconds'):02}") \
+                        .classes('text-sm leading-tight m-0')
+                with ui.column().classes('items-end'):
+                    play_pause_icon = ui.icon('play_circle').classes('text-4xl text-right').style('font-size: 40px;').props('justify-right')
 
     with ui.row().classes('w-full h-[500px]'):
         with ui.card().classes('w-1/5 border border-[#2C25B2]') as patients:
