@@ -67,12 +67,13 @@ def activityPage():
                 dot_trace_indices = []
 
                 for i, sensor in enumerate(sensors):
+                    app.storage.user['name'] = f"{sensor.location} ({sensor.type})"
                     color = colors[i % len(colors)]
 
                     fig.add_trace(go.Scatter(
                         x=sensor.timestamp,
                         y=sensor.signal,
-                        name=sensor.location,
+                        name=app.storage.user.get('name'),
                         line=dict(color=color)
                     ))
 
@@ -81,7 +82,7 @@ def activityPage():
                         y=[sensor.signal[0]],
                         mode='markers',
                         marker=dict(size=10, color=color),
-                        name=f'{sensor.location} (dot)',
+                        name=app.storage.user.get('name'),
                         showlegend=False
                     ))
 
