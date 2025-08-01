@@ -28,7 +28,6 @@ def activityPage():
     app.storage.user['hours'] = app.storage.user.get('total_seconds') // 3600
     app.storage.user['minutes'] = (app.storage.user.get('total_seconds') % 3600) // 60
     app.storage.user['seconds'] = app.storage.user['total_seconds'] % 60
-    print(app.storage.user.get('activity').type)
     state = app.storage.user.get('state', {'playing': False, 'frame_index': 0})
     app.storage.user['state'] = state
     with ui.row().classes('w-full items-end'):
@@ -92,7 +91,8 @@ def activityPage():
                     fig.update_yaxes(gridcolor='lightgrey')
 
                 plot = ui.plotly(fig).classes('w-full')
-                plot._props['options']['config'] = {'displaylogo': False}
+                # plot._props['options']['config'] = {'displaylogo': False}
+                plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
 
                 app.storage.user['state'] = {
                     'frame_index': 0,

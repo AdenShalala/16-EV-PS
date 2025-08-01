@@ -21,13 +21,15 @@ def sessionHistory():
     ui.page_title("SocketFit Dashboard")
     header()
     app.storage.user['activityList'] = []
-    for activity in patient.activities:
-        app.storage.user['activityList'].append(activity)
+    for app.storage.user['activity'] in patient.activities:
+        print(app.storage.user.get('activity').type)
+        app.storage.user['activityList'].append(app.storage.user['activity'])
     activityNameList = ['All']
     app.storage.user['actTypeList'] = ['All']
     for app.storage.user['activity'] in app.storage.user.get('activityList'):
-        # print(activity.type)
-        app.storage.user['actTypeList'].append(activity.type)
+        print(app.storage.user.get('activity').type)
+        if app.storage.user.get('activity').type not in app.storage.user.get('actTypeList'):
+            app.storage.user['actTypeList'].append(app.storage.user['activity'].type)
         # print(app.storage.user.get('actTypeList'))
     with ui.row().classes('w-full'):
         ui.label("User History").classes('text-xl font-semibold ml-[21%]')
@@ -131,10 +133,6 @@ def sessionHistory():
                                 if app.storage.user.get('maxSensor') == None or float(app.storage.user.get('signal')) > float(app.storage.user.get('maxSensor')):
                                     app.storage.user['maxSensor'] = round(float(app.storage.user.get('signal')), 1)
 
-                        print(app.storage.user.get('minSensor'))
-                        print(app.storage.user.get('maxSensor'))
-
-                        print(f"Duration: {app.storage.user.get('hours')} hours, {app.storage.user.get('minutes')} minutes, {app.storage.user.get('seconds')} seconds")
                         with ui.grid(columns=23).classes('border-[2px] border-[#2C25B2] rounded items-center'):
                             ui.label('').classes('col-span-1')
                             ui.label(f'This is row ').classes('col-span-2')
