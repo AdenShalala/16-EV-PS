@@ -1,5 +1,6 @@
 from nicegui import ui, app
 import ActivityPage
+import Homepage
 from collections import OrderedDict
 from datetime import datetime
 def bold(text):
@@ -76,3 +77,8 @@ def on_tree_select(e):
                 app.storage.user['activity'] = activity
                 ActivityPage.navigateActivity()
                 break
+
+def header():
+    with ui.header().style('background-color: #FFFFFF'):
+        with ui.link(target='/main'):
+            ui.image('src\\frontEnd\\assets\\SocketFitDashboard.png').classes('h-[40px] w-[140px]')

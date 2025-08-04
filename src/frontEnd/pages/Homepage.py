@@ -1,11 +1,10 @@
 from nicegui import ui, app
-import elements
+import utilities
 import UserInformation
 import Login
 import ActivityPage
 import os
 import sys
-from utilities import session_tree
 
 sql_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL'))
 if sql_path not in sys.path:
@@ -16,7 +15,7 @@ except ImportError as e:
     raise ImportError(f"Could not import 'SQL_read'. Make sure 'SQL_read.py' exists in {sql_path}. Original error: {e}")
 
 def header():
-    elements.header()
+    utilities.header()
 
 @ui.page('/main')
 def main():
@@ -85,8 +84,6 @@ def main():
                         ui.label('User').classes('text-xl')
                         ui.label(app.storage.user.get('dob'))
                         ui.label(app.storage.user.get('gender'))
-    ui.button('test', on_click=UserInformation.navigate)
-    ui.button('activity', on_click=ActivityPage.navigateActivity)
 
 def mainNavigate():
     ui.navigate.to('/main')

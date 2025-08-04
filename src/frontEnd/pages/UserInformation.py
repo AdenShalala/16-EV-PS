@@ -1,11 +1,10 @@
 from nicegui import ui, app
-import elements
+import utilities
 import SessionHistory
-from utilities import session_tree
 
 
 def header():
-    elements.header()
+    utilities.header()
 
 
     
@@ -19,7 +18,7 @@ def main():
         ui.label("User").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[800px]'):
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
-            session_tree()
+            utilities.session_tree()
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             with ui.row():
                 with ui.row().classes('w-2/5 items-start'):
@@ -34,7 +33,6 @@ def main():
                 with ui.column().classes('w-2/5'):
                     ui.label("Additional Notes").classes('text-xl self-start')
                     ui.textarea(placeholder='Enter Notes Here').classes('h-full w-full border rounded-md border-[#3545FF]')
-    ui.button("Next", on_click=SessionHistory.navigateSession)
 def navigate():
     ui.navigate.to('/userInformation')
 

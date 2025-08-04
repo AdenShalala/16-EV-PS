@@ -1,13 +1,12 @@
 from nicegui import ui, app
-import elements
+import utilities
 import ActivityPage
 from datetime import datetime
 from functools import partial
-from utilities import session_tree
 from collections import OrderedDict
 
 def header():
-    elements.header()
+    utilities.header()
 
 def activitypass(act):
     app.storage.user['activity'] = act
@@ -36,7 +35,7 @@ def sessionHistory():
         ui.label("User History").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[800px]'):
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
-            session_tree()
+            utilities.session_tree()
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             ui.label("Filters:")
             with ui.grid(columns=11).classes('w-full'):
