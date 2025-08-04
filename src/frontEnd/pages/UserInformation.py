@@ -13,7 +13,6 @@ def header():
 def main():
     app.storage.user['current_page'] = '/userInformation'
     patient = app.storage.user.get('patient')
-    print(patient.month_year_birth)
     ui.page_title("SocketFit Dashboard")
     header()
     with ui.row().classes('w-full'):

@@ -74,7 +74,6 @@ def main():
             with ui.grid(columns=4).classes('w-full gap-6'):
                 for patient in app.storage.user.get('patients'):
                     app.storage.user['gender'] = patient.gender
-                    print(app.storage.user.get('gender'))
                     app.storage.user['dob'] = patient.month_year_birth
                     with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2]').on('click', lambda: UserInformation.navigatePatient(patient)):
                         ui.label('User').classes('text-xl')
