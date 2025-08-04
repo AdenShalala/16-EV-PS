@@ -16,6 +16,7 @@ def session_tree():
             seen_dates = OrderedDict()
 
             for activity in app.storage.user.get('activityList', []):
+                print(activity)
                 dt_str1 = activity.start_time
                 dt_format = "%d-%b-%Y %H:%M:%S"
                 dt1 = datetime.strptime(dt_str1, dt_format)

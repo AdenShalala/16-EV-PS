@@ -21,10 +21,10 @@ def sessionHistory():
     patient = app.storage.user.get('patient')
     ui.page_title("SocketFit Dashboard")
     header()
-    app.storage.user['activityList'] = []
-    for app.storage.user['activity'] in patient.activities:
-        print(app.storage.user.get('activity').type)
-        app.storage.user['activityList'].append(app.storage.user['activity'])
+    # app.storage.user['activityList'] = []
+    # for app.storage.user['activity'] in patient.activities:
+    #     print(app.storage.user.get('activity').type)
+    #     app.storage.user['activityList'].append(app.storage.user['activity'])
     activityNameList = ['All']
     app.storage.user['actTypeList'] = ['All']
     for app.storage.user['activity'] in app.storage.user.get('activityList'):

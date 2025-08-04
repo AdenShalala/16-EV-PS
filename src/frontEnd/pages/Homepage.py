@@ -30,6 +30,12 @@ def main():
     ui.page_title("SocketFit Dashboard")
     genderList = ['All', 'Male', 'Female', 'Prefer not to say']
     amputationTypeList = ['All']
+    app.storage.user['activityList'] = []
+    # patient = app.storage.user.get('patient')
+    for patient in app.storage.user.get('patients'):
+        for app.storage.user['activity'] in patient.activities:
+            print(app.storage.user.get('activity').type)
+            app.storage.user['activityList'].append(app.storage.user['activity'])
     header()
     with ui.row().classes('w-full'):
         ui.label("Welcome").classes('text-xl font-semibold ml-[21%]')
