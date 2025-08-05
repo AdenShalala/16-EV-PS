@@ -2,6 +2,7 @@ from nicegui import ui, app
 import ActivityPage
 from collections import OrderedDict
 from datetime import datetime
+import UserInformation
 def bold(text):
     return ''.join(
         chr(ord(c) + 0x1D400 - ord('A')) if 'A' <= c <= 'Z' else
@@ -76,3 +77,31 @@ def on_tree_select(e):
                 app.storage.user['activity'] = activity
                 ActivityPage.navigateActivity()
                 break
+
+def patients_tree():
+
+    # fOR NOW PATIENTS NODES HAVE TITLES SUCH AS USER A,B....... LATER CAN BE CHANGED WHEN WE HAVE NAMES
+    patient_nodes = []
+    for i, patient in enumerate(app.storage.user.get('patients', [])):
+        patient_nodes.append({
+            'id': f'patient-{i}',
+            'label': f'User {chr(65 + i)}'
+        })
+
+    tree_data = [
+        {
+            'id': 'Patients',
+            'label': 'Patients',
+            'children': patient_nodes
+        }
+    ]
+
+    def on_patient_select(e):
+        selected_id = e.value
+        if selected_id.startswith("patient-"):
+            index = int(selected_id.replace("patient-", ""))
+            selected_patient = app.storage.user.get('patients', [])[index]
+            app.storage.user['patient'] = selected_patient
+            UserInformation.navigatePatient(selected_patient)
+
+    ui.tree(tree_data, label_key='label', on_select=on_patient_select).expand(['Patients'])
