@@ -5,7 +5,6 @@ import Login
 import ActivityPage
 import os
 import sys
-from utilities import patients_tree
 
 sql_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL'))
 if sql_path not in sys.path:
@@ -42,7 +41,7 @@ def main():
     with ui.row().classes('w-full h-[500px]'):
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]'):
             ## Tree with users needed
-           patients_tree()
+           utilities.patients_tree()
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             with ui.row().classes('w-full'):
                 ui.label("Select User to View Users Information").classes('text-lg font-bold')
