@@ -30,11 +30,9 @@ def config():
             with ui.row().classes('items-center gap-4'):
                 ui.button(
                     'Advanced Database Configuration',
-                    on_click=lambda: ui.navigate.to('/advanced-config'),
+                    on_click=lambda: ui.navigate.to('/advanced-config'), color="#FFB030"
                 ).classes('bg-orange-400 text-white mt-4 px-3 py-2 rounded-md text-sm')
             placeholder_column_inputs(main)
-
-    ui.button('next', on_click=WriteFromFile.navigateFile).classes('mt-4')
 
 def placeholder_column_inputs(container):
     """Draw initial 4 placeholder inputs inside a container"""

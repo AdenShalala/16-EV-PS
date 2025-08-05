@@ -35,8 +35,8 @@ def writeFile():
                 label='Drag and drop or browse for XML file',
                 on_upload=handle_database_upload,
                 auto_upload=True,
-                max_files=1,
-            ).props('accept=".xml"').style('color: #3545FF; text-transform: none;').classes('rounded-md px-4 py-2')
+                max_files=1
+            ).props('accept=".xml" color=orange-5').style(' text-transform: none;').classes('rounded-md px-4 py-2')
             ui.input("Database Choice").classes('border rounded-md border-[#2C25B2]')
             ui.input(placeholder='Height Column Name Here...').classes('border rounded-md border-[#3545FF]')
             ui.input(placeholder='Weight Column Name Here...').classes('border rounded-md border-[#3545FF]')

@@ -114,6 +114,12 @@ def activityPage():
                     plot.update()
 
                 timer = ui.timer(interval=0.1, callback=update_dots, active=False)
+            
+            toleranceList = []
+            for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
+                for app.storage.user['signal'] in app.storage.user.get('sensor').signal:
+                    if float(app.storage.user.get('signal')) > float(app.storage.user.get('sensor').pressure_tolerance):
+                        toleranceList.append(app.storage.user.get('signal'))
 
             with ui.row().classes('row-span-3'):
                 with ui.grid(columns=3).classes('w-full h-full'):
@@ -124,6 +130,9 @@ def activityPage():
                             ui.label(f'{app.storage.user.get('hours'):02}:{app.storage.user.get('minutes'):02}:{app.storage.user.get('seconds'):02}')
                     with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                         ui.label('Area/s Exceeding Tolerance Level').classes('font-bold')
+                        with ui.scroll_area().classes('h-20'):
+                            for tolerance in toleranceList:
+                                ui.label(tolerance)
                     with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                         ui.label('Type of Sensor/s Connected').classes('font-bold')
                         with ui.row():
