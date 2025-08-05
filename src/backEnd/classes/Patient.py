@@ -1,12 +1,12 @@
 from enum import Enum
-from sqlite3 import Date
+from datetime import date
 from dataclasses import dataclass
 
 @dataclass
 class Patient:
     patient_id: str
     clinician_id: str
-    month_year_birth: Date
+    month_year_birth: date
     gender: str
     height: float
     weight: float
@@ -14,7 +14,7 @@ class Patient:
     #amputation_type: Enum
     amputation_type: str
     socket_type: str
-    first_fitting: Date
+    first_fitting: date
     hours_per_week: int
     distance_per_week: float
     activities: list
