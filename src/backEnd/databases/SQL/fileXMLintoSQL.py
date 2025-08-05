@@ -34,7 +34,7 @@ def create_database(xml_content: str):
 
     database.close()
 
-    print(f"Parsing XML from uploaded xml file")
+    print("Parsing XML from uploaded xml file")
 
     database = sql.connect(
         host = os.getenv('MYSQL_HOST'), 

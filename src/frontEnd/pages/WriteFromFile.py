@@ -1,5 +1,5 @@
 from nicegui import ui
-import elements
+import utilities
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src', 'backEnd', 'databases', 'SQL')))
@@ -8,7 +8,7 @@ from fileXMLintoSQL import create_database
 import asyncio
 
 def header():
-    elements.header()
+    utilities.header()
 
 @ui.page('/writeFile')
 def writeFile():

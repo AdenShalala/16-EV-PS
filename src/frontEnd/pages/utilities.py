@@ -1,5 +1,6 @@
 from nicegui import ui, app
 import ActivityPage
+import Homepage
 from collections import OrderedDict
 from datetime import datetime
 import UserInformation
@@ -15,9 +16,15 @@ def session_tree():
             current_page = app.storage.user.get('current_page', '')
             session_date_nodes = []
             seen_dates = OrderedDict()
+            expand_nodes = ['User Records']
+            if current_page == '/sessionHistory':
+                 expand_nodes.append('Session History')
+            elif current_page != '/sesionHistory' and current_page != '/activity':
+                 if 'Session History' in expand_nodes:
+                    expand_nodes.remove('Session History')
 
             for activity in app.storage.user.get('activityList', []):
-                print(activity)
+                # print(activity)
                 dt_str1 = activity.start_time
                 dt_format = "%d-%b-%Y %H:%M:%S"
                 dt1 = datetime.strptime(dt_str1, dt_format)
@@ -53,7 +60,7 @@ def session_tree():
                 label_key='label', 
                 # default_value=current_page,
                 on_select=on_tree_select
-            ).expand(['User Records'])
+            ).expand(expand_nodes)
 
 def on_tree_select(e):
     label_to_path = {
@@ -105,3 +112,9 @@ def patients_tree():
             UserInformation.navigatePatient(selected_patient)
 
     ui.tree(tree_data, label_key='label', on_select=on_patient_select).expand(['Patients'])
+
+
+def header():
+    with ui.header().style('background-color: #FFFFFF'):
+        with ui.link(target='/main'):
+            ui.image('src\\frontEnd\\assets\\SocketFitDashboard.png').classes('h-[40px] w-[140px]')

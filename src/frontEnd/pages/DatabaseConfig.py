@@ -1,5 +1,5 @@
 from nicegui import ui
-import elements
+import utilities
 import WriteFromFile
 import os
 import sys
@@ -8,7 +8,7 @@ import sys
 selected_db_type = 'MySQL'  # default
 
 def header():
-    elements.header()
+    utilities.header()
 
 @ui.page('/config')
 def config():

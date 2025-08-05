@@ -1,12 +1,12 @@
 from nicegui import ui, app
-import elements
+import utilities
 import plotly.graph_objects as go
 from datetime import datetime
 import plotly.colors as pc
-from utilities import session_tree
+# from utilities import session_tree
 
 def header():
-    elements.header()
+    utilities.header()
 
 @ui.page('/activity')
 def activityPage():
@@ -55,7 +55,7 @@ def activityPage():
 
     with ui.row().classes('w-full h-[500px]'):
         with ui.card().classes('w-1/5 border border-[#2C25B2]') as patients:
-            session_tree()
+            utilities.session_tree()
         with ui.grid(rows=10).classes('w-3/4 h-800px'):
             with ui.card().classes('row-span-7 border border-[#2C25B2]') as main:
                 sensors = app.storage.user.get('activity').sensors
