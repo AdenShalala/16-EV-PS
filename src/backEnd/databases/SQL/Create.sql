@@ -1,15 +1,24 @@
+CREATE TABLE Clinician (
+    clinician_id   VARCHAR(50)  PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL,
+    email          VARCHAR(100) NOT NULL,
+    password_hash  VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE Patient (
-	patient_id VARCHAR(50) PRIMARY KEY,
-    clinician_id VARCHAR(50),
+    patient_id    VARCHAR(50)   PRIMARY KEY,
+    clinician_id  VARCHAR(50),
+    name           VARCHAR(100),
     month_year_birth VARCHAR(10),
-    gender VARCHAR(20),
-    height BIGINT,
-    weight BIGINT,
+    gender        VARCHAR(20),
+    height        BIGINT,
+    weight        BIGINT,
     amputation_type VARCHAR(40),
-    socket_type VARCHAR(30),
+    socket_type   VARCHAR(30),
     first_fitting VARCHAR(10),
     hours_per_week VARCHAR(30),
-    distance_per_week VARCHAR(30)
+    distance_per_week VARCHAR(30),
+    FOREIGN KEY (clinician_id) REFERENCES Clinician(clinician_id)
 );
 
 CREATE TABLE Activity (
