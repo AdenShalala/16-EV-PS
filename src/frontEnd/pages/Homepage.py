@@ -33,7 +33,7 @@ def main():
     # patient = app.storage.user.get('patient')
     for patient in app.storage.user.get('patients'):
         for app.storage.user['activity'] in patient.activities:
-            print(app.storage.user.get('activity').type)
+            # print(app.storage.user.get('activity').type)
             app.storage.user['activityList'].append(app.storage.user['activity'])
     header()
     with ui.row().classes('w-full'):
@@ -80,7 +80,7 @@ def main():
                 for patient in app.storage.user.get('patients'):
                     app.storage.user['gender'] = patient.gender
                     app.storage.user['dob'] = patient.month_year_birth
-                    with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2]').on('click', lambda: UserInformation.navigatePatient(patient)):
+                    with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2] cursor-pointer').on('click', lambda: UserInformation.navigatePatient(patient)):
                         ui.label('User').classes('text-xl')
                         ui.label(app.storage.user.get('dob'))
                         ui.label(app.storage.user.get('gender'))

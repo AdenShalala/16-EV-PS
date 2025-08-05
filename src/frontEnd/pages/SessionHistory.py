@@ -27,7 +27,7 @@ def sessionHistory():
     activityNameList = ['All']
     app.storage.user['actTypeList'] = ['All']
     for app.storage.user['activity'] in app.storage.user.get('activityList'):
-        print(app.storage.user.get('activity').type)
+        # print(app.storage.user.get('activity').type)
         if app.storage.user.get('activity').type not in app.storage.user.get('actTypeList'):
             app.storage.user['actTypeList'].append(app.storage.user['activity'].type)
         # print(app.storage.user.get('actTypeList'))
@@ -62,21 +62,20 @@ def sessionHistory():
                 ui.number(label="Max", placeholder="Max").classes('col-span-1 w-full border rounded-md border-[#3545FF]')
             ui.label("Session List").classes('text-2xl')
             with ui.row().classes('w-full'):
-                ui.space()
                 with ui.card().classes('w-9/10 border rounded-md border-[#3545FF]'):
-                    with ui.grid(columns=23):
+                    with ui.grid(columns=24):
                         ui.label('').classes('col-span-1')
-                        ui.label('Session ID').classes('col-span-2')
-                        ui.label('').classes('col-span-2')
-                        ui.label('Date').classes('col-span-2')
-                        ui.label('').classes('col-span-2')
+                        # ui.label('Session ID').classes('col-span-2')
+                        # ui.label('').classes('col-span-2')
+                        ui.label('Date').classes('col-span-3')
+                        ui.label('').classes('col-span-3')
                         ui.label('Activity').classes('col-span-2')
-                        ui.label('').classes('col-span-2')
+                        ui.label('').classes('col-span-3')
                         ui.label('Duration').classes('col-span-2')
-                        ui.label('').classes('col-span-2')
+                        ui.label('').classes('col-span-3')
                         ui.label('Pressure').classes('col-span-2')
                         ui.label('').classes('col-span-2')
-                        ui.label('').classes('col-span-2')
+                        ui.label('').classes('col-span-3')
                     #This is an example of how these details would be listed.
                     #It would be 'for activity in activities:'
                     # for i in range(1, 6):
@@ -108,22 +107,21 @@ def sessionHistory():
                                 if app.storage.user.get('maxSensor') == None or float(app.storage.user.get('signal')) > float(app.storage.user.get('maxSensor')):
                                     app.storage.user['maxSensor'] = round(float(app.storage.user.get('signal')), 1)
 
-                        with ui.grid(columns=23).classes('border-[2px] border-[#2C25B2] rounded items-center'):
+                        with ui.grid(columns=24).classes('border-[2px] border-[#2C25B2] h-16 rounded items-center'):
                             ui.label('').classes('col-span-1')
-                            ui.label(f'This is row ').classes('col-span-2')
-                            ui.label('').classes('col-span-2')
-                            ui.label(app.storage.user.get('activity').start_time).classes('col-span-2')
-                            ui.label('').classes('col-span-2')
+                            # ui.label(f'This is row ').classes('col-span-2')
+                            # ui.label('').classes('col-span-2')
+                            ui.label(app.storage.user.get('activity').start_time).classes('col-span-3')
+                            ui.label('').classes('col-span-3')
                             ui.label(app.storage.user.get('activity').type).classes('col-span-2')
-                            ui.label('').classes('col-span-2')
+                            ui.label('').classes('col-span-3')
                             ui.label(f'{app.storage.user.get('hours')}h{app.storage.user.get('minutes')}m{app.storage.user.get('seconds')}s').classes('col-span-2')
-                            ui.label('').classes('col-span-2')
+                            ui.label('').classes('col-span-3')
                             ui.label(f"{app.storage.user.get('minSensor')} - {app.storage.user.get('maxSensor')}").classes('col-span-2')
                             ui.button('View Activity').props('flat').classes(
-                                      'col-span-4 text-white text-sm px-3 py-1 rounded-3xl bg-[#FFB030] h-1/2'
+                                      'col-span-5 text-white text-sm px-3 py-1 rounded-3xl bg-[#FFB030] h-1/2'
                                      ).on_click(partial(activitypass, app.storage.user.get('activity')))
                 ui.space()
-
 
 def navigateSession():
     ui.navigate.to('sessionHistory')
