@@ -8,4 +8,5 @@ VALUES
 ('CLIN133', 'Dr. Brown', 'brown@email.com', 'hashed_password_103'),
 ('CLIN888', 'Dr. Davis', 'davis@email.com', 'hashed_password_104'),
 ('CLIN956', 'Dr. Wilson', 'wilson@email.com', 'hashed_password_105'),
+('CLIN844', 'Dr. House', 'house@email.com', 'hashed_password_102'),
 ('CLIN978', 'Dr. Taylor', 'taylor@email.com', 'hashed_password_106');
