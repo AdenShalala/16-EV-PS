@@ -2,6 +2,7 @@ from nicegui import ui, app
 import Homepage
 import DatabaseConfig
 
+# login header
 def header():
     with ui.header().style('background-color: #FFFFFF'):
         with ui.row().classes('w-full justify-center items-center'):
@@ -9,6 +10,7 @@ def header():
 
 @ui.page('/login')
 def login():
+    # comparing entered value
     def checkLogin():
         app.storage.user['clinid'] = email.value
         Homepage.mainNavigate()
@@ -16,6 +18,7 @@ def login():
     ui.page_title("SocketFit Dashboard")
     header()
     with ui.row().classes('w-full h-full justify-center items-center'):
+        # login box
         with ui.card().classes('w-[300px] border rounded-md border-[#2C25B2]'):
             email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF]')
             ui.input(placeholder='Password').classes('w-full border rounded-md border-[#3545FF]')

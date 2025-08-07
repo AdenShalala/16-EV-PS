@@ -4,6 +4,8 @@ import Homepage
 from collections import OrderedDict
 from datetime import datetime
 import UserInformation
+
+# making text in tree bold
 def bold(text):
     return ''.join(
         chr(ord(c) + 0x1D400 - ord('A')) if 'A' <= c <= 'Z' else
@@ -11,8 +13,8 @@ def bold(text):
         c for c in text
     )
 
-def session_tree():
-            
+# making sidebar tree for sessions
+def session_tree(): 
             current_page = app.storage.user.get('current_page', '')
             session_date_nodes = []
             seen_dates = OrderedDict()
@@ -24,7 +26,6 @@ def session_tree():
                     expand_nodes.remove('Session History')
 
             for activity in app.storage.user.get('activityList', []):
-                # print(activity)
                 dt_str1 = activity.start_time
                 dt_format = "%d-%b-%Y %H:%M:%S"
                 dt1 = datetime.strptime(dt_str1, dt_format)
@@ -58,10 +59,10 @@ def session_tree():
             tree = ui.tree(
                 tree_data, 
                 label_key='label', 
-                # default_value=current_page,
                 on_select=on_tree_select
             ).expand(expand_nodes)
 
+# linking tree to pages
 def on_tree_select(e):
     label_to_path = {
         'User Records': '/main',
@@ -85,9 +86,9 @@ def on_tree_select(e):
                 ActivityPage.navigateActivity()
                 break
 
+# making sidebar tree for patients
 def patients_tree():
-
-    # fOR NOW PATIENTS NODES HAVE TITLES SUCH AS USER A,B....... LATER CAN BE CHANGED WHEN WE HAVE NAMES
+    # FOR NOW PATIENTS NODES HAVE TITLES SUCH AS USER A,B....... LATER CAN BE CHANGED WHEN WE HAVE NAMES
     patient_nodes = []
     for i, patient in enumerate(app.storage.user.get('patients', [])):
         patient_nodes.append({
@@ -103,6 +104,7 @@ def patients_tree():
         }
     ]
 
+    # setting up navigation to user
     def on_patient_select(e):
         selected_id = e.value
         if selected_id.startswith("patient-"):
@@ -113,7 +115,7 @@ def patients_tree():
 
     ui.tree(tree_data, label_key='label', on_select=on_patient_select).expand(['Patients'])
 
-
+# making standard header
 def header():
     with ui.header().style('background-color: #FFFFFF'):
         with ui.link(target='/main'):
