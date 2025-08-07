@@ -1,6 +1,3 @@
-from calendar import c
-from sqlite3 import DatabaseError
-from venv import create
 import mysql.connector as sql
 from xml.dom.minidom import parseString
 from dotenv import load_dotenv
