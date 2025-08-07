@@ -81,7 +81,7 @@ def read_patients_by_clinician_id(clinician_id: str):
             result = cursor.fetchone()
             activity_list = (result[0], result[2], result[3], result[4])
             activities.append(create_activity(activity_list, sensors))
-        cursor.execute("SELECT * FROM Patient where patient_id = %s;", (patient_id[0],))
+        cursor.execute("SELECT patient_id, clinician_id, month_year_birth, gender, height, weight, amputation_type, socket_type, first_fitting, hours_per_week, distance_per_week FROM Patient where patient_id = %s;", (patient_id[0],))
         result = cursor.fetchone()
         patient_list = (result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10])
         patients.append(create_patient(patient_list, activities)) 
