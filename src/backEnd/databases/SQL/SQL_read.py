@@ -15,6 +15,7 @@ load_dotenv()
 #~~~~~~~~~~~~~~~~~~~~~~~#
 
 def database_connect(): 
+    load_dotenv(override=True)
     database = mysql.connector.connect(
         host = os.getenv('MYSQL_HOST'), 
         user = os.getenv('MYSQL_USER'), 
