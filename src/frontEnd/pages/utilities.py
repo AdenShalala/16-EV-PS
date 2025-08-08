@@ -118,5 +118,5 @@ def patients_tree():
 # making standard header
 def header():
     with ui.header().style('background-color: #FFFFFF'):
-        with ui.link(target='/main'):
+        with ui.link(target='/login'):
             ui.image('src\\frontEnd\\assets\\SocketFitDashboard.png').classes('h-[40px] w-[140px]')
