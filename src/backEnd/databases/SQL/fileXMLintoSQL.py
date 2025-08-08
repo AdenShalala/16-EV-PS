@@ -15,31 +15,8 @@ def create_database(xml_content: str):
         password = os.getenv('MYSQL_PASSWORD'),
         port = os.getenv('MYSQL_PORT')
     )
-    cursor = database.cursor()
-
-    cursor.execute("DROP DATABASE IF EXISTS " + str(os.getenv('MYSQL_DATABASE')) + ';')
-
-    # Create database
-    cursor.execute("CREATE DATABASE " + str(os.getenv('MYSQL_DATABASE')) + ';')
-
-    # Use CSIT321
-    cursor.execute("USE " + str(os.getenv('MYSQL_DATABASE')) + ';')
-
-    # Create tables
-    with open(os.path.join(os.path.dirname(__file__), "Create.sql"),  'r') as f:
-        cursor.execute(f.read())
-
-    database.close()
 
     print("Parsing XML from uploaded xml file")
-
-    database = sql.connect(
-        host = os.getenv('MYSQL_HOST'), 
-        user = os.getenv('MYSQL_USER'), 
-        password = os.getenv('MYSQL_PASSWORD'),
-        port = os.getenv('MYSQL_PORT'),
-        database = os.getenv('MYSQL_DATABASE')
-    )
 
     # added parseString to parse the content of uploaded xml file content which is a string.
     dom = parseString(xml_content)
@@ -57,6 +34,7 @@ def create_database(xml_content: str):
         hours_per_week = user.getElementsByTagName('HoursPerWeek')[0].firstChild.nodeValue
         distance_per_week = user.getElementsByTagName('DistancePerWeek_km')[0].firstChild.nodeValue
         cursor = database.cursor()
+        cursor.execute("USE " + str(os.getenv('MYSQL_DATABASE')) + ';')
         cursor.execute("INSERT INTO Patient (patient_id, clinician_id, month_year_birth, gender, height, weight,\
                       amputation_type, socket_type, first_fitting, hours_per_week, distance_per_week )\
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 

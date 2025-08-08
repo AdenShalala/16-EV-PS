@@ -1,0 +1,25 @@
+services:
+  database:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3006'
+    expose:
+      - '3306'
+    volumes:
+      - db:/var/lib/mysql
+  socketfit:
+    image: socketfit
+    restart: always
+    ports:
+      - '5732:8080'
+    expose:
+      - '5732'
+
+volumes:
+  db:
