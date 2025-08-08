@@ -1,6 +1,3 @@
-from calendar import c
-from sqlite3 import DatabaseError
-from venv import create
 import mysql.connector as sql
 from xml.dom.minidom import parseString
 from dotenv import load_dotenv
@@ -57,10 +54,12 @@ def create_database(xml_content: str):
         amputation_type = user.getElementsByTagName('AmputationType')[0].firstChild.nodeValue
         socket_type = user.getElementsByTagName('SocketType')[0].firstChild.nodeValue
         first_fitted = user.getElementsByTagName('FirstProsthesisFitted')[0].firstChild.nodeValue
-        hours_per_week = user.getElementsByTagName('FirstProsthesisFitted')[0].firstChild.nodeValue
+        hours_per_week = user.getElementsByTagName('HoursPerWeek')[0].firstChild.nodeValue
         distance_per_week = user.getElementsByTagName('DistancePerWeek_km')[0].firstChild.nodeValue
         cursor = database.cursor()
-        cursor.execute("INSERT INTO Patient VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+        cursor.execute("INSERT INTO Patient (patient_id, clinician_id, month_year_birth, gender, height, weight,\
+                      amputation_type, socket_type, first_fitting, hours_per_week, distance_per_week )\
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
                       (patient_id, clinician_id, month_year_birth, gender, height, weight, 
                       amputation_type, socket_type, first_fitted, hours_per_week, distance_per_week))
         database.commit()

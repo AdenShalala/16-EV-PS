@@ -2,12 +2,10 @@ from nicegui import ui, app
 import utilities
 import SessionHistory
 
-
+# getting standard header
 def header():
     utilities.header()
 
-
-    
 @ui.page('/userInformation')
 def main():
     app.storage.user['current_page'] = '/userInformation'
@@ -17,10 +15,13 @@ def main():
     with ui.row().classes('w-full'):
         ui.label("User").classes('text-xl font-semibold ml-[21%]')
     with ui.row().classes('w-full h-[800px]'):
+        # left section with tree
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
             utilities.session_tree()
+        # main section
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             with ui.row():
+                # user information fields
                 with ui.row().classes('w-2/5 items-start'):
                     with ui.input(placeholder='Users First Name', label='First Name').classes('w-full h-full border rounded-md border-[#3545FF]'):
                         ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
@@ -37,6 +38,7 @@ def main():
                     with ui.input(placeholder='Users Amputation Type', label='Amputation Type', value=patient.amputation_type).classes('w-full border rounded-md border-[#3545FF]'):
                         ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
                 ui.space()
+                # additional notes section
                 with ui.column().classes('w-2/5'):
                     ui.label("Additional Notes").classes('text-xl self-start')
                     ui.textarea(placeholder='Enter Notes Here').classes('h-full w-full border rounded-md border-[#3545FF]')
