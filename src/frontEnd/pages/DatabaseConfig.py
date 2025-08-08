@@ -1,10 +1,10 @@
 from nicegui import ui
 import utilities
-import WriteFromFile
+#import WriteFromFile
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'backEnd', 'databases', 'SQL'))
-from SQL_Setup import database_connect
+from SQL_Setup import database_connect # pyright: ignore[reportMissingImports]
 
 # state variable
 selected_db_type = 'MySQL'  # default

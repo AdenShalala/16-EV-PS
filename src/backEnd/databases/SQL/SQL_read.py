@@ -3,9 +3,9 @@ import mysql.connector
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'classes'))
-from Patient import Patient
-from Activity import Activity
-from Sensor import Sensor
+from Patient import Patient # pyright: ignore[reportMissingImports]
+from Activity import Activity # pyright: ignore[reportMissingImports]
+from Sensor import Sensor # pyright: ignore[reportMissingImports]
 
 load_dotenv()
 
