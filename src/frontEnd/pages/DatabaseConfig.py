@@ -1,6 +1,6 @@
 from nicegui import ui
 import utilities
-#import WriteFromFile
+import WriteFromFile
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'backEnd', 'databases', 'SQL'))
