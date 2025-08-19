@@ -93,7 +93,7 @@ def activityPage():
 
                             with ui.row().classes('items-center gap-2'):
                                 ui.label('Seconds').classes('text-sm')
-                                x_axis_switch = ui.switch(value=False).on('update:model-value', toggle_x_axis_unit)  # Always start with seconds (False)
+                                x_axis_switch = ui.switch(value=False).on('update:model-value', toggle_x_axis_unit).style('--q-primary: #FFB030')
                                 ui.label('Minutes').classes('text-sm')
                         
                         
