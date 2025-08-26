@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS Admin (
+CREATE TABLE IF NOT EXISTS 'Admin' (
     admin_id VARCHAR(50) PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
