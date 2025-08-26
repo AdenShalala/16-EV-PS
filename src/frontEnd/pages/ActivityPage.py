@@ -32,7 +32,15 @@ def activityPage():
     app.storage.user['animation_speed'] = 1.0
     app.storage.user['speed_value'] = {'current': 1.0}
     
+
     ui_elements = {}
+    app.storage.user['state']['current_time'] = 0
+    
+    def format_current_time(current_time):
+        app.storage.user['current_hours'] = int(current_time // 3600)
+        app.storage.user['current_minutes'] = int((current_time % 3600) // 60)
+        app.storage.user['current_seconds'] = int(current_time % 60)
+        return f"{app.storage.user.get('current_hours'):02}:{app.storage.user.get('current_minutes'):02}:{app.storage.user.get('current_seconds'):02}"
     
     with ui.row().classes('w-full items-end'):
         ui.label("Activity").classes('text-xl font-semibold ml-[21%]')
@@ -40,9 +48,8 @@ def activityPage():
         
         # playing and pausing graph animation, setting play button to play or pause
         def toggle_play():
-            state = app.storage.user.get('state')
-            state['playing'] = not state['playing']
-            if state['playing']:
+            app.storage.user.get('state')['playing'] = not app.storage.user.get('state')['playing']
+            if app.storage.user.get('state')['playing']:
                 ui_elements['timer'].activate()
                 ui_elements['play_pause_icon'].set_name('pause_circle')
             else:
@@ -54,16 +61,16 @@ def activityPage():
             with ui.grid(columns=2).classes('w-full'):
                 with ui.column().classes('gap-0 items-start w-full'):
                     ui.label('Activity').classes('text-sm leading-tight m-0')
-                    ui.label(f"{app.storage.user.get('hours'):02}:{app.storage.user.get('minutes'):02}:{app.storage.user.get('seconds'):02}") \
-                        .classes('text-sm leading-tight m-0')
+                    current_time_label = ui.label(format_current_time(app.storage.user.get('state')['current_time'])).classes('text-sm leading-tight m-0')
                 with ui.column().classes('items-end'):
                     play_pause_icon = ui.icon('play_circle').classes('text-4xl text-right').style('font-size: 40px;').props('justify-right')
-                    ui_elements['play_pause_icon'] = play_pause_icon
+        
+        ui_elements['current_time_label'] = current_time_label
+        ui_elements['play_pause_icon'] = play_pause_icon
 
     def toggle_x_axis_unit(e):
-        current_unit = app.storage.user.get('x_axis_unit')
-        new_unit = 'minutes' if current_unit == 'seconds' else 'seconds'
-        app.storage.user['x_axis_unit'] = new_unit
+        app.storage.user['new_unit'] = 'minutes' if app.storage.user.get('x_axis_unit') == 'seconds' else 'seconds'
+        app.storage.user['x_axis_unit'] = app.storage.user.get('new_unit')
         
         update_x_axis()
 
@@ -82,10 +89,10 @@ def activityPage():
                             app.storage.user['speed_value'] = app.storage.user.get('speed_value', {'current': 1.0})
                             
                             def update_speed(e):
-                                new_value = float(e.args)
-                                app.storage.user.get('speed_value')['current'] = new_value
-                                app.storage.user['animation_speed'] = new_value
-                                ui_elements['speed_label'].text = f"{new_value}x"
+                                app.storage.user['new_value'] = float(e.args)
+                                app.storage.user.get('speed_value')['current'] = app.storage.user.get('new_value')
+                                app.storage.user['animation_speed'] = app.storage.user.get('new_value')
+                                ui_elements['speed_label'].text = f"{app.storage.user.get('new_value')}x"
                             
                             speed_slider = ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-3/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
                             speed_label = ui.label("1.0x").classes('text-sm min-w-8')
@@ -95,18 +102,11 @@ def activityPage():
                                 ui.label('Seconds').classes('text-sm')
                                 x_axis_switch = ui.switch(value=False).on('update:model-value', toggle_x_axis_unit).style('--q-primary: #FFB030')
                                 ui.label('Minutes').classes('text-sm')
-                        
-                        
-                        
-                        
-                
-                sensors = app.storage.user.get('activity').sensors
-                total_duration = app.storage.user.get('total_seconds')
 
                 colors = pc.qualitative.Plotly
                 fig = go.Figure()
-                dot_trace_indices = []
-                normalized_sensors = []
+                app.storage.user['dot_trace_indices'] = []
+                app.storage.user['normalized_sensors'] = []
 
                 def get_display_values(timestamps_in_seconds, unit):
                     if unit == 'minutes':
@@ -118,32 +118,32 @@ def activityPage():
 
                 def get_axis_range(unit):
                     if unit == 'minutes':
-                        return [0, total_duration / 60]
-                    return [0, total_duration]
+                        return [0, app.storage.user.get('total_seconds') / 60]
+                    return [0, app.storage.user.get('total_seconds')]
 
-                for i, sensor in enumerate(sensors):
-                    sensor_name = f"{sensor.location} ({sensor.type})"
-                    color = colors[i % len(colors)]
+                for app.storage.user['i'], app.storage.user['sensor'] in enumerate(app.storage.user.get('activity').sensors):
+                    sensor_name = f"{app.storage.user.get('sensor').location} ({app.storage.user.get('sensor').type})"
+                    color = colors[app.storage.user.get('i') % len(colors)]
                     
-                    num_points = len(sensor.timestamp)
-                    normalized_timestamps = [
-                        (j / (num_points - 1)) * total_duration if num_points > 1 else 0
-                        for j in range(num_points)
+                    app.storage.user['num_points'] = len(app.storage.user.get('sensor').timestamp)
+                    app.storage.user['normalized_timestamps'] = [
+                        (j / (app.storage.user.get('num_points') - 1)) * app.storage.user.get('total_seconds') if app.storage.user.get('num_points') > 1 else 0
+                        for j in range(app.storage.user.get('num_points'))
                     ]
                     
-                    normalized_sensors.append({
-                        'timestamps': normalized_timestamps,
-                        'signals': sensor.signal,
+                    app.storage.user.get('normalized_sensors').append({
+                        'timestamps': app.storage.user.get('normalized_timestamps'),
+                        'signals': app.storage.user.get('sensor').signal,
                         'name': sensor_name
                     })
 
                     current_unit = app.storage.user.get('x_axis_unit')
-                    display_timestamps = get_display_values(normalized_timestamps, current_unit)
+                    display_timestamps = get_display_values(app.storage.user.get('normalized_timestamps'), current_unit)
 
                     # adding traces for line
                     fig.add_trace(go.Scatter(
                         x=display_timestamps,
-                        y=sensor.signal,
+                        y=app.storage.user.get('sensor').signal,
                         name=sensor_name,
                         line=dict(color=color)
                     ))
@@ -151,14 +151,14 @@ def activityPage():
                     # adding traces for markers (start at first point)
                     fig.add_trace(go.Scatter(
                         x=[display_timestamps[0]],
-                        y=[sensor.signal[0]],
+                        y=[app.storage.user.get('sensor').signal[0]],
                         mode='markers',
                         marker=dict(size=10, color=color),
                         name=sensor_name,
                         showlegend=False
                     ))
 
-                    dot_trace_indices.append(len(fig.data) - 1)
+                    app.storage.user.get('dot_trace_indices').append(len(fig.data) - 1)
 
                 # changing graph look
                 current_unit = app.storage.user.get('x_axis_unit')
@@ -180,7 +180,7 @@ def activityPage():
                 def update_x_axis():
                     current_unit = app.storage.user.get('x_axis_unit')
                     
-                    for i, sensor_data in enumerate(normalized_sensors):
+                    for i, sensor_data in enumerate(app.storage.user.get('normalized_sensors')):
                         line_idx = i * 2  # line traces are at even indices
                         display_timestamps = get_display_values(sensor_data['timestamps'], current_unit)
                         fig.data[line_idx].x = display_timestamps
@@ -188,8 +188,8 @@ def activityPage():
                     current_time = app.storage.user.get('state')['current_time']
                     display_current_time = current_time / 60 if current_unit == 'minutes' else current_time
                     
-                    for i, sensor_data in enumerate(normalized_sensors):
-                        dot_idx = dot_trace_indices[i]
+                    for i, sensor_data in enumerate(app.storage.user.get('normalized_sensors')):
+                        dot_idx = app.storage.user.get('dot_trace_indices')[i]
                         fig.data[dot_idx].x = [display_current_time]
                     
                     fig.update_layout(xaxis_title=get_axis_label(current_unit))
@@ -201,7 +201,6 @@ def activityPage():
                 base_time_increment = 1.0 / updates_per_second  
 
                 def interpolate_signal(timestamps, signals, target_time):
-                    """Interpolate signal value at target_time"""
                     if target_time <= timestamps[0]:
                         return signals[0]
                     if target_time >= timestamps[-1]:
@@ -209,7 +208,6 @@ def activityPage():
                     
                     for i in range(len(timestamps) - 1):
                         if timestamps[i] <= target_time <= timestamps[i + 1]:
-                            # Linear interpolation
                             t1, t2 = timestamps[i], timestamps[i + 1]
                             s1, s2 = signals[i], signals[i + 1]
                             ratio = (target_time - t1) / (t2 - t1) if t2 != t1 else 0
@@ -223,28 +221,31 @@ def activityPage():
                     if not state or not state.get('playing'):
                         return
 
-                    current_speed = app.storage.user.get('speed_value', {'current': 1.0})['current']
-                    time_increment = base_time_increment * current_speed
+                    app.storage.user['current_speed'] = app.storage.user.get('speed_value', {'current': 1.0})['current']
+                    app.storage.user['time_increment'] = base_time_increment * app.storage.user.get('current_speed')
 
                     current_time = state['current_time']
-                    current_time += time_increment
+                    current_time += app.storage.user.get('time_increment')
                     
-                    total_duration = app.storage.user.get('total_seconds')
+                    # total_duration = app.storage.user.get('total_seconds')
                     
-                    if current_time >= total_duration:
+                    if current_time >= app.storage.user.get('total_seconds'):
                         current_time = 0
                     
                     state['current_time'] = current_time
 
+                    ui_elements['current_time_label'].text = format_current_time(current_time)
+
+
                     current_unit = app.storage.user.get('x_axis_unit')
                     display_current_time = current_time / 60 if current_unit == 'minutes' else current_time
 
-                    for i, sensor_data in enumerate(normalized_sensors):
-                        dot_idx = dot_trace_indices[i]
+                    for app.storage.user['i'], app.storage.user['sensor_data'] in enumerate(app.storage.user.get('normalized_sensors')):
+                        dot_idx = app.storage.user.get('dot_trace_indices')[app.storage.user.get('i')]
                         
                         signal_value = interpolate_signal(
-                            sensor_data['timestamps'], 
-                            sensor_data['signals'], 
+                            app.storage.user.get('sensor_data')['timestamps'], 
+                            app.storage.user.get('sensor_data')['signals'], 
                             current_time
                         )
                         
@@ -256,12 +257,12 @@ def activityPage():
                 timer = ui.timer(interval=0.1, callback=update_dots, active=False)
                 ui_elements['timer'] = timer
             
-            toleranceList = []
+            app.storage.user['toleranceList'] = []
             # getting tolerances
             for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
                 for app.storage.user['signal'] in app.storage.user.get('sensor').signal:
                     if float(app.storage.user.get('signal')) > float(app.storage.user.get('sensor').pressure_tolerance):
-                        toleranceList.append(app.storage.user.get('sensor'))
+                        app.storage.user.get('toleranceList').append(app.storage.user.get('sensor'))
 
             with ui.row().classes('row-span-3'):
                 with ui.grid(columns=3).classes('w-full h-full'):
