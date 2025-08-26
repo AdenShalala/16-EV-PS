@@ -30,8 +30,8 @@ def database_connect():
 #      Constructors     #
 #~~~~~~~~~~~~~~~~~~~~~~~#
 
-def create_sensor(result):
-    return Sensor(*result)
+def create_sensor(result, readings):
+    return Sensor(*result, readings)
 
 def create_activity(result, sensors):
     return Activity(*result, sensors)

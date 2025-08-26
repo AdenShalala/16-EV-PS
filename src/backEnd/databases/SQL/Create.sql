@@ -1,10 +1,10 @@
-CREATE TABLE IF NOT EXISTS 'Admin' (
+CREATE TABLE IF NOT EXISTS Admin (
     admin_id VARCHAR(50) PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL
-);
+); 
 
 CREATE TABLE IF NOT EXISTS Clinician (
     clinician_id   VARCHAR(50)  PRIMARY KEY,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS Patient (
     weight VARCHAR(10),
     amputation_type VARCHAR(50),
     prosthetic_type VARCHAR(50),
-    email VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
     password_hash VARCHAR(255),
     patient_id VARCHAR(50) PRIMARY KEY,
     user_id VARCHAR(50),
@@ -39,13 +39,13 @@ CREATE TABLE IF NOT EXISTS Patient (
 -- );
 
 CREATE TABLE IF NOT EXISTS Activity (
-	activity_type VARCHAR(20) PRIMARY KEY,
+    activity_type VARCHAR(20),
     start_time BIGINT,
     end_time BIGINT,
     is_uploaded BOOLEAN DEFAULT TRUE,
     patient_id VARCHAR(50),
     activity_id VARCHAR(50) PRIMARY KEY,
-    FOREIGN KEY (patient_id) REFERENCES Patient (patient_id)
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id)
 );
 
 -- CREATE TABLE Sensor (
@@ -58,14 +58,14 @@ CREATE TABLE IF NOT EXISTS Activity (
 -- );
 
 CREATE TABLE IF NOT EXISTS Sensor (
+    sensor_id VARCHAR(50) PRIMARY KEY,
     location_name VARCHAR(50),
-    sensor_location_id VARCHAR(50) PRIMARY KEY,
-    type INT,
+    sensor_location_id VARCHAR(50) UNIQUE,
+    sensor_type INT,
     is_connected BOOLEAN DEFAULT TRUE,
     patient_email VARCHAR(100),
     location_id INT,
     pressure_sensor_id VARCHAR(50),
-    FOREIGN KEY (pressure_sensor_id) REFERENCES Sensor(sensor_id),
     FOREIGN KEY (patient_email) REFERENCES Patient(email)
 );
 
@@ -74,13 +74,11 @@ CREATE TABLE IF NOT EXISTS PressureReading (
     time BIGINT,
     sensor_type INT,
     is_uploaded BOOLEAN DEFAULT TRUE,
-    activity_id VARCHAR(50),
-    sensor_location_id VARCHAR(50),
-    pressure_sensor_id VARCHAR(50),
     pressure_reading_id VARCHAR(50) PRIMARY KEY,
+    activity_id VARCHAR(50),
+    sensor_id VARCHAR(50),
     FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),
-    FOREIGN KEY (sensor_location_id) REFERENCES Sensor(sensor_location_id),
-    FOREIGN KEY (pressure_sensor_id) REFERENCES Sensor(sensor_id)
+    FOREIGN KEY (sensor_id) REFERENCES Sensor(sensor_id)
 );
 
 -- CREATE TABLE Timestamp (
