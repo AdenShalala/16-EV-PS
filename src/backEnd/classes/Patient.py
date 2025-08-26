@@ -1,4 +1,3 @@
-from enum import Enum
 from datetime import date
 from dataclasses import dataclass
 
