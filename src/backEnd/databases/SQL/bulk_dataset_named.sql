@@ -724,3 +724,7 @@ INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, sensor_t
 INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, sensor_type, is_uploaded, activity_id, sensor_id) VALUES ('PR050_8',33.02,1693600920,3,TRUE,'ACT050_2','SNS050');
 INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, sensor_type, is_uploaded, activity_id, sensor_id) VALUES ('PR050_9',64.26,1693600480,3,TRUE,'ACT050_1','SNS050');
 INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, sensor_type, is_uploaded, activity_id, sensor_id) VALUES ('PR050_10',61.86,1693600540,3,TRUE,'ACT050_1','SNS050');
+
+UPDATE Sensor s
+JOIN PressureReading p ON s.sensor_id = p.sensor_id
+SET s.activity_id  = p.activity_id;
