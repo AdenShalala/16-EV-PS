@@ -66,6 +66,8 @@ CREATE TABLE IF NOT EXISTS Sensor (
     patient_email VARCHAR(100),
     location_id INT,
     pressure_sensor_id VARCHAR(50),
+    activity_id VARCHAR(50),
+    FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),
     FOREIGN KEY (patient_email) REFERENCES Patient(email)
 );
 

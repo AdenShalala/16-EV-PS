@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify, abort
 from dotenv import load_dotenv
-from SQL_read import read_patients_by_clinician_id
+from backEnd.databases.SQL.SQL_read import read_patients_by_clinician_id
 from Patient import Patient
 from Activity import Activity
 from Sensor import Sensor
