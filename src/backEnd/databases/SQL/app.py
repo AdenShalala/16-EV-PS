@@ -15,7 +15,7 @@ def health():
 
 
 def to_serializable(obj: Any):
-    """尽量把 Patient/Activity/Sensor 等对象序列化为 dict/list/基本类型。"""
+    
     # normal types
     if obj is None or isinstance(obj, (bool, int, float, str)):
         # NaN/inf, weird error
@@ -44,10 +44,10 @@ def to_serializable(obj: Any):
 
 @app.get("/patients/<string:clinician_id>")
 def get_patients(clinician_id: str):
-    """
-    base on clinician_id get the Patient objects（including activities, sensors etc.），return JSON.
-    call SQL_read.read_patients_by_clinician_id(clinician_id)
-    """
+    
+    #base on clinician_id get the Patient objects（including activities, sensors etc.），return JSON.
+    #call SQL_read.read_patients_by_clinician_id(clinician_id)
+    
     try:
         patients = read_patients_by_clinician_id(clinician_id)
     
