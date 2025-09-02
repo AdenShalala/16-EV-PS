@@ -7,4 +7,3 @@ class Sensor:
     sensor_location_id: str
     type: str
     readings: list
-
