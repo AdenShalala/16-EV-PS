@@ -43,44 +43,10 @@ def database_connect():
 
     database.commit() 
 
-    database.close()
-    
-    database = mysql.connector.connect(
-        host = os.getenv('MYSQL_HOST'), 
-        user = os.getenv('MYSQL_USER'), 
-        password = os.getenv('MYSQL_PASSWORD'),
-        port = os.getenv('MYSQL_PORT'),
-        database = os.getenv('MYSQL_DATABASE')
-    )
+    # # Create test data
+    # with open(os.path.join(os.path.dirname(__file__), "bulk_dataset_named.sql"),  'r') as f:
+    #     cursor.execute(f.read())
 
-    cursor = database.cursor()
-    # Use Database
-    cursor.execute("USE " + str(os.getenv('MYSQL_DATABASE')) + ';')
-
-    
-    # Insert Clinicians 
-
-    clinicians = [
-    ['CLIN402', 'Dr. Zhang', 'zhang@email.com', 'hashed_password_123'],
-    ['CLIN180', 'Dr. Smith', 'smith@email.com', 'hashed_password_456'],
-    ['CLIN495', 'Dr. Johnson', 'johnson@email.com', 'hashed_password_789'],
-    ['CLIN612', 'Dr. Lee', 'lee@email.com', 'hashed_password_101'],
-    ['CLIN953', 'Dr. Patel', 'patel@email.com', 'hashed_password_102'],
-    ['CLIN133', 'Dr. Brown', 'brown@email.com', 'hashed_password_103'],
-    ['CLIN888', 'Dr. Davis', 'davis@email.com', 'hashed_password_104'],
-    ['CLIN956', 'Dr. Wilson', 'wilson@email.com', 'hashed_password_105'],
-    ['CLIN844', 'Dr. House', 'house@email.com', 'hashed_password_102'],
-    ['CLIN978', 'Dr. Taylor', 'taylor@email.com', 'hashed_password_106']
-    ]
-
-    # Insert into the table
-    for c in clinicians:
-        cursor.execute("""
-        INSERT INTO Clinician (clinician_id, name, email, password_hash)
-        VALUES (%s, %s, %s, %s)
-        """, (c[0], c[1], c[2], c[3]))
-
-    database.commit()
-
+    # database.commit() 
 
     database.close()
