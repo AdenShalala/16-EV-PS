@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Activity:
-    activity_id: str
-    end_time: datetime
-    start_time: datetime
     type: str
+    start_time: datetime
+    end_time: datetime
+    activity_id: str
     sensors: list

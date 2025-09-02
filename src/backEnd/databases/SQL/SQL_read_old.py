@@ -6,8 +6,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'classes'))
 from Patient import Patient # pyright: ignore[reportMissingImports]
 from Activity import Activity # pyright: ignore[reportMissingImports]
 from Sensor import Sensor # pyright: ignore[reportMissingImports]
-from Clinician import Clinician # pyright: ignore[reportMissingImports]
-from PressureReading import PressureReading as PreRe # pyright: ignore[reportMissingImports]
 
 load_dotenv()
 
@@ -32,9 +30,6 @@ def database_connect():
 #      Constructors     #
 #~~~~~~~~~~~~~~~~~~~~~~~#
 
-def create_reading(result):
-    return 
-
 def create_sensor(result, readings):
     return Sensor(*result, readings)
 
@@ -43,12 +38,6 @@ def create_activity(result, sensors):
 
 def create_patient(result, activities):
     return Patient(*result, activities)
-
-def create_clinician(result):
-    return Clinician(*result)
-
-def create_reading(result):
-    return PreRe(*result)
 
 #~~~~~~~~~~~~~~~~~~~~~~~#
 #  Read by clinician ID #
@@ -65,43 +54,37 @@ def read_patients_by_clinician_id(clinician_id: str):
     if patient_id_list is None:
         return None
     patients = list()
-    #
-    #LOOPING PATIENT IDS
-    #
     for patient_id in patient_id_list:
         cursor.execute("SELECT activity_id FROM Activity WHERE patient_id = %s;", (patient_id[0],))
         patient_activity_list = cursor.fetchall()
         activities = list()
-        #
-        #LOOPING ACTIVITY IDS
-        #
         for activity_id in patient_activity_list:
             cursor.execute("SELECT sensor_id FROM Sensor WHERE activity_id = %s;", (activity_id[0],))
             activity_sensor_list = cursor.fetchall()
             sensors = list()
-            #
-            #LOOPING SENSOR IDS
-            #
             for sensor_id in activity_sensor_list:
-                cursor.execute("SELECT pressure_value, time, sensor_type, pressure_reading_id, activity_id, sensor_id FROM PressureReading WHERE sensor_id = %s ORDER BY time;", (sensor_id[0], ))
-                readings = list()
-                results = cursor.fetchall()
-                for result in results:
-                    readings.append(create_reading(result))
-                
-                cursor.execute("SELECT sensor_id, location_name, sensor_location_id, sensor_type FROM Sensor where sensor_id = %s;", (sensor_id[0],))
+                cursor.execute("SELECT time_stamp FROM Timestamp WHERE sensor_id = %s ORDER BY sequence_number;", (sensor_id[0],))
+                activity_timestamps = cursor.fetchall()
+                cursor.execute("SELECT signal_output FROM Sensor_signal WHERE sensor_id = %s ORDER BY sequence_number;", (sensor_id[0],))
+                activity_signals = cursor.fetchall()
+                cursor.execute("SELECT point_of_interest_time_stamp FROM Point_of_interest WHERE sensor_id = %s;", (sensor_id[0],))
+                activity_pois = cursor.fetchall()
+                for i in range(len(activity_timestamps)):
+                    activity_timestamps[i] = round(float(activity_timestamps[i][0]), 1)
+                    activity_signals[i] = float(activity_signals[i][0])
+                for i in range(len(activity_pois)):
+                    activity_pois[i] = float(activity_pois[i][0])
+                cursor.execute("SELECT * FROM Sensor where sensor_id = %s;", (sensor_id[0],))
                 result = cursor.fetchone()
-                sensor_list = (result[0], result[1], result[2], result[3])
-                sensors.append(create_sensor(sensor_list, readings))
-            cursor.execute("SELECT activity_type, start_time, end_time, activity_id FROM Activity WHERE activity_id = %s;", (activity_id[0],))
+                sensor_list = (result[0], result[2], result[3], result[4], activity_signals, activity_timestamps, activity_pois)
+                sensors.append(create_sensor(sensor_list))
+            cursor.execute("SELECT * FROM Activity WHERE activity_id = %s;", (activity_id[0],))
             result = cursor.fetchone()
-            activity_list = (result[0], result[1], result[2], result[3])
+            activity_list = (result[0], result[2], result[3], result[4])
             activities.append(create_activity(activity_list, sensors))
-        cursor.execute("SELECT first_name, last_name, height, weight, amputation_type, prosthetic_type, email, patient_id, clinician_id FROM Patient where patient_id = %s;", (patient_id[0],))
+        cursor.execute("SELECT patient_id, clinician_id, month_year_birth, gender, height, weight, amputation_type, socket_type, first_fitting, hours_per_week, distance_per_week FROM Patient where patient_id = %s;", (patient_id[0],))
         result = cursor.fetchone()
-        patient_list = (result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8])
+        patient_list = (result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10])
         patients.append(create_patient(patient_list, activities)) 
     db.close()
     return patients
-
-print(read_patients_by_clinician_id('CLIN001'))
