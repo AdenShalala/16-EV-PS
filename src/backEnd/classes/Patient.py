@@ -8,7 +8,7 @@ class Patient:
     height: float
     weight: float
     amputation_type: str
-    socket_type: str
+    prosthetic_type: str
     email: str
     patient_id: str
     clinician_id: str
