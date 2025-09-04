@@ -33,7 +33,7 @@ def main():
     header()
     with ui.row().classes('w-full'):
         ui.label("Welcome").classes('text-xl font-semibold ml-[21%]')
-    with ui.row().classes('w-full h-[500px]'):
+    with ui.row().classes('w-full h-full'):
         # side tree section
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]'):
             # Tree with users needed
@@ -43,7 +43,7 @@ def main():
             with ui.row().classes('w-full'):
                 ui.label("Select User to View Users Information").classes('text-lg font-bold')
                 ui.space()
-                ui.input(label="Search Name", placeholder='Name').classes('border rounded-md border-[#3545FF]')
+                ui.input(label="Search Name", placeholder='Name').classes('border rounded-md border-[#FFB030]')
             ui.label("Filters").classes('text-md font-semibold')
 
             # filter titles
@@ -56,32 +56,51 @@ def main():
 
             # filter boxes
             with ui.grid(columns=10).classes('w-full gap-4'):
-                ui.select(value=genderList[0], options=genderList).classes('col-span-2 border rounded-md border-[#3545FF]')
+                ui.select(value=genderList[0], options=genderList).classes('col-span-2 border rounded-md border-[#FFB030]')
 
                 with ui.row().classes('col-span-2 gap-1'):
-                    ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#3545FF]')
-                    ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#3545FF]')
+
+                    ui.add_head_html('''
+                    <style>
+                    input::placeholder {
+                        text-align: center;
+                    }
+                    .q-field__label {
+                        text-align: center !important;
+                        width: 100% !important;
+                    }
+                    .q-select .q-field__input {
+                        text-align: center !important;
+                    }
+                    </style>
+                    ''')
+
+                    ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
+                    ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
 
                 with ui.row().classes('col-span-2 gap-1'):
-                    ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#3545FF]')
-                    ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#3545FF]')
+                    ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
+                    ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
 
                 with ui.row().classes('col-span-2 gap-1'):
-                    ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#3545FF]')
-                    ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#3545FF]')
+                    ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
+                    ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
 
-                ui.select(value=amputationTypeList[0], options=amputationTypeList).classes('col-span-2 border rounded-md border-[#3545FF]')
+                ui.select(value=amputationTypeList[0], options=amputationTypeList).classes('col-span-2 border rounded-md border-[#FFB030]')
 
             with ui.grid(columns=4).classes('w-full gap-6'):
                 # storing patient information
                 for app.storage.user['patient'] in app.storage.user.get('patients'):
-                    app.storage.user['gender'] = app.storage.user.get('patient').gender
-                    app.storage.user['dob'] = app.storage.user.get('patient').month_year_birth
+                    app.storage.user['first_name'] = app.storage.user.get('patient').first_name
+                    app.storage.user['last_name'] = app.storage.user.get('patient').last_name
+                    app.storage.user['full_name'] = app.storage.user.get('first_name') + " " + app.storage.user.get('last_name')
+                    # app.storage.user['gender'] = app.storage.user.get('patient').gender
+                    # app.storage.user['dob'] = app.storage.user.get('patient').month_year_birth
                     # displaying each user in separate cards
                     with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2] cursor-pointer').on('click', lambda: UserInformation.navigatePatient(app.storage.user.get('patient'))):
-                        ui.label('User').classes('text-xl')
-                        ui.label(app.storage.user.get('dob'))
-                        ui.label(app.storage.user.get('gender'))
+                        ui.label(app.storage.user.get('full_name')).classes('text-xl')
+                        # ui.label(app.storage.user.get('dob'))
+                        # ui.label(app.storage.user.get('gender'))
 
 def mainNavigate():
     ui.navigate.to('/main')
