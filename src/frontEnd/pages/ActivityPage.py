@@ -1,5 +1,6 @@
 from nicegui import ui, app
 import utilities
+import SessionHistory
 import plotly.graph_objects as go
 from datetime import datetime
 import plotly.colors as pc
@@ -13,8 +14,8 @@ def activityPage():
     ui.page_title("SocketFit Dashboard")
     header()
     # calculating duration
-    app.storage.user['dt_str1'] = app.storage.user.get('activity').start_time
-    app.storage.user['dt_str2'] = app.storage.user.get('activity').end_time
+    app.storage.user['dt_str1'] = SessionHistory.normalize_to_str(app.storage.user.get('activity').start_time)
+    app.storage.user['dt_str2'] = SessionHistory.normalize_to_str(app.storage.user.get('activity').end_time)
 
     dt_format = "%d-%b-%Y %H:%M:%S"
 
@@ -125,25 +126,33 @@ def activityPage():
                     sensor_name = f"{app.storage.user.get('sensor').location} ({app.storage.user.get('sensor').type})"
                     color = colors[app.storage.user.get('i') % len(colors)]
                     
-                    app.storage.user['num_points'] = len(app.storage.user.get('sensor').timestamp)
+                    for reading in app.storage.user.get('sensor').readings:
+                        app.storage.user['num_points'] = len(SessionHistory.normalize_to_str(reading.time))
+                    
+                    # app.storage.user['num_points'] = len(app.storage.user.get('sensor').timestamp)
                     app.storage.user['normalized_timestamps'] = [
                         (j / (app.storage.user.get('num_points') - 1)) * app.storage.user.get('total_seconds') if app.storage.user.get('num_points') > 1 else 0
                         for j in range(app.storage.user.get('num_points'))
                     ]
-                    
+                    pressures = []
+                    for reading in app.storage.user.get('sensor').readings:
+                        pressures.append(float(reading.pressure_value))
+
                     app.storage.user.get('normalized_sensors').append({
                         'timestamps': app.storage.user.get('normalized_timestamps'),
-                        'signals': app.storage.user.get('sensor').signal,
+                        'signals': len(pressures),
                         'name': sensor_name
                     })
 
                     current_unit = app.storage.user.get('x_axis_unit')
                     display_timestamps = get_display_values(app.storage.user.get('normalized_timestamps'), current_unit)
 
+                    print(pressures)
                     # adding traces for line
                     fig.add_trace(go.Scatter(
                         x=display_timestamps,
-                        y=app.storage.user.get('sensor').signal,
+                        y=pressures,
+                        # y=app.storage.user.get('sensor').signal,
                         name=sensor_name,
                         line=dict(color=color)
                     ))
@@ -151,7 +160,8 @@ def activityPage():
                     # adding traces for markers (start at first point)
                     fig.add_trace(go.Scatter(
                         x=[display_timestamps[0]],
-                        y=[app.storage.user.get('sensor').signal[0]],
+                        y=[pressures[0]],
+                        # y=[app.storage.user.get('sensor').signal[0]],
                         mode='markers',
                         marker=dict(size=10, color=color),
                         name=sensor_name,
@@ -259,10 +269,11 @@ def activityPage():
             
             app.storage.user['toleranceList'] = []
             # getting tolerances
-            for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
-                for app.storage.user['signal'] in app.storage.user.get('sensor').signal:
-                    if float(app.storage.user.get('signal')) > float(app.storage.user.get('sensor').pressure_tolerance):
-                        app.storage.user.get('toleranceList').append(app.storage.user.get('sensor'))
+            # for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
+                # for app.storage.user['signal'] in app.storage.user.get('sensor').signal:
+                # for app.storage.user['signal'] in pressures:
+                #     if float(app.storage.user.get('signal')) > float(app.storage.user.get('signal').pressure_tolerance):
+                #         app.storage.user.get('toleranceList').append(app.storage.user.get('sensor'))
 
             with ui.row().classes('row-span-3'):
                 with ui.grid(columns=3).classes('w-full h-full'):
@@ -275,16 +286,16 @@ def activityPage():
                     # list of areas exceeding tolerance levels
                     with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                         ui.label('Area/s Exceeding Tolerance Level').classes('font-bold')
-                        with ui.scroll_area().classes('h-3/4'):
-                            for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
-                                for app.storage.user['signal'] in app.storage.user.get('sensor').signal:
-                                    if float(app.storage.user.get('signal')) > float(app.storage.user.get('sensor').pressure_tolerance):
-                                        with ui.card().classes('bg-[#2C25B2] rounded-3xl p-0 overflow-hidden h-8'):
-                                            with ui.row().classes('w-full items-center gap-0 h-full'):
-                                                with ui.element('div').classes('bg-[#2C25B2] px-4 flex-grow h-full flex items-center'):
-                                                    ui.label(app.storage.user.get('sensor').location).classes('text-white font-medium text-sm leading-none')
-                                                with ui.element('div').classes('bg-[#FFB13B] px-4 min-w-[80px] h-full flex items-center justify-center rounded-l-3xl'):
-                                                    ui.label(f"{round(app.storage.user.get('signal'),1)}").classes('text-white font-bold text-sm leading-none')
+                        # with ui.scroll_area().classes('h-3/4'):
+                        #     for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
+                        #         for app.storage.user['signal'] in app.storage.user.get('sensor').readings:
+                        #             if float(app.storage.user.get('signal')) > float(app.storage.user.get('sensor').pressure_tolerance):
+                        #                 with ui.card().classes('bg-[#2C25B2] rounded-3xl p-0 overflow-hidden h-8'):
+                        #                     with ui.row().classes('w-full items-center gap-0 h-full'):
+                        #                         with ui.element('div').classes('bg-[#2C25B2] px-4 flex-grow h-full flex items-center'):
+                        #                             ui.label(app.storage.user.get('sensor').location).classes('text-white font-medium text-sm leading-none')
+                        #                         with ui.element('div').classes('bg-[#FFB13B] px-4 min-w-[80px] h-full flex items-center justify-center rounded-l-3xl'):
+                        #                             ui.label(f"{round(app.storage.user.get('signal'),1)}").classes('text-white font-bold text-sm leading-none')
                     # list of sensor types
                     with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                         ui.label('Type of Sensor/s Connected').classes('font-bold')
