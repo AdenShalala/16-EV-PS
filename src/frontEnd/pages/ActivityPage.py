@@ -140,7 +140,7 @@ def activityPage():
 
                     app.storage.user.get('normalized_sensors').append({
                         'timestamps': app.storage.user.get('normalized_timestamps'),
-                        'signals': len(pressures),
+                        'signals': pressures,
                         'name': sensor_name
                     })
 
@@ -189,7 +189,6 @@ def activityPage():
 
                 def update_x_axis():
                     current_unit = app.storage.user.get('x_axis_unit')
-                    
                     for i, sensor_data in enumerate(app.storage.user.get('normalized_sensors')):
                         line_idx = i * 2  # line traces are at even indices
                         display_timestamps = get_display_values(sensor_data['timestamps'], current_unit)

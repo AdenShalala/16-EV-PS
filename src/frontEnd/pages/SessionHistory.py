@@ -54,13 +54,16 @@ def sessionHistory():
     header()
     app.storage.user['actTypeList'] = ['All']
     # getting activities
-    for app.storage.user['activity'] in app.storage.user.get('activityList'):
+    
+    # for app.storage.user['activity'] in app.storage.user.get('activityList'):
+    for app.storage.user['activity'] in app.storage.user.get('patient').activities:
+        # print(app.storage.user.get('activity'))
         # adding unique activity types to list
         if app.storage.user.get('activity').type not in app.storage.user.get('actTypeList'):
             app.storage.user['actTypeList'].append(app.storage.user['activity'].type)
     with ui.row().classes('w-full'):
         ui.label("User History").classes('text-xl font-semibold ml-[21%]')
-    with ui.row().classes('w-full h-[800px]'):
+    with ui.row().classes('w-full h-full'):
         # left section with tree
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]') as patients:
             utilities.session_tree()
@@ -105,9 +108,8 @@ def sessionHistory():
                         ui.label('').classes('col-span-3')
 
                     # calculating duration of activities
-                    for app.storage.user['activity'] in app.storage.user.get('activityList'):
+                    for app.storage.user['activity'] in app.storage.user.get('patient').activities:
                         app.storage.user['dt_str1'] = normalize_to_str(app.storage.user.get('activity').start_time)
-                        print(app.storage.user.get('dt_str1'))
                         # format_time(app.storage.user.get('dt_str1'))
                         # app.storage.user['dt_str1'] = utilities._date_label(app.storage.user.get('dt_str1'))
                         app.storage.user['dt_str2'] = normalize_to_str(app.storage.user.get('activity').end_time)
@@ -127,10 +129,10 @@ def sessionHistory():
                         app.storage.user['minSensor'] = None
                         app.storage.user['maxSensor'] = None
                         # finding min and max sensor signal values
+                        # for sensor in app.storage.user.get('activity').sensors:
                         for sensor in app.storage.user.get('activity').sensors:
                             for reading in sensor.readings:
                                 value = float(reading.pressure_value)   # <-- extract the Decimal
-                                print(value)
 
                                 if app.storage.user.get('minSensor') is None or value < app.storage.user.get('minSensor'):
                                     app.storage.user['minSensor'] = round(value, 1)

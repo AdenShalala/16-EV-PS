@@ -97,7 +97,7 @@ def main():
                     # app.storage.user['gender'] = app.storage.user.get('patient').gender
                     # app.storage.user['dob'] = app.storage.user.get('patient').month_year_birth
                     # displaying each user in separate cards
-                    with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2] cursor-pointer').on('click', lambda: UserInformation.navigatePatient(app.storage.user.get('patient'))):
+                    with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2] cursor-pointer').on('click', lambda p=app.storage.user.get('patient'): UserInformation.navigatePatient(p)):
                         ui.label(app.storage.user.get('full_name')).classes('text-xl')
                         # ui.label(app.storage.user.get('dob'))
                         # ui.label(app.storage.user.get('gender'))
