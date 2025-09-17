@@ -24,7 +24,7 @@ def main():
 
     ui.page_title("SocketFit Dashboard")
     genderList = ['All', 'Male', 'Female', 'Prefer not to say']
-    amputationTypeList = ['All']
+    amputationTypeList = ['All', 'Above Knee', 'Below Knee', 'Above Elbow', 'Below Elbow']
     app.storage.user['activityList'] = []
     # looping through patients
     for app.storage.user['patient'] in app.storage.user.get('patients'):
@@ -43,7 +43,7 @@ def main():
             with ui.row().classes('w-full'):
                 ui.label("Select User to View Users Information").classes('text-lg font-bold')
                 ui.space()
-                ui.input(label="Search Name", placeholder='Name', on_change= lambda e: _on_search(e)).classes('border rounded-md border-[#FFB030]')
+                search = ui.input(label="Search Name", placeholder='Name', on_change= lambda e: _on_search(e)).classes('border rounded-md border-[#FFB030]')
             ui.label("Filters").classes('text-md font-semibold')
 
             # filter titles
@@ -86,7 +86,7 @@ def main():
                 #     ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
                 #     ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
 
-                ui.select(value=amputationTypeList[0], options=amputationTypeList).classes('col-span-2 border rounded-md border-[#FFB030]')
+                amp_select = ui.select(value=amputationTypeList[0], options=amputationTypeList, on_change= lambda e: _on_search(e)).classes('col-span-2 border rounded-md border-[#FFB030]')
 
             cards_container = ui.column().classes('w-full')
 
@@ -98,22 +98,43 @@ def main():
                             full_name = f'{getattr(p, "first_name", "")} {getattr(p, "last_name", "")}'.strip()
                             with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2] cursor-pointer').on('click', lambda p=p: UserInformation.navigatePatient(p)):
                                 ui.label(full_name or "Unnamed").classes('text-xl')
-            def _filter_patients_by_name(q):
-                base = app.storage.user.get('patients', [])
+            def _filter_by_name(p_list, q):
                 q = (q or '').strip().lower()
                 if not q:
-                    return base
-                result = []
-                for p in base:
+                    return p_list
+                out = []
+                for p in p_list:
                     fn = (getattr(p, 'first_name', '') or '').lower()
                     ln = (getattr(p, 'last_name', '') or '').lower()
                     full = f'{fn} {ln}'.strip()
                     if q in fn or q in ln or q in full:
-                        result.append(p)
-                return result
-            _render_cards(app.storage.user.get('patients', []))
+                        out.append(p)
+                return out
+            
+            def _filter_by_amputation(p_list, amp):
+                amp = (amp or '').strip().lower()
+                if not amp or amp == 'all':
+                    return p_list
+                out = []
+                for p in p_list:
+                    a = (getattr(p, 'amputation_type', '') or '').strip().lower()
+                    if a == amp:
+                        out.append(p)
+                return out
+            
+            
+            def _apply_filters():
+                base = app.storage.user.get('patients', [])
+                by_name = _filter_by_name(base, getattr(search, 'value', ''))
+                by_amp = _filter_by_amputation(by_name, getattr(amp_select, 'value', 'All'))
+                _render_cards(by_amp)
+
+            
+            # _render_cards(app.storage.user.get('patients', []))
             def _on_search(e):
-                _render_cards(_filter_patients_by_name(e.value))
+                _apply_filters()
+
+            _apply_filters()
 
 def mainNavigate():
     ui.navigate.to('/main')
