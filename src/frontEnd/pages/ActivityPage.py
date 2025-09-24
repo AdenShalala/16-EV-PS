@@ -133,7 +133,8 @@ def activityPage():
                 activity_start_dt = unix_to_datetime(app.storage.user.get('activity').start_time)
 
                 for app.storage.user['i'], app.storage.user['sensor'] in enumerate(app.storage.user.get('activity').sensors):
-                    sensor_name = f"{app.storage.user.get('sensor').location} ({app.storage.user.get('sensor').type})"
+                    # sensor_name = f"{app.storage.user.get('sensor').location} ({app.storage.user.get('sensor').type})"
+                    sensor_name = f"{app.storage.user.get('sensor').sensor_id} ({app.storage.user.get('sensor').type})"
                     color = colors[app.storage.user.get('i') % len(colors)]
                     
                     # calculate timestamps and pressures for all readings in this sensor
@@ -155,7 +156,7 @@ def activityPage():
 
                     # sort by timestamp
                     combined = list(zip(timestamps_seconds, pressures))
-                    combined.sort(key=lambda x: x[0])  # Sort by timestamp
+                    combined.sort(key=lambda x: x[0])
                     timestamps_seconds, pressures = zip(*combined) if combined else ([], [])
                     
                     # convert to lists
