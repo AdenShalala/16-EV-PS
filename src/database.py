@@ -3,7 +3,7 @@ import mysql.connector
 import os
 import sys
 
-from schema import *;
+from schema import *
 
 load_dotenv()
 
@@ -41,17 +41,18 @@ def create():
     )
 
     cursor = database.cursor()
-    cursor.execute("CREATE DATABASE IF NOT EXISTS " + str(os.getenv('MYSQL_DATABASE')) + ';')
-    database.close();
+    cursor.execute("CREATE DATABASE IF NOT EXISTS " + str(os.getenv('MYSQL_DATABASE')) + '')
+    cursor.execute("USE " + str(os.getenv('MYSQL_DATABASE')) + '')
+    # database.close()
 
-    # re open database
-    database = get_database()
-    cursor = database.cursor()
+    # # re open database
+    # database = get_database()
+    # cursor = database.cursor()
 
     with open(os.path.join(os.path.dirname(__file__), "sql/create.sql"),  'r') as f:
         cursor.execute(f.read())
 
-    database.commit() 
+    #database.commit() 
     database.close()
 
 def populate():
@@ -68,14 +69,17 @@ def populate():
 def create_clinician(result):
     return Clinician(*result)
 
+def create_session(result):
+    #print(result)
+    return Session(*result)
 
 # accessors
 def get_clinician(clinician_id: str):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM Clinician WHERE clinician_id = %s", (clinician_id,));
-    result = cursor.fetchone();
+    cursor.execute("SELECT * FROM Clinician WHERE clinician_id = %s", (clinician_id,))
+    result = cursor.fetchone()
 
     if result:
         database.close()
@@ -88,8 +92,8 @@ def get_clinician_from_email(email: str):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM Clinician WHERE email = %s", (email,));
-    result = cursor.fetchone();
+    cursor.execute("SELECT * FROM Clinician WHERE email = %s", (email,))
+    result = cursor.fetchone()
 
     if result:
         database.close()
@@ -97,3 +101,35 @@ def get_clinician_from_email(email: str):
     else:
         database.close()
         return None
+
+def write_session(session: Session):
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO Session (session_id, secret_hash, created_at) VALUES (%s, %s, %s)", 
+                           (session.session_id, session.secret_hash, session.created_at))
+    
+    database.commit()
+    database.close()
+
+def get_session(session_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Session WHERE session_id = %s", (session_id,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_session(result)
+    else:
+        database.close()
+        return None
+    
+def delete_session(session_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("DELETE FROM Session WHERE session_id = %s", (session_id,))
+    database.commit()
+    database.close()
