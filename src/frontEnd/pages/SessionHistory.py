@@ -53,8 +53,9 @@ def sessionHistory():
     ui.page_title("SocketFit Dashboard")
     header()
     app.storage.user['actTypeList'] = ['All']
-    
+    app.storage.user['activityList'] = []
     for app.storage.user['activity'] in app.storage.user.get('patient').activities:
+        app.storage.user['activityList'].append(app.storage.user['activity'])
         # adding unique activity types to list
         if app.storage.user.get('activity').type not in app.storage.user.get('actTypeList'):
             app.storage.user['actTypeList'].append(app.storage.user['activity'].type)
