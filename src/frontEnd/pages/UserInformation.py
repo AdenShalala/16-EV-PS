@@ -47,19 +47,19 @@ def main():
             with ui.row():
                 with ui.row().classes('w-2/5 items-start'):
                     with ui.input(label='First Name', value=_get(patient, 'first_name')).classes('w-full border rounded-md border-[#3545FF]'):
-                        ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
+                        ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
                     with ui.input(label='Last Name', value=_get(patient, 'last_name')).classes('w-full border rounded-md border-[#3545FF]'):
-                        ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
+                        ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
                     with ui.input(label='Weight (kg)', value=str(_get(patient, 'weight', ''))).classes('w-full border rounded-md border-[#3545FF]'):
-                        ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
+                        ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
                     with ui.input(label='Height (cm)', value=str(_get(patient, 'height', ''))).classes('w-full border rounded-md border-[#3545FF]'):
-                        ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
+                        ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
                     with ui.input(label='Amputation Type', value=_get(patient, 'amputation_type')).classes('w-full border rounded-md border-[#3545FF]'):
-                        ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
+                        ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
                     with ui.input(label='Prosthetic Type', value=_get(patient, 'prosthetic_type')).classes('w-full border rounded-md border-[#3545FF]'):
-                        ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
+                        ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
                     with ui.input(label='Email', value=_get(patient, 'email')).classes('w-full border rounded-md border-[#3545FF]'):
-                        ui.icon('o_edit').classes('text-black text-3xl h-full flex items-center mr-2')
+                        ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
                     with ui.input(label='Patient ID', value=_get(patient, 'patient_id')).classes('w-full border rounded-md border-[#3545FF]'):
                         ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
                     with ui.input(label='Clinician ID', value=_get(patient, 'clinician_id')).classes('w-full border rounded-md border-[#3545FF]'):
