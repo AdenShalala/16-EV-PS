@@ -50,6 +50,22 @@ def create_reading(result):
     return PreRe(*result)
 
 #~~~~~~~~~~~~~~~~~~~~~~~#
+#  Read all clinicians #
+#~~~~~~~~~~~~~~~~~~~~~~~#
+
+def list_all_clinicians():
+    db = database_connect()
+    cur = db.cursor(dictionary=True)
+    cur.execute("""
+        SELECT clinician_id, first_name, last_name, email
+        FROM Clinician
+        ORDER BY last_name, first_name
+    """)
+    rows = cur.fetchall()
+    cur.close(); db.close()
+    return rows or []
+
+#~~~~~~~~~~~~~~~~~~~~~~~#
 #  Read by clinician ID #
 #~~~~~~~~~~~~~~~~~~~~~~~#
 
