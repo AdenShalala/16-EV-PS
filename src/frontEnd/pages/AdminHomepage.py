@@ -2,6 +2,7 @@
 from nicegui import ui, app
 import os, sys
 import ClinicianInformation
+import utilities
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'backEnd', 'databases', 'SQL'))
@@ -39,13 +40,16 @@ def _render_cards(c_list, mount):
 
 @ui.page('/admin/home')
 def admin_home():
+    app.storage.user['current_page'] = '/admin/home'
     ui.page_title('SocketFit Admin')
     header()
 
     with ui.row().classes('w-full'):
         with ui.card().classes('w-1/5 border border-[#2C25B2]'):
-            ui.link('Database Configuration', '/config').style('color: black; text-decoration: none;')
-            ui.link('Write from file', '/writeFile').style('color: black; text-decoration: none;')
+            # SideTree need some stuff to be fixed to be consistent
+            utilities._clinicians_tree()
+            ui.link('Database Configuration', '/config').style('color: black; text-decoration: none; padding: 05px;')
+            ui.link('Write from file', '/writeFile').style(f'color: black; text-decoration: none; padding: 05px;')
 
         with ui.card().classes('w-3/4 border rounded-md border-[#2C25B2]') as main:
             with ui.column().classes('w-full p-4 gap-4'):

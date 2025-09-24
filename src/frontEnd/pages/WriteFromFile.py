@@ -16,8 +16,9 @@ def writeFile():
     header()
     with ui.row().classes('w-full'):
         with ui.card().classes('w-1/5 border border-[#2C25B2]') as patients:
-            ui.link('Database Configuration', '/config').style('color: black; text-decoration: none;')
-            ui.link('Write From File', '/writeFile').style('color: black; text-decoration: none;')
+            utilities._clinicians_tree()
+            ui.link('Database Configuration', '/config').style('color: black; text-decoration: none; padding: 05px;')
+            ui.link('Write from file', '/writeFile').style(f'color: black; text-decoration: none; padding: 05px;')
         with ui.card().classes('w-3/4 border rounded-md border-[#2C25B2] justify-center items-center') as main:
             
             async def handle_database_upload(e):

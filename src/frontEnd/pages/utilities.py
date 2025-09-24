@@ -148,6 +148,42 @@ def patients_tree():
     }]
     ui.tree(tree_data, label_key='label', on_select=on_tree_select).expand(['Patient Records'])
 
+def _on_clinician_tree_select(e):
+    node_id = e.value
+    if not node_id or not node_id.startswith('clinician-'):
+        return
+    try:
+        idx = int(node_id.split('-', 1)[1])
+    except ValueError:
+        return
+    clinicians = app.storage.user.get('clinicians', [])
+    if 0 <= idx < len(clinicians):
+        app.storage.user['clinician'] = clinicians[idx]
+        ui.navigate.to('/admin/clinicianInfo')
+
+def _clinicians_tree():
+    current_page = app.storage.user.get('current_page', '')
+    clinicians = app.storage.user.get('clinicians', [])
+    clinician_nodes = []
+    for i, c in enumerate(clinicians):
+        first = (getattr(c, 'first_name', None) or c.get('first_name', '') if isinstance(c, dict) else '')
+        last  = (getattr(c, 'last_name',  None) or c.get('last_name',  '') if isinstance(c, dict) else '')
+        full_name = f'{first} {last}'.strip() or 'Unnamed'
+        clinician_nodes.append({
+            'id': f'clinician-{i}',
+            'label': full_name,
+        })
+
+    tree_data = [{
+        'id': 'Clinician Records',
+        'label': bold('Clinician Records') if current_page in {'/admin/home', '/admin/clinicianInfo'} else 'Clinician Records',
+        'children': clinician_nodes,
+    }]
+
+   
+    ui.tree(tree_data, label_key='label', on_select=_on_clinician_tree_select) \
+      .expand(['Clinician Records'] if current_page in {'/admin/clinincianInfo'} else [])
+
 def header():
     with ui.header().style('background-color: #FFFFFF'):
         with ui.link(target='/login'):

@@ -22,12 +22,12 @@ def _ensure_current_clinician():
     app.storage.user['clinician'] = clinicians[0]
     return clinicians[0]
 
-def _clinicians_tree():
-    clinicians = app.storage.user.get('clinicians') or []
-    for c in clinicians:
-        name = f"{_get(c, 'first_name')} {_get(c, 'last_name')}".strip() or 'Unnamed'
-        ui.link(name, '#').on('click', lambda _=None, cc=c: navigateClinician(cc)) \
-                               .style('color: black; text-decoration: none;')
+# def _clinicians_tree():
+#     clinicians = app.storage.user.get('clinicians') or []
+#     for c in clinicians:
+#         name = f"{_get(c, 'first_name')} {_get(c, 'last_name')}".strip() or 'Unnamed'
+#         ui.link(name, '#').on('click', lambda _=None, cc=c: navigateClinician(cc)) \
+#                                .style('color: black; text-decoration: none;')
 
 @ui.page('/admin/clinicianInfo')
 def main():
@@ -42,7 +42,7 @@ def main():
     with ui.row().classes('w-full h-[800px]'):
         # LEFT: sidetree (clinicians list)
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]'):
-            _clinicians_tree()
+            utilities._clinicians_tree()
             ui.link('Database Configuration', '/config').style('color: black; text-decoration: none;')
             ui.link('Write from file', '/writeFile').style('color: black; text-decoration: none;')
 
