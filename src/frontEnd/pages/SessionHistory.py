@@ -19,16 +19,16 @@ def normalize_to_str(value: str | int | float | datetime) -> str:
     if value is None:
         return None
 
-    # If it's already a datetime
+    # if it's already a datetime
     if isinstance(value, datetime):
         return value.strftime("%d-%b-%Y %H:%M:%S")
 
-    # If it's a unix timestamp
+    # if it's a unix timestamp
     if isinstance(value, (int, float)) or (isinstance(value, str) and value.isdigit()):
         dt = datetime.fromtimestamp(int(value))
         return dt.strftime("%d-%b-%Y %H:%M:%S")
 
-    # If it's a string datetime
+    # if it's a string datetime
     value = str(value).strip()
     formats = [
         "%Y-%m-%d %H:%M:%S%z",   # 2023-08-28 12:33:20+00:00
@@ -53,11 +53,8 @@ def sessionHistory():
     ui.page_title("SocketFit Dashboard")
     header()
     app.storage.user['actTypeList'] = ['All']
-    # getting activities
     
-    # for app.storage.user['activity'] in app.storage.user.get('activityList'):
     for app.storage.user['activity'] in app.storage.user.get('patient').activities:
-        # print(app.storage.user.get('activity'))
         # adding unique activity types to list
         if app.storage.user.get('activity').type not in app.storage.user.get('actTypeList'):
             app.storage.user['actTypeList'].append(app.storage.user['activity'].type)
@@ -69,7 +66,7 @@ def sessionHistory():
             utilities.session_tree()
         # main section
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
-            # Filter Titles
+            # filter titles
             ui.label("Filters:")
             with ui.grid(columns=11).classes('w-full'):
                 ui.label("Activity").classes('col-span-2')
@@ -108,58 +105,53 @@ def sessionHistory():
                         ui.label('').classes('col-span-3')
 
                     # calculating duration of activities
-                    for app.storage.user['activity'] in app.storage.user.get('patient').activities:
-                        app.storage.user['dt_str1'] = normalize_to_str(app.storage.user.get('activity').start_time)
-                        # format_time(app.storage.user.get('dt_str1'))
-                        # app.storage.user['dt_str1'] = utilities._date_label(app.storage.user.get('dt_str1'))
-                        app.storage.user['dt_str2'] = normalize_to_str(app.storage.user.get('activity').end_time)
+                    for app.storage.user['current_activity'] in app.storage.user.get('patient').activities:
+                        
+                        app.storage.user['dt_str1'] = normalize_to_str(app.storage.user['current_activity'].start_time)
+                        app.storage.user['dt_str2'] = normalize_to_str(app.storage.user['current_activity'].end_time)
 
                         dt_format = "%d-%b-%Y %H:%M:%S"
 
-                        dt1 = datetime.strptime(app.storage.user.get('dt_str1'), dt_format)
-                        dt2 = datetime.strptime(app.storage.user.get('dt_str2'), dt_format)
+                        dt1 = datetime.strptime(app.storage.user['dt_str1'], dt_format)
+                        dt2 = datetime.strptime(app.storage.user['dt_str2'], dt_format)
 
                         total_seconds = int((dt2 - dt1).total_seconds())
                         app.storage.user['total_seconds'] = total_seconds
 
-                        app.storage.user['hours'] = app.storage.user.get('total_seconds') // 3600
-                        app.storage.user['minutes'] = (app.storage.user.get('total_seconds') % 3600) // 60
+                        app.storage.user['hours'] = app.storage.user['total_seconds'] // 3600
+                        app.storage.user['minutes'] = (app.storage.user['total_seconds'] % 3600) // 60
                         app.storage.user['seconds'] = app.storage.user['total_seconds'] % 60
 
                         app.storage.user['minSensor'] = None
                         app.storage.user['maxSensor'] = None
+                        
                         # finding min and max sensor signal values
-                        # for sensor in app.storage.user.get('activity').sensors:
-                        for sensor in app.storage.user.get('activity').sensors:
+                        current_activity = app.storage.user['current_activity']  # Store reference for cleaner access
+
+                        for sensor in current_activity.sensors:
                             for reading in sensor.readings:
-                                value = float(reading.pressure_value)   # <-- extract the Decimal
+                                if reading.activity_id == current_activity.activity_id:
+                                    value = float(reading.pressure_value)
 
-                                if app.storage.user.get('minSensor') is None or value < app.storage.user.get('minSensor'):
-                                    app.storage.user['minSensor'] = round(value, 1)
+                                    if app.storage.user['minSensor'] is None or value < app.storage.user['minSensor']:
+                                        app.storage.user['minSensor'] = round(value, 1)
 
-                                if app.storage.user.get('maxSensor') is None or value > app.storage.user.get('maxSensor'):
-                                    app.storage.user['maxSensor'] = round(value, 1)
-                        # for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
-                        #     for app.storage.user['signal'] in app.storage.user.get('sensor').readings:
-                        #         print(app.storage.user.get('signal'))
-                        #         if app.storage.user.get('minSensor') == None or float(app.storage.user.get('signal')) < float(app.storage.user.get('minSensor')):
-                        #             app.storage.user['minSensor'] = round(float(app.storage.user.get('signal')), 1)
-                        #         if app.storage.user.get('maxSensor') == None or float(app.storage.user.get('signal')) > float(app.storage.user.get('maxSensor')):
-                        #             app.storage.user['maxSensor'] = round(float(app.storage.user.get('signal')), 1)
+                                    if app.storage.user['maxSensor'] is None or value > app.storage.user['maxSensor']:
+                                        app.storage.user['maxSensor'] = round(value, 1)
 
                         # creating row for each activity
                         with ui.grid(columns=24).classes('border-[2px] border-[#2C25B2] h-16 rounded items-center'):
                             ui.label('').classes('col-span-1')
                             ui.label(normalize_to_str(app.storage.user.get('activity').start_time)).classes('col-span-3')
                             ui.label('').classes('col-span-3')
-                            ui.label(app.storage.user.get('activity').type).classes('col-span-2')
+                            ui.label(app.storage.user.get('current_activity').type).classes('col-span-2')
                             ui.label('').classes('col-span-3')
                             ui.label(f'{app.storage.user.get('hours')}h{app.storage.user.get('minutes')}m{app.storage.user.get('seconds')}s').classes('col-span-2')
                             ui.label('').classes('col-span-3')
                             ui.label(f"{app.storage.user.get('minSensor')} - {app.storage.user.get('maxSensor')}").classes('col-span-2')
                             ui.button('View Activity').props('flat').classes(
                                       'col-span-5 text-white text-sm px-3 py-1 rounded-3xl bg-[#FFB030] h-1/2'
-                                     ).on_click(partial(activitypass, app.storage.user.get('activity')))
+                                     ).on_click(partial(activitypass, app.storage.user.get('current_activity')))
                 ui.space()
 
 def navigateSession():

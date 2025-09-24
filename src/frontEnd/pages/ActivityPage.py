@@ -9,8 +9,15 @@ import plotly.colors as pc
 def header():
     utilities.header()
 
+def unix_to_datetime(unix_timestamp):
+    """Convert Unix timestamp to datetime object."""
+    if isinstance(unix_timestamp, str):
+        unix_timestamp = float(unix_timestamp)
+    return datetime.fromtimestamp(unix_timestamp)
+
 @ui.page('/activity')
 def activityPage():
+    app.storage.user['current_page'] = '/activity'
     ui.page_title("SocketFit Dashboard")
     header()
     # calculating duration
@@ -122,61 +129,77 @@ def activityPage():
                         return [0, app.storage.user.get('total_seconds') / 60]
                     return [0, app.storage.user.get('total_seconds')]
 
+                # Get activity start time as datetime for calculations
+                activity_start_dt = unix_to_datetime(app.storage.user.get('activity').start_time)
+
                 for app.storage.user['i'], app.storage.user['sensor'] in enumerate(app.storage.user.get('activity').sensors):
                     sensor_name = f"{app.storage.user.get('sensor').location} ({app.storage.user.get('sensor').type})"
                     color = colors[app.storage.user.get('i') % len(colors)]
                     
-                    for reading in app.storage.user.get('sensor').readings:
-                        app.storage.user['num_points'] = len(SessionHistory.normalize_to_str(reading.time))
-                    
-                    # app.storage.user['num_points'] = len(app.storage.user.get('sensor').timestamp)
-                    app.storage.user['normalized_timestamps'] = [
-                        (j / (app.storage.user.get('num_points') - 1)) * app.storage.user.get('total_seconds') if app.storage.user.get('num_points') > 1 else 0
-                        for j in range(app.storage.user.get('num_points'))
-                    ]
+                    # calculate timestamps and pressures for all readings in this sensor
+                    timestamps_seconds = []
                     pressures = []
+                    
                     for reading in app.storage.user.get('sensor').readings:
-                        pressures.append(float(reading.pressure_value))
+                        if reading.activity_id == app.storage.user.get('activity').activity_id:
+                            reading_time = unix_to_datetime(reading.time)
+                            
+                            # calculate seconds elapsed from activity start
+                            time_from_start_seconds = (reading_time - activity_start_dt).total_seconds()
+                            
+                            # clamp to activity bounds
+                            time_from_start_seconds = max(0, min(time_from_start_seconds, app.storage.user.get('total_seconds')))
+                            
+                            timestamps_seconds.append(time_from_start_seconds)
+                            pressures.append(float(reading.pressure_value))
 
+                    # sort by timestamp
+                    combined = list(zip(timestamps_seconds, pressures))
+                    combined.sort(key=lambda x: x[0])  # Sort by timestamp
+                    timestamps_seconds, pressures = zip(*combined) if combined else ([], [])
+                    
+                    # convert to lists
+                    timestamps_seconds = list(timestamps_seconds)
+                    pressures = list(pressures)
+
+                    # store sensor data for animation and axis switching
                     app.storage.user.get('normalized_sensors').append({
-                        'timestamps': app.storage.user.get('normalized_timestamps'),
+                        'timestamps': timestamps_seconds,
                         'signals': pressures,
                         'name': sensor_name
                     })
 
+                    # get display values based on current unit
                     current_unit = app.storage.user.get('x_axis_unit')
-                    display_timestamps = get_display_values(app.storage.user.get('normalized_timestamps'), current_unit)
+                    display_timestamps = get_display_values(timestamps_seconds, current_unit)
 
-                    print(pressures)
-                    # adding traces for line
+                    # add line trace
                     fig.add_trace(go.Scatter(
                         x=display_timestamps,
                         y=pressures,
-                        # y=app.storage.user.get('sensor').signal,
                         name=sensor_name,
                         line=dict(color=color)
                     ))
 
-                    # adding traces for markers (start at first point)
-                    fig.add_trace(go.Scatter(
-                        x=[display_timestamps[0]],
-                        y=[pressures[0]],
-                        # y=[app.storage.user.get('sensor').signal[0]],
-                        mode='markers',
-                        marker=dict(size=10, color=color),
-                        name=sensor_name,
-                        showlegend=False
-                    ))
+                    # add marker trace
+                    if display_timestamps and pressures:
+                        fig.add_trace(go.Scatter(
+                            x=[display_timestamps[0]],
+                            y=[pressures[0]],
+                            mode='markers',
+                            marker=dict(size=10, color=color),
+                            name=sensor_name,
+                            showlegend=False
+                        ))
+                        app.storage.user.get('dot_trace_indices').append(len(fig.data) - 1)
 
-                    app.storage.user.get('dot_trace_indices').append(len(fig.data) - 1)
-
-                # changing graph look
+                # update graph layout
                 current_unit = app.storage.user.get('x_axis_unit')
                 fig.update_layout(
                     hovermode='x unified', 
                     plot_bgcolor='white',
                     xaxis_title=get_axis_label(current_unit),
-                    yaxis_title="Signal"
+                    yaxis_title="Pressure"
                 )
                 fig.update_xaxes(gridcolor='lightgrey', range=get_axis_range(current_unit))
                 fig.update_yaxes(gridcolor='lightgrey')
@@ -198,8 +221,9 @@ def activityPage():
                     display_current_time = current_time / 60 if current_unit == 'minutes' else current_time
                     
                     for i, sensor_data in enumerate(app.storage.user.get('normalized_sensors')):
-                        dot_idx = app.storage.user.get('dot_trace_indices')[i]
-                        fig.data[dot_idx].x = [display_current_time]
+                        if i < len(app.storage.user.get('dot_trace_indices')):
+                            dot_idx = app.storage.user.get('dot_trace_indices')[i]
+                            fig.data[dot_idx].x = [display_current_time]
                     
                     fig.update_layout(xaxis_title=get_axis_label(current_unit))
                     fig.update_xaxes(range=get_axis_range(current_unit))
@@ -210,6 +234,8 @@ def activityPage():
                 base_time_increment = 1.0 / updates_per_second  
 
                 def interpolate_signal(timestamps, signals, target_time):
+                    if not timestamps or not signals:
+                        return 0
                     if target_time <= timestamps[0]:
                         return signals[0]
                     if target_time >= timestamps[-1]:
@@ -222,7 +248,7 @@ def activityPage():
                             ratio = (target_time - t1) / (t2 - t1) if t2 != t1 else 0
                             return s1 + ratio * (s2 - s1)
                     
-                    return signals[-1]
+                    return signals[-1] if signals else 0
 
                 # moving markers based on time
                 def update_dots():
@@ -236,8 +262,6 @@ def activityPage():
                     current_time = state['current_time']
                     current_time += app.storage.user.get('time_increment')
                     
-                    # total_duration = app.storage.user.get('total_seconds')
-                    
                     if current_time >= app.storage.user.get('total_seconds'):
                         current_time = 0
                     
@@ -245,21 +269,21 @@ def activityPage():
 
                     ui_elements['current_time_label'].text = format_current_time(current_time)
 
-
                     current_unit = app.storage.user.get('x_axis_unit')
                     display_current_time = current_time / 60 if current_unit == 'minutes' else current_time
 
                     for app.storage.user['i'], app.storage.user['sensor_data'] in enumerate(app.storage.user.get('normalized_sensors')):
-                        dot_idx = app.storage.user.get('dot_trace_indices')[app.storage.user.get('i')]
-                        
-                        signal_value = interpolate_signal(
-                            app.storage.user.get('sensor_data')['timestamps'], 
-                            app.storage.user.get('sensor_data')['signals'], 
-                            current_time
-                        )
-                        
-                        fig.data[dot_idx].x = [display_current_time]
-                        fig.data[dot_idx].y = [signal_value]
+                        if app.storage.user.get('i') < len(app.storage.user.get('dot_trace_indices')):
+                            dot_idx = app.storage.user.get('dot_trace_indices')[app.storage.user.get('i')]
+                            
+                            signal_value = interpolate_signal(
+                                app.storage.user.get('sensor_data')['timestamps'], 
+                                app.storage.user.get('sensor_data')['signals'], 
+                                current_time
+                            )
+                            
+                            fig.data[dot_idx].x = [display_current_time]
+                            fig.data[dot_idx].y = [signal_value]
 
                     ui_elements['plot'].update()
 
@@ -267,12 +291,6 @@ def activityPage():
                 ui_elements['timer'] = timer
             
             app.storage.user['toleranceList'] = []
-            # getting tolerances
-            # for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
-                # for app.storage.user['signal'] in app.storage.user.get('sensor').signal:
-                # for app.storage.user['signal'] in pressures:
-                #     if float(app.storage.user.get('signal')) > float(app.storage.user.get('signal').pressure_tolerance):
-                #         app.storage.user.get('toleranceList').append(app.storage.user.get('sensor'))
 
             with ui.row().classes('row-span-3'):
                 with ui.grid(columns=3).classes('w-full h-full'):
@@ -285,16 +303,6 @@ def activityPage():
                     # list of areas exceeding tolerance levels
                     with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                         ui.label('Area/s Exceeding Tolerance Level').classes('font-bold')
-                        # with ui.scroll_area().classes('h-3/4'):
-                        #     for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
-                        #         for app.storage.user['signal'] in app.storage.user.get('sensor').readings:
-                        #             if float(app.storage.user.get('signal')) > float(app.storage.user.get('sensor').pressure_tolerance):
-                        #                 with ui.card().classes('bg-[#2C25B2] rounded-3xl p-0 overflow-hidden h-8'):
-                        #                     with ui.row().classes('w-full items-center gap-0 h-full'):
-                        #                         with ui.element('div').classes('bg-[#2C25B2] px-4 flex-grow h-full flex items-center'):
-                        #                             ui.label(app.storage.user.get('sensor').location).classes('text-white font-medium text-sm leading-none')
-                        #                         with ui.element('div').classes('bg-[#FFB13B] px-4 min-w-[80px] h-full flex items-center justify-center rounded-l-3xl'):
-                        #                             ui.label(f"{round(app.storage.user.get('signal'),1)}").classes('text-white font-bold text-sm leading-none')
                     # list of sensor types
                     with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                         ui.label('Type of Sensor/s Connected').classes('font-bold')

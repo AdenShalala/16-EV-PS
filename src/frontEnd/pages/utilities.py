@@ -46,16 +46,27 @@ def _date_label(dt: datetime) -> str:
 def session_tree():
     current_page = app.storage.user.get('current_page', '')
     selected_patient_index = app.storage.user.get('selected_patient_index')
-    selected_session_date = app.storage.user.get('selected_session_date')
+    # selected_session_date = app.storage.user.get('selected_session_date')
+    if current_page == '/activity':
+        selected_session_date = app.storage.user.get('activity').activity_id
+    else: 
+        selected_session_date = None
 
     seen_dates = OrderedDict()
     for activity in app.storage.user.get('activityList', []):
         start_raw = _get(activity, 'start_time')
         dt1 = _to_dt(start_raw)
         date_label = _date_label(dt1)
-        if date_label not in seen_dates:
-            label = bold(date_label) if selected_session_date == date_label else date_label
-            seen_dates[date_label] = {'id': date_label, 'label': label}
+        
+        # Use activity_id as the unique key (assuming it exists)
+        activity_id = _get(activity, 'activity_id')  # or however you access the activity ID
+        
+        if activity_id not in seen_dates:
+            # Combine date and activity type first, then apply bold to the whole thing
+            full_label = date_label + " " + activity.type
+            label = bold(full_label) if selected_session_date == activity_id else full_label
+            seen_dates[activity_id] = {'id': activity_id, 'label': label}
+
     session_date_nodes = list(seen_dates.values())
 
     patient_nodes = []
@@ -65,7 +76,7 @@ def session_tree():
         patient_nodes.append({'id': f'patient-{i}', 'label': label})
 
     expand_nodes = ['User Records']
-    if current_page == '/sessionHistory':
+    if current_page == '/sessionHistory' or current_page == '/activity':
         expand_nodes.append('Session History')
     if current_page == '/userInformation':
         expand_nodes.append('User Information')
@@ -89,6 +100,36 @@ def session_tree():
 
     ui.tree(tree_data, label_key='label', on_select=on_tree_select).expand(expand_nodes)
 
+# def on_tree_select(e):
+#     label_to_path = {
+#         'User Records': '/main',
+#         'User Information': '/userInformation',
+#         'Session History': '/sessionHistory',
+#     }
+#     selected = e.value
+
+#     if isinstance(selected, str) and selected.startswith('patient-'):
+#         idx = int(selected.split('-')[-1])
+#         app.storage.user['selected_patient_index'] = idx
+#         selected_patient = app.storage.user.get('patients', [])[idx]
+#         app.storage.user['patient'] = selected_patient
+#         UserInformation.navigatePatient(selected_patient)
+#         return
+
+#     for activity in app.storage.user.get('activityList', []):
+#         start_raw = _get(activity, 'start_time')
+#         dt = _to_dt(start_raw)
+#         if _date_label(dt) == selected:
+#             app.storage.user['selected_session_date'] = selected
+#             app.storage.user['activity'] = activity
+#             ActivityPage.navigateActivity()
+#             return
+
+#     if selected in label_to_path:
+#         if selected == 'Session History':
+#             app.storage.user['filter_date'] = None
+#             app.storage.user['selected_session_date'] = None
+#         ui.navigate.to(label_to_path[selected])
 def on_tree_select(e):
     label_to_path = {
         'User Records': '/main',
@@ -105,11 +146,11 @@ def on_tree_select(e):
         UserInformation.navigatePatient(selected_patient)
         return
 
+    # Check if selected is an activity_id
     for activity in app.storage.user.get('activityList', []):
-        start_raw = _get(activity, 'start_time')
-        dt = _to_dt(start_raw)
-        if _date_label(dt) == selected:
-            app.storage.user['selected_session_date'] = selected
+        activity_id = _get(activity, 'activity_id')
+        if activity_id == selected:
+            app.storage.user['selected_session_date'] = selected  # Store the activity_id
             app.storage.user['activity'] = activity
             ActivityPage.navigateActivity()
             return

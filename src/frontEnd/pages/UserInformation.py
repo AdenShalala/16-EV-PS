@@ -44,6 +44,7 @@ def main():
                 ui.label('No patients loaded yet.').classes('p-4 text-gray-600')
                 return
 
+            # user information boxes
             with ui.row():
                 with ui.row().classes('w-2/5 items-start'):
                     with ui.input(label='First Name', value=_get(patient, 'first_name')).classes('w-full border rounded-md border-[#3545FF]'):

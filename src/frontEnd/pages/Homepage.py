@@ -17,9 +17,11 @@ except ImportError as e:
 def header():
     utilities.header()
 
+# creating new page
 @ui.page('/main')
 def main():
     app.storage.user['current_page'] = '/main'
+    # reading in patients
     app.storage.user['patients'] = read_patients_by_clinician_id(app.storage.user.get('clinid'))
 
     ui.page_title("SocketFit Dashboard")
@@ -28,6 +30,7 @@ def main():
     app.storage.user['activityList'] = []
     # looping through patients
     for app.storage.user['patient'] in app.storage.user.get('patients'):
+        # looping through activities
         for app.storage.user['activity'] in app.storage.user.get('patient').activities:
             app.storage.user['activityList'].append(app.storage.user['activity'])
     header()
@@ -36,27 +39,25 @@ def main():
     with ui.row().classes('w-full h-full'):
         # side tree section
         with ui.card().classes('w-1/5 h-full border border-[#2C25B2]'):
-            # Tree with users needed
+            # tree with users needed
            utilities.patients_tree()
         # main section
         with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
             with ui.row().classes('w-full'):
                 ui.label("Select User to View Users Information").classes('text-lg font-bold')
                 ui.space()
+                # box to search users
                 search = ui.input(label="Search Name", placeholder='Name', on_change= lambda e: _on_search(e)).classes('border rounded-md border-[#FFB030]')
             ui.label("Filters").classes('text-md font-semibold')
 
             # filter titles
             with ui.grid(columns=10).classes('w-full gap-4'):
-                # ui.label("Gender:").classes('col-span-2')
-                # ui.label("Age:").classes('col-span-2')
                 ui.label("Height (cm):").classes('col-span-2')
                 ui.label("Weight (kg):").classes('col-span-2')
                 ui.label("Amputation Type:").classes('col-span-2')
 
             # filter boxes
             with ui.grid(columns=10).classes('w-full gap-4'):
-                # ui.select(value=genderList[0], options=genderList).classes('col-span-2 border rounded-md border-[#FFB030]')
 
                 with ui.row().classes('col-span-2 gap-1'):
 
@@ -75,16 +76,13 @@ def main():
                     </style>
                     ''')
 
+                    # filters
                     ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
                     ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
 
                 with ui.row().classes('col-span-2 gap-1'):
                     ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
                     ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
-
-                # with ui.row().classes('col-span-2 gap-1'):
-                #     ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
-                #     ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
 
                 amp_select = ui.select(value=amputationTypeList[0], options=amputationTypeList, on_change= lambda e: _on_search(e)).classes('col-span-2 border rounded-md border-[#FFB030]')
 
@@ -121,7 +119,7 @@ def main():
                     if a == amp:
                         out.append(p)
                 return out
-            
+
             
             def _apply_filters():
                 base = app.storage.user.get('patients', [])
@@ -129,7 +127,6 @@ def main():
                 by_amp = _filter_by_amputation(by_name, getattr(amp_select, 'value', 'All'))
                 _render_cards(by_amp)
 
-            
             # _render_cards(app.storage.user.get('patients', []))
             def _on_search(e):
                 _apply_filters()
