@@ -100,36 +100,6 @@ def session_tree():
 
     ui.tree(tree_data, label_key='label', on_select=on_tree_select).expand(expand_nodes)
 
-# def on_tree_select(e):
-#     label_to_path = {
-#         'User Records': '/main',
-#         'User Information': '/userInformation',
-#         'Session History': '/sessionHistory',
-#     }
-#     selected = e.value
-
-#     if isinstance(selected, str) and selected.startswith('patient-'):
-#         idx = int(selected.split('-')[-1])
-#         app.storage.user['selected_patient_index'] = idx
-#         selected_patient = app.storage.user.get('patients', [])[idx]
-#         app.storage.user['patient'] = selected_patient
-#         UserInformation.navigatePatient(selected_patient)
-#         return
-
-#     for activity in app.storage.user.get('activityList', []):
-#         start_raw = _get(activity, 'start_time')
-#         dt = _to_dt(start_raw)
-#         if _date_label(dt) == selected:
-#             app.storage.user['selected_session_date'] = selected
-#             app.storage.user['activity'] = activity
-#             ActivityPage.navigateActivity()
-#             return
-
-#     if selected in label_to_path:
-#         if selected == 'Session History':
-#             app.storage.user['filter_date'] = None
-#             app.storage.user['selected_session_date'] = None
-#         ui.navigate.to(label_to_path[selected])
 def on_tree_select(e):
     label_to_path = {
         'User Records': '/main',
