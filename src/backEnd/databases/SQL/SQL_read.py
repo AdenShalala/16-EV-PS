@@ -102,8 +102,3 @@ def read_patients_by_clinician_id(clinician_id: str):
         patients.append(create_patient(patient_list, activities)) 
     db.close()
     return patients
-
-lis = read_patients_by_clinician_id('CLIN001')
-
-for li in lis:
-    print(li)
