@@ -76,13 +76,14 @@ def main():
                     </style>
                     ''')
 
-                    # filters
-                    ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
-                    ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
+                    # Height filters with on_change handlers
+                    height_min = ui.number(label="Min", placeholder="Min", on_change=lambda e: _on_search(e)).classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
+                    height_max = ui.number(label="Max", placeholder="Max", on_change=lambda e: _on_search(e)).classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
 
                 with ui.row().classes('col-span-2 gap-1'):
-                    ui.number(label="Min", placeholder="Min").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
-                    ui.number(label="Max", placeholder="Max").classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
+                    # Weight filters with on_change handlers
+                    weight_min = ui.number(label="Min", placeholder="Min", on_change=lambda e: _on_search(e)).classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
+                    weight_max = ui.number(label="Max", placeholder="Max", on_change=lambda e: _on_search(e)).classes('w-2/5 border rounded-md border-[#FFB030]').props('input-style="text-align: center"')
 
                 amp_select = ui.select(value=amputationTypeList[0], options=amputationTypeList, on_change= lambda e: _on_search(e)).classes('col-span-2 border rounded-md border-[#FFB030]')
 
@@ -96,6 +97,7 @@ def main():
                             full_name = f'{getattr(p, "first_name", "")} {getattr(p, "last_name", "")}'.strip()
                             with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2] cursor-pointer').on('click', lambda p=p: UserInformation.navigatePatient(p)):
                                 ui.label(full_name or "Unnamed").classes('text-xl')
+            
             def _filter_by_name(p_list, q):
                 q = (q or '').strip().lower()
                 if not q:
@@ -120,14 +122,71 @@ def main():
                         out.append(p)
                 return out
 
+            def _filter_by_height(p_list, min_height, max_height):
+                out = []
+                for p in p_list:
+                    height = getattr(p, 'height', None)
+                    if height is None:
+                        continue
+                    
+                    # Convert height to number if it's a string
+                    try:
+                        height = float(height)
+                    except (ValueError, TypeError):
+                        continue
+                    
+                    # Check min height
+                    if min_height is not None and height < min_height:
+                        continue
+                    
+                    # Check max height
+                    if max_height is not None and height > max_height:
+                        continue
+                    
+                    out.append(p)
+                return out
+
+            def _filter_by_weight(p_list, min_weight, max_weight):
+                out = []
+                for p in p_list:
+                    weight = getattr(p, 'weight', None)
+                    if weight is None:
+                        continue
+                    
+                    # Convert weight to number if it's a string
+                    try:
+                        weight = float(weight)
+                    except (ValueError, TypeError):
+                        continue
+                    
+                    # Check min weight
+                    if min_weight is not None and weight < min_weight:
+                        continue
+                    
+                    # Check max weight
+                    if max_weight is not None and weight > max_weight:
+                        continue
+                    
+                    out.append(p)
+                return out
             
             def _apply_filters():
                 base = app.storage.user.get('patients', [])
+                
+                # Apply name filter
                 by_name = _filter_by_name(base, getattr(search, 'value', ''))
+                
+                # Apply amputation filter
                 by_amp = _filter_by_amputation(by_name, getattr(amp_select, 'value', 'All'))
-                _render_cards(by_amp)
+                
+                # Apply height filter
+                by_height = _filter_by_height(by_amp, getattr(height_min, 'value', None), getattr(height_max, 'value', None))
+                
+                # Apply weight filter
+                by_weight = _filter_by_weight(by_height, getattr(weight_min, 'value', None), getattr(weight_max, 'value', None))
+                
+                _render_cards(by_weight)
 
-            # _render_cards(app.storage.user.get('patients', []))
             def _on_search(e):
                 _apply_filters()
 

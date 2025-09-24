@@ -46,7 +46,6 @@ def _date_label(dt: datetime) -> str:
 def session_tree():
     current_page = app.storage.user.get('current_page', '')
     selected_patient_index = app.storage.user.get('selected_patient_index')
-    # selected_session_date = app.storage.user.get('selected_session_date')
     if current_page == '/activity':
         selected_session_date = app.storage.user.get('activity').activity_id
     else: 
@@ -71,23 +70,25 @@ def session_tree():
 
     patient_nodes = []
     for i, patient in enumerate(app.storage.user.get('patients', [])):
-        base = f'User {chr(65+i)}'
-        label = bold(base) if selected_patient_index == i else base
-        patient_nodes.append({'id': f'patient-{i}', 'label': label})
+        full_name = f"{patient.first_name} {patient.last_name}"
+        patient_nodes.append({
+            'id': f'patient-{i}',
+            'label': full_name
+        })
 
-    expand_nodes = ['User Records']
+    expand_nodes = ['Patient Records']
     if current_page == '/sessionHistory' or current_page == '/activity':
         expand_nodes.append('Session History')
     if current_page == '/userInformation':
-        expand_nodes.append('User Information')
+        expand_nodes.append('Patient Information')
 
     tree_data = [{
-        'id': 'User Records',
-        'label': 'User Records',
+        'id': 'Patient Records',
+        'label': 'Patient Records',
         'children': [
             {
-                'id': 'User Information',
-                'label': bold('User Information') if current_page == '/userInformation' else 'User Information',
+                'id': 'Patient Information',
+                'label': bold('User Information') if current_page == '/userInformation' else 'Patient Information',
                 'children': patient_nodes,
             },
             {
@@ -102,8 +103,8 @@ def session_tree():
 
 def on_tree_select(e):
     label_to_path = {
-        'User Records': '/main',
-        'User Information': '/userInformation',
+        'Patient Records': '/main',
+        'Patient Information': '/userInformation',
         'Session History': '/sessionHistory',
     }
     selected = e.value
@@ -133,14 +134,19 @@ def on_tree_select(e):
 
 def patients_tree():
     current_page = app.storage.user.get('current_page', '')
-    patient_nodes = [{'id': f'patient-{i}', 'label': f'User {chr(65 + i)}'}
-                     for i, _ in enumerate(app.storage.user.get('patients', []))]
+    patient_nodes = []
+    for i, patient in enumerate(app.storage.user.get('patients', [])):
+        full_name = f"{patient.first_name} {patient.last_name}"
+        patient_nodes.append({
+            'id': f'patient-{i}',
+            'label': full_name
+        })
     tree_data = [{
-        'id': 'User Records',
-        'label': bold('User Records') if current_page == '/main' else 'User Records',
+        'id': 'Patient Records',
+        'label': bold('Patient Records') if current_page == '/main' else 'Patient Records',
         'children': patient_nodes,
     }]
-    ui.tree(tree_data, label_key='label', on_select=on_tree_select).expand(['User Records'])
+    ui.tree(tree_data, label_key='label', on_select=on_tree_select).expand(['Patient Records'])
 
 def header():
     with ui.header().style('background-color: #FFFFFF'):
