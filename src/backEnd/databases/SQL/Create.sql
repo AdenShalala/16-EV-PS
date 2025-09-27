@@ -77,11 +77,21 @@ CREATE TABLE IF NOT EXISTS PressureReading (
     sensor_type INT,
     is_uploaded BOOLEAN DEFAULT TRUE,
     pressure_reading_id VARCHAR(50) PRIMARY KEY,
+    reading_series_id VARCHAR(50),
     activity_id VARCHAR(50),
     sensor_id VARCHAR(50),
     FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),
     FOREIGN KEY (sensor_id) REFERENCES Sensor(sensor_id)
 );
+
+CREATE TABLE IF NOT EXISTS Activity_Readings (
+    activity_id VARCHAR(50),
+    reading_series_id VARCHAR(50),
+    sensor_id VARCHAR(50),
+    FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),
+    FOREIGN KEY (reading_series_id) REFERENCES PressureReading(reading_series_id),
+    FOREIGN KEY sensor_id REFERENCES Sensor(sensor_id)
+)
 
 -- CREATE TABLE Timestamp (
 -- 	sensor_id VARCHAR(50),
