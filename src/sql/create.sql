@@ -10,5 +10,6 @@ CREATE TABLE IF NOT EXISTS Clinician (
 CREATE TABLE IF NOT EXISTS Session (
     session_id VARCHAR(50) PRIMARY KEY,
     secret_hash BLOB NOT NULL,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    last_verified_at TIMESTAMP NOT NULL
 );

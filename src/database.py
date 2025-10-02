@@ -27,7 +27,7 @@ def drop():
     with open(os.path.join(os.path.dirname(__file__), "sql/drop.sql"),  'r') as f:
         cursor.execute(f.read())
 
-    database.commit() 
+   # database.commit() 
     database.close()
 
 def create():
@@ -106,11 +106,21 @@ def write_session(session: Session):
     database = get_database()
 
     cursor = database.cursor()
-    cursor.execute("INSERT INTO Session (session_id, secret_hash, created_at) VALUES (%s, %s, %s)", 
-                           (session.session_id, session.secret_hash, session.created_at))
+    cursor.execute("INSERT INTO Session (session_id, secret_hash, created_at, last_verified_at) VALUES (%s, %s, %s, %s)", 
+                           (session.session_id, session.secret_hash, session.created_at, session.last_verified_at,))
     
     database.commit()
     database.close()
+
+def update_session_verified_at(session: Session):
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("UPDATE Session SET last_verified_at %s WHERE session_id = %s", (session.last_verified_at, session.session_id))
+    
+    database.commit()
+    database.close()
+
 
 def get_session(session_id: str):
     database = get_database()

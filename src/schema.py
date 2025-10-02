@@ -15,4 +15,5 @@ class Clinician:
 class Session:
     session_id: str
     secret_hash: str
+    last_verified_at: datetime
     created_at: datetime
