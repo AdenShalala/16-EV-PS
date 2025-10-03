@@ -32,7 +32,7 @@ def validate_session(token: str) -> Session:
     if not valid:
         return None
     
-    if (datetime.now() - session.created_at).minutes >= 60:
+    if (datetime.now() - session.created_at).seconds >= 3600:
         session.last_verified_at = datetime.now()
         database.update_session_verified_at(session)
 
@@ -50,14 +50,14 @@ def get_session(session_id: str) -> Session:
 
     return Session
 
-def create_session():
+def create_session(clinician_id: str):
     time = datetime.now()
     id = generate_token()
     secret = generate_token()
     hashed_secret = hash_secret(secret)
     token = id + "." + secret
 
-    session = Session(id, hashed_secret, time, time)
+    session = Session(id, clinician_id, hashed_secret, time, time)
 
     database.write_session(session)
 

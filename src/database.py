@@ -106,8 +106,8 @@ def write_session(session: Session):
     database = get_database()
 
     cursor = database.cursor()
-    cursor.execute("INSERT INTO Session (session_id, secret_hash, created_at, last_verified_at) VALUES (%s, %s, %s, %s)", 
-                           (session.session_id, session.secret_hash, session.created_at, session.last_verified_at,))
+    cursor.execute("INSERT INTO Session (session_id, clinician_id, secret_hash, created_at, last_verified_at) VALUES (%s, %s, %s, %s, %s)", 
+                           (session.session_id, session.clinician_id, session.secret_hash, session.created_at, session.last_verified_at,))
     
     database.commit()
     database.close()

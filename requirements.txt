@@ -4,10 +4,13 @@ aiohttp==3.12.15
 aiosignal==1.4.0
 annotated-types==0.7.0
 anyio==4.10.0
+argon2-cffi==25.1.0
+argon2-cffi-bindings==25.1.0
 attrs==25.3.0
 bcrypt==4.3.0
 bidict==0.23.1
 certifi==2025.8.3
+cffi==2.0.0
 charset-normalizer==3.4.3
 click==8.3.0
 dnspython==2.8.0
@@ -36,6 +39,7 @@ orjson==3.11.3
 passlib==1.7.4
 propcache==0.3.2
 pscript==0.7.7
+pycparser==2.23
 pydantic==2.11.9
 pydantic_core==2.33.2
 Pygments==2.19.2
