@@ -1,6 +1,6 @@
 import secrets
 import database
-import datetime
+from datetime import datetime
 import hmac
 import hashlib
 from schema import Session
@@ -57,7 +57,7 @@ def create_session():
     hashed_secret = hash_secret(secret)
     token = id + "." + secret
 
-    session = Session(id, hashed_secret, time)
+    session = Session(id, hashed_secret, time, time)
 
     database.write_session(session)
 

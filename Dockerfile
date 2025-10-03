@@ -2,10 +2,12 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY . /app
+COPY ./requirements.txt /app/requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /app//requirements.txt
+
+COPY ./src /app/src
 
 EXPOSE 8080
 
-CMD ["python", "./src/frontEnd/pages/Login.py"]
+CMD ["fastapi", "run","./src/main.py"]

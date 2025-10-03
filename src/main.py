@@ -1,58 +1,28 @@
-# from nicegui import ui, app
-# import api
-# import pages.login
-
-# pages.login.create()
-
-# ui.run_with(app=api.app, storage_secret="tuehauhd")
-
-from fastapi import FastAPI
-from nicegui import app as nicegui_app, ui
-import pages.login
-import api
-import database
 from typing import Annotated
-from fastapi import Depends, FastAPI, HTTPException, status, Request
-from passlib.context import CryptContext
+from fastapi import FastAPI, Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.responses import RedirectResponse
-from starlette.middleware.base import BaseHTTPMiddleware
-from schema import *
+from argon2 import PasswordHasher
+import session
+import database
+
 
 app = FastAPI()
 
+@app.get("/")
+async def root():
+    return {"message": "Hello bob"}
 
-class AuthMiddleware(BaseHTTPMiddleware):
-    """This middleware restricts access to all NiceGUI pages.
+@app.post("/token")
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    clinician = database.get_clinician_from_email(form_data.username)
 
-    It redirects the user to the login page if they are not authenticated.
-    """
+    print(clinician)
 
-    async def dispatch(self, request: Request, call_next):
-        if not nicegui_app.storage.user.get('token', False):
-            if not request.url.path.startswith('/_nicegui') and request.url.path != '/test':
-                return RedirectResponse(f'/login?redirect_to={request.url.path}')
-        return await call_next(request)
+    if not clinician:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    ph = PasswordHasher()
+    if not ph.verify(clinician.password, form_data.password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
     
-nicegui_app.add_middleware(AuthMiddleware)
-
-pages.login.create()
-
-
-
-
-# @app.get('/')
-# def read_root():
-#     session, token = api.create_session()
-#     #print(session)
-#     print(api.validate_token(token))
-#     database.delete_session(session.session_id)
-#     return {'Hello': 'World'}
-
-api.login = app.get('/login')
-
-# Integrate with your FastAPI Application
-ui.run_with(
-    app=app,
-    storage_secret='pick your private secret here',
-)
+    _, token = session.create_session()
+    return {"access_token": token, "token_type": "bearer"}
