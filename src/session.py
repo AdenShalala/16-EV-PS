@@ -50,16 +50,15 @@ def get_session(session_id: str) -> Session:
 
     return Session
 
-def create_session(clinician_id: str):
+def create_session(user_id: str):
     time = datetime.now()
     id = generate_token()
     secret = generate_token()
     hashed_secret = hash_secret(secret)
     token = id + "." + secret
 
-    session = Session(id, clinician_id, hashed_secret, time, time)
+    session = Session(id, user_id, hashed_secret, time, time)
 
     database.write_session(session)
 
-    print(session, token)
     return session, token

@@ -16,9 +16,7 @@ async def root():
     return {"message": "Hello bob"}
 
 @app.get("/clinician")
-async def get_clinician(
-    token: Annotated[schema.PublicClinican, Depends(oauth2_scheme)]
-):
+async def get_clinician(token: Annotated[schema.PublicClinican, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -39,15 +37,9 @@ async def get_clinician(
     
     return schema.PublicClinican(clinician.clinician_id, clinician.first_name, clinician.last_name, clinician.email, clinician.created_at)
     
-    # try:
-    #     #payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    #     #username = payload.get("sub")
-    #     #if username is None:
-    #         #raise credentials_exception
-    #     #token_data = TokenData(username=username)
-    # except InvalidTokenError:
-    #     raise credentials_exception
 
+# @app.get("/patients")
+# async def get_patients(token: Annotated[])
 
 @app.post("/token")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
