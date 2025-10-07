@@ -10,7 +10,6 @@ def generate_token() -> str:
 
 def hash_secret(secret: str):
     hash_object = hashlib.sha256()
-    #print(hash_object)
     hash_object.update(secret.encode('utf-8'))
     return hash_object.digest()
 
@@ -50,14 +49,14 @@ def get_session(session_id: str) -> Session:
 
     return Session
 
-def create_session(user_id: str):
+def create_session(user_id: str, type: str):
     time = datetime.now()
     id = generate_token()
     secret = generate_token()
     hashed_secret = hash_secret(secret)
     token = id + "." + secret
 
-    session = Session(id, user_id, hashed_secret, time, time)
+    session = Session(id, user_id, type, hashed_secret, time, time)
 
     database.write_session(session)
 

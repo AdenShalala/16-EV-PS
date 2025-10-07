@@ -1,14 +1,11 @@
-INSERT INTO Admin (admin_id, first_name, last_name, email, password) VALUES
-()
-
 INSERT INTO Clinician (clinician_id, first_name, last_name, email, password, created_at) VALUES
 ('b8f13d56-1b3c-4cfc-a6e0-9d202f633c73', 'Alice', 'Smith', 'alice.smith@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
 ('be946e5c-60e3-4b7c-8af1-9b8b5249e276', 'Bob', 'Johnson', 'bob.johnson@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
 ('2f44b5f0-d4db-42cc-88f3-0bbcbfa6c9e0', 'Carol', 'Williams', 'carol.williams@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
 ('0c594be8-39c6-4d3d-906d-504a4f0b7ff2', 'David', 'Brown', 'david.brown@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
-('aef77577-d1e3-4870-a923-7b7e96c7317f', 'Emma', 'Jones', 'emma.jones@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP);
-('f3e7a9c2-8d4b-4f1a-9e6c-7b5d3a8f2e1c','Rachel','Thompson','rachel.thompson@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE',CURRENT_TIMESTAMP),
-('a8d2e5f7-9c3e-4b2d-8f7a-6e4c5b9a3f2d','Michael','Anderson','michael.anderson@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE',CURRENT_TIMESTAMP),
+('aef77577-d1e3-4870-a923-7b7e96c7317f', 'Emma', 'Jones', 'emma.jones@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
+('f3e7a9c2-8d4b-4f1a-9e6c-7b5d3a8f2e1c', 'Rachel', 'Thompson', 'rachel.thompson@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
+('a8d2e5f7-9c3e-4b2d-8f7a-6e4c5b9a3f2d','Michael','Anderson','michael.anderson@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
 ('b9e6f3a4-7d5c-4e3b-9a8f-5d6e4c8b7a3e','Jennifer','Martinez','jennifer.martinez@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
 ('c5f8a7b2-6e4d-4c5a-8b9e-7a5f6d9c4b8f','David','Robinson','david.robinson@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
 ('d7a9b4c6-8f5e-4d6c-9e7b-6c8a5f7d3e9a','Sarah','Williams','sarah.williams@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP);

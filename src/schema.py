@@ -5,6 +5,7 @@ from datetime import datetime
 class Session:
     session_id: str
     id: str
+    account_type: str
     secret_hash: str
     last_verified_at: datetime
     created_at: datetime

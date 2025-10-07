@@ -69,6 +69,9 @@ def populate():
 def create_clinician(result):
     return Clinician(*result)
 
+def create_patient(result):
+    return Patient(*result)
+
 def create_session(result):
     #print(result)
     return Session(*result)
@@ -106,8 +109,8 @@ def write_session(session: Session):
     database = get_database()
 
     cursor = database.cursor()
-    cursor.execute("INSERT INTO Session (session_id, clinician_id, secret_hash, created_at, last_verified_at) VALUES (%s, %s, %s, %s, %s)", 
-                           (session.session_id, session.clinician_id, session.secret_hash, session.created_at, session.last_verified_at,))
+    cursor.execute("INSERT INTO Session (session_id, id, account_type, secret_hash, created_at, last_verified_at) VALUES (%s, %s, %s, %s, %s, %s)", 
+                           (session.session_id, session.id, session.account_type, session.secret_hash, session.created_at, session.last_verified_at,))
     
     database.commit()
     database.close()
@@ -120,7 +123,6 @@ def update_session_verified_at(session: Session):
     
     database.commit()
     database.close()
-
 
 def get_session(session_id: str):
     database = get_database()
@@ -143,3 +145,19 @@ def delete_session(session_id: str):
     cursor.execute("DELETE FROM Session WHERE session_id = %s", (session_id,))
     database.commit()
     database.close()
+
+def get_patients_from_clinician(clinician: Clinician):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Patient WHERE clinician_id = %s", (Clinician.clinician_id,))
+    result = cursor.fetchall()
+
+    patients = []
+
+    for i in result:
+        patients.append(create_patient(i))
+
+    database.close()
+
+    return patients

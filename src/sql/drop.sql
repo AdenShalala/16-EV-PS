@@ -1,4 +1,8 @@
-DROP TABLE Session;
-DROP TABLE Admin;
-DROP TABLE Clinician;
 
+DROP TABLE PressureReading;
+DROP TABLE Sensor;
+DROP TABLE Activity;
+DROP TABLE Patient;
+DROP TABLE Clinician;
+DROP TABLE Admin;
+DROP TABLE Session;

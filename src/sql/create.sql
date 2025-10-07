@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS Session (
     session_id VARCHAR(50) PRIMARY KEY,
     id VARCHAR(50) NOT NULL,
+    account_type VARCHAR(50) NOT NULL,
     secret_hash BLOB NOT NULL,
     created_at TIMESTAMP NOT NULL,
     last_verified_at TIMESTAMP NOT NULL
@@ -48,14 +49,7 @@ CREATE TABLE IF NOT EXISTS Activity (
     FOREIGN KEY (patient_id) REFERENCES Patient(patient_id)
 );
 
-CREATE TABLE IF NOT EXISTS ActivityReading (
-    activity_id VARCHAR(50),
-    reading_series_id VARCHAR(50),
-    sensor_id VARCHAR(50),
-    FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),
-    FOREIGN KEY (reading_series_id) REFERENCES PressureReading(reading_series_id),
-    FOREIGN KEY (sensor_id) REFERENCES Sensor(sensor_id)
-);
+
 
 CREATE TABLE IF NOT EXISTS Sensor (
     sensor_id VARCHAR(50) PRIMARY KEY,
@@ -81,5 +75,14 @@ CREATE TABLE IF NOT EXISTS PressureReading (
     activity_id VARCHAR(50),
     sensor_id VARCHAR(50),
     FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),
+    FOREIGN KEY (sensor_id) REFERENCES Sensor(sensor_id)
+);
+
+CREATE TABLE IF NOT EXISTS ActivityReading (
+    activity_id VARCHAR(50),
+    reading_series_id VARCHAR(50),
+    sensor_id VARCHAR(50),
+    FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),
+    FOREIGN KEY (reading_series_id) REFERENCES PressureReading(reading_series_id),
     FOREIGN KEY (sensor_id) REFERENCES Sensor(sensor_id)
 );
