@@ -1,22 +1,22 @@
 from typing import Annotated
 from fastapi import FastAPI, Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from nicegui import app as app, ui
 from argon2 import PasswordHasher
 import session
+import asyncio
 import database
 import schema
+import pages.login
+import requests
+from pages.header import header
 
-
-app = FastAPI()
+#app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello bob"}
-
 @app.get("/clinician")
-async def get_clinician(token: Annotated[schema.PublicClinican, Depends(oauth2_scheme)]):
+def get_clinician(token: Annotated[schema.PublicClinican, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -28,7 +28,7 @@ async def get_clinician(token: Annotated[schema.PublicClinican, Depends(oauth2_s
     if not sess:
         raise credentials_exception
     
-    clinician = database.get_clinician(sess.clinician_id)
+    clinician = database.get_clinician(sess.id)
     if not clinician:
         raise HTTPException(
             status_code=500,
@@ -39,7 +39,7 @@ async def get_clinician(token: Annotated[schema.PublicClinican, Depends(oauth2_s
     
 
 @app.get("/patients")
-async def get_patients(token: Annotated[list[schema.Patient], Depends(oauth2_scheme)]):
+def get_patients(token: Annotated[list[schema.Patient], Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -54,7 +54,7 @@ async def get_patients(token: Annotated[list[schema.Patient], Depends(oauth2_sch
     if sess.account_type != "Clinician":
         raise credentials_exception
 
-    clinician = database.get_clinician(sess.clinician_id)
+    clinician = database.get_clinician(sess.id)
     if not clinician:
         raise HTTPException(
             status_code=500,
@@ -66,7 +66,8 @@ async def get_patients(token: Annotated[list[schema.Patient], Depends(oauth2_sch
     return patients
 
 @app.post("/token")
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    print(form_data)
     clinician = database.get_clinician_from_email(form_data.username)
 
     print(clinician)
@@ -77,5 +78,37 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     if not ph.verify(clinician.password, form_data.password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     
-    _, token = session.create_session(clinician.clinician_id, "clinician")
+    _, token = session.create_session(clinician.clinician_id, "Clinician")
     return {"access_token": token, "token_type": "bearer"}
+
+
+@ui.page('/test')
+def test():
+    # comparing entered value
+    def checkLogin():
+        #app.storage.user['clinid'] = email.value
+        #print(requests.post("http://localhost:8000/login", data={"username":email.value,"password":password.value}))
+        
+
+        #test = requests.post('http://localhost:8080/token', data={"username":email.value,"password":password.value})
+
+        x = login(OAuth2PasswordRequestForm(password=password.value, username=email.value))
+
+        print(x)
+
+
+        
+
+        #Homepage.mainNavigate()
+    ui.page_title("SocketFit Dashboard")
+    header()
+    
+    with ui.row().classes('w-full h-full justify-center items-center'):
+        # login box
+        with ui.card().classes('w-[300px] border rounded-md border-[#2C25B2]'):
+            email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF] left-2')
+            password = ui.input(placeholder='Password').classes('w-full border rounded-md border-[#3545FF]')
+            ui.button('Login', on_click=checkLogin, color='#FFB030').classes('w-full text-white')
+            #ui.button('Login as IT Admin', color='#3545FF', on_click=DatabaseConfig.navigateConfig).classes('w-full text-white')
+
+ui.run(fastapi_docs=True)

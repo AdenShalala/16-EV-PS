@@ -53,16 +53,16 @@ CREATE TABLE IF NOT EXISTS Activity (
 
 CREATE TABLE IF NOT EXISTS Sensor (
     sensor_id VARCHAR(50) PRIMARY KEY,
-    location_name VARCHAR(50),
-    sensor_location_id VARCHAR(50) UNIQUE,
+    patient_id VARCHAR(50),
+
     sensor_type INT,
-    is_connected BOOLEAN DEFAULT TRUE,
-    patient_email VARCHAR(100),
+    location_name VARCHAR(50),
     location_id INT,
-    pressure_sensor_id VARCHAR(50),
-    activity_id VARCHAR(50),
-    FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),
-    FOREIGN KEY (patient_email) REFERENCES Patient(email)
+    sensor_location_id VARCHAR(50) UNIQUE,
+    
+    is_connected BOOLEAN DEFAULT TRUE,
+    
+    FOREIGN KEY (patient_id) REFERENCES Patient(patient_id)
 );
 
 CREATE TABLE IF NOT EXISTS PressureReading (
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS PressureReading (
     time BIGINT,
     sensor_type INT,
     is_uploaded BOOLEAN DEFAULT TRUE,
-    reading_series_id VARCHAR(50),
+    reading_series_id VARCHAR(50) UNIQUE,
     activity_id VARCHAR(50),
     sensor_id VARCHAR(50),
     FOREIGN KEY (activity_id) REFERENCES Activity(activity_id),

@@ -150,7 +150,7 @@ def get_patients_from_clinician(clinician: Clinician):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM Patient WHERE clinician_id = %s", (Clinician.clinician_id,))
+    cursor.execute("SELECT * FROM Patient WHERE clinician_id = %s", (clinician.clinician_id,))
     result = cursor.fetchall()
 
     patients = []

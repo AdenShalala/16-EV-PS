@@ -5,10 +5,10 @@ INSERT INTO Clinician (clinician_id, first_name, last_name, email, password, cre
 ('0c594be8-39c6-4d3d-906d-504a4f0b7ff2', 'David', 'Brown', 'david.brown@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
 ('aef77577-d1e3-4870-a923-7b7e96c7317f', 'Emma', 'Jones', 'emma.jones@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
 ('f3e7a9c2-8d4b-4f1a-9e6c-7b5d3a8f2e1c', 'Rachel', 'Thompson', 'rachel.thompson@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
-('a8d2e5f7-9c3e-4b2d-8f7a-6e4c5b9a3f2d','Michael','Anderson','michael.anderson@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
-('b9e6f3a4-7d5c-4e3b-9a8f-5d6e4c8b7a3e','Jennifer','Martinez','jennifer.martinez@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
-('c5f8a7b2-6e4d-4c5a-8b9e-7a5f6d9c4b8f','David','Robinson','david.robinson@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
-('d7a9b4c6-8f5e-4d6c-9e7b-6c8a5f7d3e9a','Sarah','Williams','sarah.williams@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP);
+('a8d2e5f7-9c3e-4b2d-8f7a-6e4c5b9a3f2d', 'Michael','Anderson','michael.anderson@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
+('b9e6f3a4-7d5c-4e3b-9a8f-5d6e4c8b7a3e', 'Jennifer','Martinez','jennifer.martinez@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
+('c5f8a7b2-6e4d-4c5a-8b9e-7a5f6d9c4b8f', 'David','Robinson','david.robinson@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP),
+('d7a9b4c6-8f5e-4d6c-9e7b-6c8a5f7d3e9a', 'Sarah','Williams','sarah.williams@clinician.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE', CURRENT_TIMESTAMP);
 
 INSERT INTO Patient (patient_id, first_name, last_name, height, weight, amputation_type, prosthetic_type, email, password, user_id, clinician_id) VALUES
 ('a7f3c8e5-4b2d-4f1a-9c6e-8d5b3a7f2e1c','Emma','Sullivan','171','51','Below Knee','Blatchford Linx','emma.sullivan@patient.com','$argon2id$v=19$m=65536,t=3,p=4$MfvUCUCyfMNyQBZqAdwGFQ$e8vdyLPm+rRPlKMoupSe0sCxoCLImAXC2n0Q0zOPPdE','USER001','a8d2e5f7-9c3e-4b2d-8f7a-6e4c5b9a3f2d'),
@@ -166,6 +166,7 @@ INSERT INTO Activity (activity_id, activity_type, start_time, end_time, is_uploa
 
 -- INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES
 
--- INSERT INTO Sensor (sensor_id, location_name, sensor_location_id, sensor_type, is_connected, patient_email, location_id, pressure_sensor_id, activity_id) VALUES
+INSERT INTO Sensor (sensor_id, location_name, sensor_location_id, sensor_type, is_connected, patient_email, location_id, pressure_sensor_id, activity_id) VALUES
+
 
 -- INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, sensor_type, is_uploaded, reading_series_id, activity_id, sensor_id) VALUES
