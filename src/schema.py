@@ -7,8 +7,8 @@ class Session:
     id: str
     account_type: str
     secret_hash: str
-    last_verified_at: datetime
     created_at: datetime
+    last_verified_at: datetime
 
 @dataclass
 class Admin:
@@ -52,32 +52,27 @@ class Activity:
     patient_id: str
 
 @dataclass
-class ActivityReading:
-    activity_id: str
-    reading_series_id: str
-    sensor_id: str
-
-@dataclass
 class Sensor:
     sensor_id: str
-    location_name: str
-    sensor_location_id: str
+    patient_id: str
     sensor_type: int
-    is_connected: bool
-    patient_email: str
+    location_name: str
     location_id: int
-    pressure_sensor_id: str
-    activity_id: str
+    sensor_location_id: str
+    is_connected: bool
 
 @dataclass
 class PressureReading:
     pressure_reading_id: str
     pressure_value: float
     time: int
-    sensor_type: int
     is_uploaded: bool
     reading_series_id: str
+
+@dataclass
+class ActivityReading:
     activity_id: str
+    reading_series_id: str
     sensor_id: str
 
 # This is just for returning values

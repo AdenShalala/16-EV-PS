@@ -21,7 +21,7 @@ def validate_session(token: str) -> Session:
         return None
     
     # get session from database
-    session = database.get_session(split[0])
+    session = get_session(split[0])
     if session == None:
         return None
     
@@ -47,7 +47,7 @@ def get_session(session_id: str) -> Session:
         database.delete_session(session.session_id)
         return None
 
-    return Session
+    return session
 
 def create_session(user_id: str, type: str):
     time = datetime.now()
@@ -61,3 +61,6 @@ def create_session(user_id: str, type: str):
     database.write_session(session)
 
     return session, token
+
+def delete_session(session: Session):
+    database.delete_session(session.session_id)

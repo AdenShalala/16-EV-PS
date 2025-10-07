@@ -1,7 +1,8 @@
 /*	Pressure Readings for Sasha Burev activity 1 '29326be6-7cd0-4235-8ba3-587e662905c6' Sensor 1 '645c7ccd-cf9f-4035-a7f5-96936de928a5'	*/
-INSERT INTO ACTIVITYREADING(activity_id, reading_series_id, sensor_id) values ('29326be6-7cd0-4235-8ba3-587e662905c6', 'f9996f48-02db-4708-aa08-cd52719e9fce' ,'e911f0cb-1bdf-4f21-ab90-a27c878072c4');
+INSERT INTO ActivityReading(activity_id, reading_series_id, sensor_id) VALUES 
+('29326be6-7cd0-4235-8ba3-587e662905c6', 'f9996f48-02db-4708-aa08-cd52719e9fce' ,'e911f0cb-1bdf-4f21-ab90-a27c878072c4');
 
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('85087453-ef7d-4103-82ea-fb7e3f671f5f', 47, 1751393400, TRUE, 'f9996f48-02db-4708-aa08-cd52719e9fce'),
 ('87b714e7-990b-4c06-9ef2-2e836c02578a', 70, 1751393401, TRUE, 'f9996f48-02db-4708-aa08-cd52719e9fce'),
 ('2dc2ce44-b8bb-4b76-9f8f-7466ec9eae5b', 40, 1751393402, TRUE, 'f9996f48-02db-4708-aa08-cd52719e9fce'),
@@ -245,9 +246,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ('51871220-930b-48b8-a68b-f85ba23d60ab', -381, 1751393640, TRUE, 'f9996f48-02db-4708-aa08-cd52719e9fce');
 
 /*	Pressure Readings for Sasha Burev activity 1 '29326be6-7cd0-4235-8ba3-587e662905c6' Sensor 2 'c2684c2b-98f5-4a9a-a12c-5955f04a90f7'	*/
-INSERT INTO ACTIVITYREADING(activity_id, reading_series_id, sensor_id) values ('29326be6-7cd0-4235-8ba3-587e662905c6', '4f13ec7c-71ee-4200-b4ea-d77c3f32b534', 'c2684c2b-98f5-4a9a-a12c-5955f04a90f7');
+INSERT INTO ActivityReading(activity_id, reading_series_id, sensor_id) VALUES 
+('29326be6-7cd0-4235-8ba3-587e662905c6', '4f13ec7c-71ee-4200-b4ea-d77c3f32b534', 'c2684c2b-98f5-4a9a-a12c-5955f04a90f7');
 
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('57c5e242-4717-4600-b51c-ec764d46bbef', 37, 1751393400, TRUE, '4f13ec7c-71ee-4200-b4ea-d77c3f32b534'),
 ('48fe3fef-3844-489c-b079-7bf9c1b7dfb9', 0, 1751393401, TRUE, '4f13ec7c-71ee-4200-b4ea-d77c3f32b534'),
 ('50454ce1-f05d-41ef-8b98-fc9932a04beb', 37, 1751393402, TRUE, '4f13ec7c-71ee-4200-b4ea-d77c3f32b534'),
@@ -491,9 +493,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ('8f13a72e-3739-45b1-a8f7-86e37755aacc', -370, 1751393640, TRUE, '4f13ec7c-71ee-4200-b4ea-d77c3f32b534');
 
 /*	Pressure Readings for Sasha Burev activity 2 'ef7787c9-0271-4ae0-91e4-9b81d4d893f0' Sensor 1 '645c7ccd-cf9f-4035-a7f5-96936de928a5'	*/
-INSERT INTO ACTIVITYREADING(activity_id, reading_series_id, sensor_id) values ('ef7787c9-0271-4ae0-91e4-9b81d4d893f0', '8da66c44-869f-4695-8315-a925859c5f05', 'e911f0cb-1bdf-4f21-ab90-a27c878072c4');
+INSERT INTO ActivityReading(activity_id, reading_series_id, sensor_id) VALUES 
+('ef7787c9-0271-4ae0-91e4-9b81d4d893f0', '8da66c44-869f-4695-8315-a925859c5f05', 'e911f0cb-1bdf-4f21-ab90-a27c878072c4');
 
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('0626cc67-5c00-4556-a089-821e6caa0421', 56, 1749089400, TRUE, '8da66c44-869f-4695-8315-a925859c5f05'),
 ('dc0328db-50b6-446b-ba86-e3d815becc1c', 98, 1749089401, TRUE, '8da66c44-869f-4695-8315-a925859c5f05'),
 ('9001bf57-a696-437c-8dfb-321433c9db6e', 85, 1749089402, TRUE, '8da66c44-869f-4695-8315-a925859c5f05'),

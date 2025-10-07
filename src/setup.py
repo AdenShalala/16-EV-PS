@@ -1,5 +1,6 @@
 import database
+import time
 
 #database.drop()
-database.create()
-database.populate()
+#database.create()
+#database.populate()

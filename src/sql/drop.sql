@@ -1,5 +1,6 @@
 
 DROP TABLE PressureReading;
+DROP TABLE ActivityReading;
 DROP TABLE Sensor;
 DROP TABLE Activity;
 DROP TABLE Patient;

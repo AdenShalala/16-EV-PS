@@ -56,14 +56,37 @@ def create():
     database.close()
 
 def populate():
-    database = get_database()
-    cursor = database.cursor()
-
+    database = mysql.connector.connect(
+        host = os.getenv('MYSQL_HOST'), 
+        user = os.getenv('MYSQL_USER'), 
+        password = os.getenv('MYSQL_PASSWORD'),
+        port = os.getenv('MYSQL_PORT'),
+        database = os.getenv('MYSQL_DATABASE')
+    )
+    
     with open(os.path.join(os.path.dirname(__file__), "sql/populate.sql"),  'r') as f:
-        cursor.execute(f.read())
+        sql_script = f.read()
+        for statement in sql_script.split(';'):
+            statement = statement.strip()
+            if statement:
+                cursor = database.cursor()
+                cursor.execute(statement + ';')
+                cursor.close()
+        
+    path = os.path.join(os.path.dirname(__file__), "sql/patients/")    
+    for sql in os.listdir(path):
+        full_path = os.path.join(path, sql)
+        with open(full_path) as f:
+            for statement in f.read().split(';'):
+                statement = statement.strip()
+                if statement:
+                    cursor = database.cursor()
+                    cursor.execute(statement + ';')
+                    cursor.close()
 
-    database.commit() 
+    database.commit()
     database.close()
+    
 
 # constructor candy
 def create_clinician(result):
@@ -122,7 +145,7 @@ def update_session_verified_at(session: Session):
     database = get_database()
 
     cursor = database.cursor()
-    cursor.execute("UPDATE Session SET last_verified_at %s WHERE session_id = %s", (session.last_verified_at, session.session_id))
+    cursor.execute("UPDATE Session SET last_verified_at = %s WHERE session_id = %s", (session.last_verified_at, session.session_id))
     
     database.commit()
     database.close()

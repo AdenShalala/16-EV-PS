@@ -1,7 +1,8 @@
 /*	Pressure Readings for Chris Redfield activity 1 '44fd9690-d770-4e52-90ea-d881c25f4955' Sensor 1 '890f0931-ddfc-433e-8c2e-4375a6045086'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) values ('44fd9690-d770-4e52-90ea-d881c25f4955', '4ff72383-be6f-4cc0-bff6-d3b672d6cc63', '890f0931-ddfc-433e-8c2e-4375a6045086');
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES 
+('44fd9690-d770-4e52-90ea-d881c25f4955', '4ff72383-be6f-4cc0-bff6-d3b672d6cc63', '890f0931-ddfc-433e-8c2e-4375a6045086');
 
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('a0d3eaa8-9890-48a4-8302-2040b15b1d63', 81, 1751509200, TRUE, '4ff72383-be6f-4cc0-bff6-d3b672d6cc63'),
 ('bc27c932-a817-49c4-a9f9-0a6afc14ff95', 73, 1751509201, TRUE, '4ff72383-be6f-4cc0-bff6-d3b672d6cc63'),
 ('ef3c8497-447f-4ff5-97ab-47139e61db61', 31, 1751509202, TRUE, '4ff72383-be6f-4cc0-bff6-d3b672d6cc63'),
@@ -245,9 +246,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ('281e77b4-a833-4d4e-bb7b-abdf467fe191', -153, 1751509440, TRUE, '4ff72383-be6f-4cc0-bff6-d3b672d6cc63');
 
 /*	Pressure Readings for Chris Redfield activity 2 '57d17292-f4ca-4cb6-abb3-ff390faac9d8' Sensor 1 '890f0931-ddfc-433e-8c2e-4375a6045086'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) values ('57d17292-f4ca-4cb6-abb3-ff390faac9d8', 'dcd90893-efc5-4ed5-b2f5-2ee247d9a0a5', '890f0931-ddfc-433e-8c2e-4375a6045086');
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES
+('57d17292-f4ca-4cb6-abb3-ff390faac9d8', 'dcd90893-efc5-4ed5-b2f5-2ee247d9a0a5', '890f0931-ddfc-433e-8c2e-4375a6045086');
 
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('8b9f7984-a89b-4b2b-aa73-fedf5c54bb0c', 52, 1725330240, TRUE, 'dcd90893-efc5-4ed5-b2f5-2ee247d9a0a5'),
 ('0b6f2835-f593-4c61-aa31-5aab1d211847', 17, 1725330241, TRUE, 'dcd90893-efc5-4ed5-b2f5-2ee247d9a0a5'),
 ('1730275a-0978-455e-866f-2a12b0900512', 38, 1725330242, TRUE, 'dcd90893-efc5-4ed5-b2f5-2ee247d9a0a5'),
@@ -851,9 +853,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ('cb8e4d49-cee2-4f74-b595-dab905348358', 88, 1725330840, TRUE, 'dcd90893-efc5-4ed5-b2f5-2ee247d9a0a5');
 
 /*	Pressure Readings for Chris Redfield activity 2 '57d17292-f4ca-4cb6-abb3-ff390faac9d8' Sensor 2 'c8f5f9bc-4f3f-4af8-9518-800cafd5a26c'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) values ('57d17292-f4ca-4cb6-abb3-ff390faac9d8', 'b2b3bfac-71cb-434f-b1a3-002927b1a5de', 'c8f5f9bc-4f3f-4af8-9518-800cafd5a26c');
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES 
+('57d17292-f4ca-4cb6-abb3-ff390faac9d8', 'b2b3bfac-71cb-434f-b1a3-002927b1a5de', 'c8f5f9bc-4f3f-4af8-9518-800cafd5a26c');
 
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('242d41ec-4064-420f-8a42-6794f5f23158', 56, 1725330240, TRUE, 'b2b3bfac-71cb-434f-b1a3-002927b1a5de'),
 ('624e8f96-a8a5-48c7-8ced-3753539113de', 85, 1725330241, TRUE, 'b2b3bfac-71cb-434f-b1a3-002927b1a5de'),
 ('5b838dc6-75f4-47ce-9d49-15e21c6935a2', 70, 1725330242, TRUE, 'b2b3bfac-71cb-434f-b1a3-002927b1a5de'),

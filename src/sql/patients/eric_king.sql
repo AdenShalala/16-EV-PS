@@ -1,6 +1,8 @@
 /*	Pressure Readings for Eric King activity 1 '62028bf5-4eb2-4e7a-bf28-c94a622564b4' Sensor 1 '7374299f-24a7-498c-8a53-dc5648050eee'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) VALUES ('62028bf5-4eb2-4e7a-bf28-c94a622564b4', '6b68bb3b-52e2-42bc-89e1-9d9ae93a4103', '7374299f-24a7-498c-8a53-dc5648050eee');
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) 
+VALUES ('62028bf5-4eb2-4e7a-bf28-c94a622564b4', '6b68bb3b-52e2-42bc-89e1-9d9ae93a4103', '7374299f-24a7-498c-8a53-dc5648050eee');
+
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('67174d8c-0800-4524-8d21-683e4818d715', 53, 1759769820, TRUE, '6b68bb3b-52e2-42bc-89e1-9d9ae93a4103'),
 ('05a5eea8-e08f-4bb0-9abc-25c1aab9e489', 79, 1759769821, TRUE, '6b68bb3b-52e2-42bc-89e1-9d9ae93a4103'),
 ('d4d04782-6cce-408d-b2c0-c2ae3b9636de', 100, 1759769822, TRUE, '6b68bb3b-52e2-42bc-89e1-9d9ae93a4103'),
@@ -184,9 +186,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ('4a5bbe21-9abb-463f-8261-44640fa5feba', -25, 1759770000, TRUE, '6b68bb3b-52e2-42bc-89e1-9d9ae93a4103')
 ;
 /*	Pressure Readings for Eric King activity 1 '62028bf5-4eb2-4e7a-bf28-c94a622564b4' Sensor 2 '9078a409-5846-4f28-bb76-5fad493d3b56'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) VALUES ('62028bf5-4eb2-4e7a-bf28-c94a622564b4', '1f0f70dd-92c2-4186-a01f-893572fffdae', '9078a409-5846-4f28-bb76-5fad493d3b56');
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES 
+('62028bf5-4eb2-4e7a-bf28-c94a622564b4', '1f0f70dd-92c2-4186-a01f-893572fffdae', '9078a409-5846-4f28-bb76-5fad493d3b56');
 
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('5e5efc98-2395-4f3b-ae15-30ea9fa45f9f', 56, 1759769820, TRUE, '1f0f70dd-92c2-4186-a01f-893572fffdae'),
 ('0d0eab2a-b910-41d4-b991-330310b7043e', 101, 1759769821, TRUE, '1f0f70dd-92c2-4186-a01f-893572fffdae'),
 ('54fa12e7-496b-44e7-baf0-56183a806b02', 88, 1759769822, TRUE, '1f0f70dd-92c2-4186-a01f-893572fffdae'),
@@ -371,8 +374,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ;
 
 /*	Pressure Readings for Eric King activity 2 'faffdcf8-06f3-47d4-90b4-ce286c51eca8' Sensor 2 '9078a409-5846-4f28-bb76-5fad493d3b56'	*/
-INSERT INTO ACTIVITYREADING(activity_id, reading_series_id, sensor_id) values ('faffdcf8-06f3-47d4-90b4-ce286c51eca8', '2eac1ef2-dcb3-4c54-9cd3-ea671f37d308', '9078a409-5846-4f28-bb76-5fad493d3b56');
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO ActivityReading(activity_id, reading_series_id, sensor_id) VALUES 
+('faffdcf8-06f3-47d4-90b4-ce286c51eca8', '2eac1ef2-dcb3-4c54-9cd3-ea671f37d308', '9078a409-5846-4f28-bb76-5fad493d3b56');
+
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('45096e33-60df-4df3-abe3-33d1317540d5', 54, 1759597200, TRUE, '2eac1ef2-dcb3-4c54-9cd3-ea671f37d308'),
 ('40e79605-8de6-43b8-88e4-240c75da586c', 30, 1759597201, TRUE, '2eac1ef2-dcb3-4c54-9cd3-ea671f37d308'),
 ('1361851b-9f87-41d1-be79-0158e6a63723', 52, 1759597202, TRUE, '2eac1ef2-dcb3-4c54-9cd3-ea671f37d308'),

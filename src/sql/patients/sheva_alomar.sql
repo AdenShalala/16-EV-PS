@@ -1,6 +1,8 @@
 /*	Pressure Readings for Sheva Alomar activity 1 '44330f42-8d27-41fe-9906-6433058c0c32' Sensor 1 'b47c7487-65b6-4498-b7a0-9bb22e150fc0'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) values ('44fd9690-d770-4e52-90ea-d881c25f4955', '32dfdedd-3d18-487d-9dab-9648a4c82810', 'b47c7487-65b6-4498-b7a0-9bb22e150fc0');
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES 
+('44fd9690-d770-4e52-90ea-d881c25f4955', '32dfdedd-3d18-487d-9dab-9648a4c82810', 'b47c7487-65b6-4498-b7a0-9bb22e150fc0');
+
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('8cf557e1-b943-4ece-b424-c37e83fd8b75', 67, 1731288840, TRUE, '32dfdedd-3d18-487d-9dab-9648a4c82810'),
 ('fdc35a3b-7f24-4bd0-a6f1-ca804a5d75bc', 36, 1731288841, TRUE, '32dfdedd-3d18-487d-9dab-9648a4c82810'),
 ('b24d31a9-fd14-427b-a204-504ee106bb86', 46, 1731288842, TRUE, '32dfdedd-3d18-487d-9dab-9648a4c82810'),
@@ -243,8 +245,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ('a091be3f-11b7-405c-9b3d-9de71d6287c8', 141, 1731289079, TRUE, '32dfdedd-3d18-487d-9dab-9648a4c82810'),
 ('1d0d204f-0234-4641-a511-96dfba75e5b4', 142, 1731289080, TRUE, '32dfdedd-3d18-487d-9dab-9648a4c82810');
 /*	Pressure Readings for Sheva Alomar activity 1 '44330f42-8d27-41fe-9906-6433058c0c32' Sensor 2 'ba14edd4-227e-49ca-9102-aa588b42e2da'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) values ('44fd9690-d770-4e52-90ea-d881c25f4955', '9471b3fd-5b5f-41a5-bbb4-e69c932805b7', 'ba14edd4-227e-49ca-9102-aa588b42e2da');
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES 
+('44fd9690-d770-4e52-90ea-d881c25f4955', '9471b3fd-5b5f-41a5-bbb4-e69c932805b7', 'ba14edd4-227e-49ca-9102-aa588b42e2da');
+
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('1c16d3d1-c95e-4301-b684-50cbd0085302', 39, 1731288840, TRUE, '9471b3fd-5b5f-41a5-bbb4-e69c932805b7'),
 ('cf5af6b6-0143-4f69-95d1-5db4d14da16d', 7, 1731288841, TRUE, '9471b3fd-5b5f-41a5-bbb4-e69c932805b7'),
 ('79cd514c-3ca9-4450-8b33-b79c5aae37a3', 22, 1731288842, TRUE, '9471b3fd-5b5f-41a5-bbb4-e69c932805b7'),
@@ -487,8 +491,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ('28975511-c58d-41e4-97a3-2ada6ecd5f2d', 195, 1731289079, TRUE, '9471b3fd-5b5f-41a5-bbb4-e69c932805b7'),
 ('375066ac-52dd-4aac-875d-e86aca908653', 217, 1731289080, TRUE, '9471b3fd-5b5f-41a5-bbb4-e69c932805b7');
 /*	Pressure Readings for Sheva Alomar activity 2 '76724920-6bec-46c8-9866-497ea534b9cf' Sensor 1 'b47c7487-65b6-4498-b7a0-9bb22e150fc0'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) values ('76724920-6bec-46c8-9866-497ea534b9cf', 'a996be3c-cc66-4d0c-8dd1-94b4dc86c973', 'b47c7487-65b6-4498-b7a0-9bb22e150fc0');
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES 
+('76724920-6bec-46c8-9866-497ea534b9cf', 'a996be3c-cc66-4d0c-8dd1-94b4dc86c973', 'b47c7487-65b6-4498-b7a0-9bb22e150fc0');
+
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('e575134f-0266-46b1-bcbf-0a069a191b4a', 72, 1735090680, TRUE, 'a996be3c-cc66-4d0c-8dd1-94b4dc86c973'),
 ('9fb7e90d-8dcc-4f37-8417-cb699623fff3', 45, 1735090681, TRUE, 'a996be3c-cc66-4d0c-8dd1-94b4dc86c973'),
 ('657638f3-b2fa-45ec-b677-ff3acea87c60', 12, 1735090682, TRUE, 'a996be3c-cc66-4d0c-8dd1-94b4dc86c973'),
@@ -1091,8 +1097,10 @@ INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploa
 ('bda4a681-7b5a-4e5f-b58a-581ec58cd1bd', 301, 1735091279, TRUE, 'a996be3c-cc66-4d0c-8dd1-94b4dc86c973'),
 ('75d30e8b-3041-4b8f-bb0d-4d7d5ed95b29', 343, 1735091280, TRUE, 'a996be3c-cc66-4d0c-8dd1-94b4dc86c973');
 /*	Pressure Readings for Sheva Alomar activity 2 '76724920-6bec-46c8-9866-497ea534b9cf' Sensor 2 'ba14edd4-227e-49ca-9102-aa588b42e2da'	*/
-INSERT INTO ACTIVITYREADING (activity_id, reading_series_id, sensor_id) values ('76724920-6bec-46c8-9866-497ea534b9cf', 'f59c2062-96dd-4808-913e-37c305592680', 'ba14edd4-227e-49ca-9102-aa588b42e2da');
-INSERT INTO PRESSUREREADING (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) values
+INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES 
+('76724920-6bec-46c8-9866-497ea534b9cf', 'f59c2062-96dd-4808-913e-37c305592680', 'ba14edd4-227e-49ca-9102-aa588b42e2da');
+
+INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES
 ('679ae9ab-dfe7-43de-8a21-4255e9b11c98', 45, 1735090680, TRUE, 'f59c2062-96dd-4808-913e-37c305592680'),
 ('4869dd92-5b21-4461-b32d-2bc460ef9a4d', 77, 1735090681, TRUE, 'f59c2062-96dd-4808-913e-37c305592680'),
 ('0c214ffb-ae8c-4239-9d7e-045f2cc82738', 98, 1735090682, TRUE, 'f59c2062-96dd-4808-913e-37c305592680'),
