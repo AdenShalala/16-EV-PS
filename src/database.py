@@ -165,6 +165,20 @@ def get_patients_from_clinician(clinician: Clinician):
 
     return patients
 
+def get_patient_from_clinician(patient_id: str, clinician: Clinician):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Patient WHERE clinician_id = %s AND patient_id = %s", (clinician.clinician_id,patient_id,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_patient(result)
+    else:
+        database.close()
+        return None
+
 
 def get_activities_from_clinician(clinician: Clinician):
     patients = get_patients_from_clinician(clinician)
