@@ -76,6 +76,9 @@ def create_session(result):
     #print(result)
     return Session(*result)
 
+def create_activity(result):
+    return Activity(*result)
+
 # accessors
 def get_clinician(clinician_id: str):
     database = get_database()
@@ -157,6 +160,26 @@ def get_patients_from_clinician(clinician: Clinician):
 
     for i in result:
         patients.append(create_patient(i))
+
+    database.close()
+
+    return patients
+
+
+def get_activities_from_clinician(clinician: Clinician):
+    patients = get_patients_from_clinician(clinician)
+
+    database = get_database()
+    cursor = database.cursor()
+
+    activities = []
+
+    for patient in patients:
+        cursor.execute("SELECT * FROM Activity WHERE patient_id = %s", (patient.patient_id,))
+        result = cursor.fetchall()
+
+        for i in result:
+            activities.append(create_activity(i))
 
     database.close()
 

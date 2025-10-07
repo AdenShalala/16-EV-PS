@@ -65,6 +65,33 @@ def get_patients(token: Annotated[list[schema.Patient], Depends(oauth2_scheme)])
     
     return patients
 
+@app.get("/activities")
+def get_activities(token: Annotated[list[schema.Activity], Depends(oauth2_scheme)]):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    sess = session.validate_session(token=token)
+
+    if not sess:
+        raise credentials_exception
+    
+    if sess.account_type != "Clinician":
+        raise credentials_exception
+
+    clinician = database.get_clinician(sess.id)
+    if not clinician:
+        raise HTTPException(
+            status_code=500,
+            detail="Internal Server Error"
+        )
+    
+    activities = database.get_activities_from_clinician(clinician)
+    
+    return activities
+
 @app.post("/token")
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     clinician = database.get_clinician_from_email(form_data.username)
@@ -72,30 +99,32 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     if not clinician:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     ph = PasswordHasher()
+
     if not ph.verify(clinician.password, form_data.password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     
     _, token = session.create_session(clinician.clinician_id, "Clinician")
     return {"access_token": token, "token_type": "bearer"}
 
+#@app.post("/admin")
+
 
 @ui.page('/test')
 def test():
     # comparing entered value
     def checkLogin():
-        #app.storage.user['clinid'] = email.value
-        #print(requests.post("http://localhost:8000/login", data={"username":email.value,"password":password.value}))
-        
-
-        #test = requests.post('http://localhost:8080/token', data={"username":email.value,"password":password.value})
-
         x = login(OAuth2PasswordRequestForm(password=password.value, username=email.value))
 
-        app.storage.user['token'] = x.token
-        print(app.storage.user)
+        print(x)
+        app.storage.user['token'] = x['access_token']
+        
+        print(get_patients(token=app.storage.user['token']))
 
-        print(get_patients(app.storage.user.token))
+        
 
+
+    def awesome():
+        print(app.storage.user["token"])
 
         #Homepage.mainNavigate()
     ui.page_title("SocketFit Dashboard")
@@ -107,6 +136,7 @@ def test():
             email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF] left-2')
             password = ui.input(placeholder='Password').classes('w-full border rounded-md border-[#3545FF]')
             ui.button('Login', on_click=checkLogin, color='#FFB030').classes('w-full text-white')
+            ui.button("TEST", on_click=awesome, color='#FFB030').classes('w-full text-white')
             #ui.button('Login as IT Admin', color='#3545FF', on_click=DatabaseConfig.navigateConfig).classes('w-full text-white')
 
-ui.run(fastapi_docs=True)
+ui.run(fastapi_docs=True, storage_secret="HELPPP")
