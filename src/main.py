@@ -67,10 +67,7 @@ def get_patients(token: Annotated[list[schema.Patient], Depends(oauth2_scheme)])
 
 @app.post("/token")
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    print(form_data)
     clinician = database.get_clinician_from_email(form_data.username)
-
-    print(clinician)
 
     if not clinician:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
@@ -94,10 +91,11 @@ def test():
 
         x = login(OAuth2PasswordRequestForm(password=password.value, username=email.value))
 
-        print(x)
+        app.storage.user['token'] = x.token
+        print(app.storage.user)
 
+        print(get_patients(app.storage.user.token))
 
-        
 
         #Homepage.mainNavigate()
     ui.page_title("SocketFit Dashboard")
