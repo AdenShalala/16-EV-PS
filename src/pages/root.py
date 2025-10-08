@@ -15,6 +15,11 @@ def create() -> None:
                 app.storage.user["selected_patient"] = id
                 return
 
+        def navigatePatient(patient):
+            print("HELLPP", patient)
+            # app.storage.user['selected_patient'] = patient
+            # ui.navigate.to('/userInformation')
+
         app.storage.user['current_page'] = '/main'
 
         patients = api.get_patients(token=app.storage.user["token"])
@@ -23,8 +28,9 @@ def create() -> None:
         genderList = ['All', 'Male', 'Female', 'Prefer not to say']
         amputationTypeList = ['All', 'Above Knee', 'Below Knee', 'Above Elbow', 'Below Elbow']
 
-
         utilities.header()
+
+
         with ui.row().classes('w-full'):
             ui.label("Welcome").classes('text-xl font-semibold ml-[21%]')
         with ui.row().classes('w-full h-full'):
@@ -46,7 +52,6 @@ def create() -> None:
                 }]
 
                 ui.tree(tree_data, label_key='label', on_select=select).expand(['Patient Records'])
-
 
             # main section
             with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
@@ -102,7 +107,7 @@ def create() -> None:
                         with ui.grid(columns=4).classes('w-full gap-6'):
                             for p in p_list:
                                 full_name = f'{getattr(p, "first_name", "")} {getattr(p, "last_name", "")}'.strip()
-                                with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2] cursor-pointer').on('click', lambda p=p: UserInformation.navigatePatient(p)):
+                                with ui.card().classes('h-[150px] w-[160px] border border-[#2C25B2] cursor-pointer').on('click', lambda p=p: navigatePatient(p)):
                                     ui.label(full_name or "Unnamed").classes('text-xl')
                 
                 def _filter_by_name(p_list, q):
@@ -178,10 +183,10 @@ def create() -> None:
                     return out
                 
                 def _apply_filters():
-                    base = app.storage.user.get('patients', [])
+                    patients = api.get_patients(token=app.storage.user["token"])
                     
                     # Apply name filter
-                    by_name = _filter_by_name(base, getattr(search, 'value', ''))
+                    by_name = _filter_by_name(patients, getattr(search, 'value', ''))
                     
                     # Apply amputation filter
                     by_amp = _filter_by_amputation(by_name, getattr(amp_select, 'value', 'All'))

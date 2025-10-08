@@ -19,7 +19,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         if not app.storage.user.get('token', False):
             if not request.url.path.startswith('/_nicegui') and request.url.path != "/login":
-                return RedirectResponse(f'/login?redirect_to={request.url.path}')
+                return RedirectResponse('/login')
         else:
             s = session.validate_session(token=app.storage.user.get('token'))
             
