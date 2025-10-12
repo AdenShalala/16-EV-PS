@@ -397,58 +397,58 @@ def get_patients(token: Annotated[list[Patient], Depends(oauth2_scheme)]):
 ###############
 # PUT METHODS #
 ###############
-@app.put('/me')
-def put_me(token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
-    session = sessions.validate_session(token=token)
+# @app.put('/me')
+# def put_me(token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+#     session = sessions.validate_session(token=token)
 
-    if not session:
-        raise credentials_exception
+#     if not session:
+#         raise credentials_exception
     
-    account = get_account(session.id)
+#     account = get_account(session.id)
     
-    if not account:
-        raise server_exception
+#     if not account:
+#         raise server_exception
 
-    return account
+#     return account
 
-@app.put('/clinician/{clinician_id}')
-def put_clinician(clinician_id: str, token: Annotated[Clinician, Depends(oauth2_scheme)]):
-    session = sessions.validate_session(token=token)
+# @app.put('/clinician/{clinician_id}')
+# def put_clinician(clinician_id: str, token: Annotated[Clinician, Depends(oauth2_scheme)]):
+#     session = sessions.validate_session(token=token)
 
-    if not session:
-        raise credentials_exception
+#     if not session:
+#         raise credentials_exception
     
-    account = get_account(session.id)
+#     account = get_account(session.id)
     
-    if not account:
-        raise server_exception
+#     if not account:
+#         raise server_exception
 
-    return account
+#     return account
 
-@app.put('/patient/{patient_id}')
-def put_patient(patient_id: str, patient: Patient token: Annotated[Patient, Depends(oauth2_scheme)]):
-    session = sessions.validate_session(token=token)
+# @app.put('/patient/{patient_id}')
+# def put_patient(patient_id: str, patient: Patient token: Annotated[Patient, Depends(oauth2_scheme)]):
+#     session = sessions.validate_session(token=token)
 
-    if not session:
-        raise credentials_exception
+#     if not session:
+#         raise credentials_exception
     
-    account = get_account(session.id)
+#     account = get_account(session.id)
     
-    if not account:
-        raise server_exception
+#     if not account:
+#         raise server_exception
 
-    return account
+#     return account
 
-@app.put('/activity/{activity_id}')
-def put_activity(activity_id: str, activity: Activity, token: Annotated[Patient, Depends(oauth2_scheme)]):
-    session = sessions.validate_session(token=token)
+# @app.put('/activity/{activity_id}')
+# def put_activity(activity_id: str, activity: Activity, token: Annotated[Patient, Depends(oauth2_scheme)]):
+#     session = sessions.validate_session(token=token)
 
-    if not session:
-        raise credentials_exception
+#     if not session:
+#         raise credentials_exception
     
-    account = get_account(session.id)
+#     account = get_account(session.id)
     
-    if not account:
-        raise server_exception
+#     if not account:
+#         raise server_exception
 
-    return account
+#     return account
