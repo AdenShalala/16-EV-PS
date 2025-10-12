@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import FastAPI, Depends, FastAPI, HTTPException, status, Request
+from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -9,8 +9,13 @@ import sessions
 import database
 from schema import *
 
+# OAuth2 password-bearer scheme. Clients will first POST to /token to get a bearer token,
+# then send it as "Authorization: Bearer <token>" on every request.
+# tokenUrl="token" means our token endpoint is /api/token. Keep this in sync with the route below.
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
+# exceptions
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
