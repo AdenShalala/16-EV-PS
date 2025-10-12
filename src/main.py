@@ -9,6 +9,9 @@ from collections import OrderedDict
 
 import pages.login as login
 import pages.root as root
+import pages.admin as admin
+import pages.clinician as clinician
+import pages.patient as patient
 
 class AuthMiddleware(BaseHTTPMiddleware):
     """This middleware restricts access to all NiceGUI pages.
@@ -26,6 +29,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
             if s == None:
                 app.storage.user.clear()
 
+            if s.account_type == "Admin":
+                # redirect if admin
+                if not request.url.path.startswith('/_nicegui') and not request.url.path.startswith('/admin'):
+                    return RedirectResponse('/admin')
+            else:
+                # redirect if not admin
+                if not request.url.path.startswith('/_nicegui') and request.url.path.startswith('/admin'):
+                    return RedirectResponse('/')
                 
         return await call_next(request)
 
@@ -35,6 +46,9 @@ app.add_middleware(AuthMiddleware)
 
 login.create()
 root.create()
+admin.create()
+clinician.create()
+patient.create()
 
 # def session_tree():
 #     current_page = app.storage.user.get('current_page', '')

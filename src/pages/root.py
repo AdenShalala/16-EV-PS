@@ -10,15 +10,14 @@ def create() -> None:
             selected = e.value
             print(selected)
 
-            if isinstance(selected, str) and selected.startswith('patient:'):
-                id = selected.split(':')[1]
+            if isinstance(selected, str) and selected.startswith('patient.'):
+                id = selected.split('.')[1]
                 app.storage.user["selected_patient"] = id
                 return
 
         def navigatePatient(patient):
-            print("HELLPP", patient)
-            # app.storage.user['selected_patient'] = patient
-            # ui.navigate.to('/userInformation')
+            app.storage.user['selected_patient'] = patient.patient_id
+            ui.navigate.to('/patient')
 
         app.storage.user['current_page'] = '/main'
 
@@ -41,20 +40,20 @@ def create() -> None:
                 for patient in patients:
                     full_name = f"{patient.first_name} {patient.last_name}"
                     patient_nodes.append({
-                        'id': f'patient:{patient.patient_id}',
+                        'id': f'patient.{patient.patient_id}',
                         'label': full_name
                     })
 
                 tree_data = [{
                     'id': 'Patient Records',
-                    'label': utilities.bold('Patient Records') if current_page == '/main' else 'Patient Records',
+                    'label': 'Patient Records',
                     'children': patient_nodes,
                 }]
 
                 ui.tree(tree_data, label_key='label', on_select=select).expand(['Patient Records'])
 
             # main section
-            with ui.card().classes('w-3/4 h-full border border-[#2C25B2]') as main:
+            with ui.card().classes('w-3/4 h-full border border-[#2C25B2]'):
                 with ui.row().classes('w-full'):
                     ui.label("Select User to View Users Information").classes('text-lg font-bold')
                     ui.space()

@@ -102,6 +102,9 @@ def create_session(result):
 def create_activity(result):
     return Activity(*result)
 
+def create_admin(result):
+    return Admin(*result)
+
 # accessors
 def get_clinician(clinician_id: str):
     database = get_database()
@@ -116,6 +119,22 @@ def get_clinician(clinician_id: str):
     else:
         database.close()
         return None
+    
+def get_clinicians():
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Clinician;")
+    result = cursor.fetchall()
+
+    clinicians = []
+
+    for i in result:
+        clinicians.append(create_clinician(i))
+
+    database.close()
+
+    return clinicians
 
 def get_clinician_from_email(email: str):
     database = get_database()
@@ -127,6 +146,34 @@ def get_clinician_from_email(email: str):
     if result:
         database.close()
         return create_clinician(result)
+    else:
+        database.close()
+        return None
+    
+def get_admin(admin_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Admin WHERE admin_id = %s", (admin_id,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_admin(result)
+    else:
+        database.close()
+        return None
+    
+def get_admin_from_email(email: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Admin WHERE email = %s", (email,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_admin(result)
     else:
         database.close()
         return None
