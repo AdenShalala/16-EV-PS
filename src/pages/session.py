@@ -3,45 +3,12 @@ from datetime import datetime
 from functools import partial
 from collections import OrderedDict
 import pages.utilities as utilities
-import oldapi
+import api
 
 # getting activity and navigating
 def activitypass(act):
     app.storage.user['activity'] = act
-    ActivityPage.navigateActivity()
-
-def normalize_to_str(value: str | int | float | datetime) -> str:
-    """Return time as 'dd-Mon-YYYY HH:MM:SS' string, no tzinfo."""
-    if value is None:
-        return None
-
-    # if it's already a datetime
-    if isinstance(value, datetime):
-        return value.strftime("%d-%b-%Y %H:%M:%S")
-
-    # if it's a unix timestamp
-    if isinstance(value, (int, float)) or (isinstance(value, str) and value.isdigit()):
-        dt = datetime.fromtimestamp(int(value))
-        return dt.strftime("%d-%b-%Y %H:%M:%S")
-
-    # if it's a string datetime
-    value = str(value).strip()
-    formats = [
-        "%Y-%m-%d %H:%M:%S%z",   # 2023-08-28 12:33:20+00:00
-        "%Y-%m-%d %H:%M:%S",     # 2023-08-28 12:33:20
-        "%Y-%m-%dT%H:%M:%S",     # 2023-08-28T12:33:20
-        "%d-%b-%Y %H:%M:%S",     # 28-Aug-2023 12:33:20
-        "%d %b %Y",              # 28 Aug 2023
-        "%Y-%m-%d"               # 2023-08-28
-    ]
-    for fmt in formats:
-        try:
-            dt = datetime.strptime(value, fmt)
-            return dt.strftime("%d-%b-%Y %H:%M:%S")
-        except ValueError:
-            continue
-
-    raise ValueError(f"Unsupported datetime format: {value!r}")
+    ui.navigate.to("/activity")
 
 def create() -> None:
     @ui.page('/patient/session')
@@ -53,7 +20,7 @@ def create() -> None:
         #app.storage.user['actTypeList'] = ['All']
         #app.storage.user['activityList'] = []
 
-        activities = oldapi.get_activities(patient_id=app.storage.user.get("selected_patient"), token=app.storage.user.get("token"))
+        activities = api.get_activities(patient_id=app.storage.user.get("selected_patient"), token=app.storage.user.get("token"))
 
         print(activities)
 
@@ -111,30 +78,32 @@ def create() -> None:
 
                         # calculating duration of activities
                         for activity in activities:
-                            # app.storage.user['dt_str1'] = normalize_to_str(activity.start_time)
-                            # app.storage.user['dt_str2'] = normalize_to_str(activity.end_time)
+                            app.storage.user['dt_str1'] = utilities.normalize_to_str(activity.start_time)
+                            app.storage.user['dt_str2'] = utilities.normalize_to_str(activity.end_time)
 
-                            # dt_format = "%d-%b-%Y %H:%M:%S"
+                            dt_format = "%d-%b-%Y %H:%M:%S"
 
-                            # dt1 = datetime.strptime(app.storage.user['dt_str1'], dt_format)
-                            # dt2 = datetime.strptime(app.storage.user['dt_str2'], dt_format)
+                            dt1 = datetime.strptime(app.storage.user['dt_str1'], dt_format)
+                            dt2 = datetime.strptime(app.storage.user['dt_str2'], dt_format)
 
-                            # total_seconds = int((dt2 - dt1).total_seconds())
-                            # app.storage.user['total_seconds'] = total_seconds
+                            total_seconds = int((dt2 - dt1).total_seconds())
+                            app.storage.user['total_seconds'] = total_seconds
 
-                            # app.storage.user['hours'] = app.storage.user['total_seconds'] // 3600
-                            # app.storage.user['minutes'] = (app.storage.user['total_seconds'] % 3600) // 60
-                            # app.storage.user['seconds'] = app.storage.user['total_seconds'] % 60
+                            app.storage.user['hours'] = app.storage.user['total_seconds'] // 3600
+                            app.storage.user['minutes'] = (app.storage.user['total_seconds'] % 3600) // 60
+                            app.storage.user['seconds'] = app.storage.user['total_seconds'] % 60
 
-                            # app.storage.user['minSensor'] = None
-                            # app.storage.user['maxSensor'] = None
+                            app.storage.user['minSensor'] = None
+                            app.storage.user['maxSensor'] = None
                             
                             # finding min and max sensor signal values
-                            #current_activity = app.storage.user['current_activity']  # Store reference for cleaner access
+                            # current_activity = app.storage.user['current_activity']  # Store reference for cleaner access
+
+
 
                             for sensor in activity.sensors:
                                 for reading in sensor.readings:
-                                    if reading.activity_id == current_activity.activity_id:
+                                    if reading.activity_id == activity.activity_id:
                                         value = float(reading.pressure_value)
 
                                         if app.storage.user['minSensor'] is None or value < app.storage.user['minSensor']:
@@ -146,7 +115,7 @@ def create() -> None:
                             # creating row for each activity
                             with ui.grid(columns=24).classes('border-[2px] border-[#2C25B2] h-16 rounded items-center'):
                                 ui.label('').classes('col-span-1')
-                                ui.label(normalize_to_str(app.storage.user.get('activity').start_time)).classes('col-span-3')
+                                ui.label(utilities.normalize_to_str(app.storage.user.get('activity').start_time)).classes('col-span-3')
                                 ui.label('').classes('col-span-3')
                                 ui.label(app.storage.user.get('current_activity').type).classes('col-span-2')
                                 ui.label('').classes('col-span-3')

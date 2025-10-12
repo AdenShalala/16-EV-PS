@@ -3,7 +3,7 @@ from nicegui import ui, app
 import os, sys
 #import ClinicianInformation
 import pages.utilities as utilities
-import oldapi
+import api
 from schema import Clinician
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'backEnd', 'databases', 'SQL'))
@@ -42,7 +42,7 @@ def create() -> None:
                         ui.label('Select Clinician to View Information').classes('text-2xl font-bold')
 
                     cards_container = ui.column()
-                    clinicians = oldapi.get_clinicians(token=app.storage.user.get("token"))
+                    clinicians = api.get_clinicians(token=app.storage.user.get("token"))
                     # app.storage.user['clinicians'] = clinicians
                     if not clinicians:
                         ui.label('No clinicians found.').classes('text-gray-600')

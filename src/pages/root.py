@@ -1,6 +1,6 @@
 from nicegui import ui, app
 import pages.utilities as utilities
-import oldapi
+import api
 
 
 def create() -> None:
@@ -8,7 +8,6 @@ def create() -> None:
     def root():
         def select(e):
             selected = e.value
-            print(selected)
 
             if isinstance(selected, str) and selected.startswith('patient.'):
                 id = selected.split('.')[1]
@@ -19,9 +18,9 @@ def create() -> None:
             app.storage.user['selected_patient'] = patient.patient_id
             ui.navigate.to('/patient')
 
-        app.storage.user['current_page'] = '/main'
+        app.storage.user['current_page'] = '/'
 
-        patients = oldapi.get_patients(token=app.storage.user["token"])
+        patients = api.get_patients(token=app.storage.user["token"])
 
         ui.page_title("SocketFit Dashboard")
         genderList = ['All', 'Male', 'Female', 'Prefer not to say']
@@ -182,7 +181,7 @@ def create() -> None:
                     return out
                 
                 def _apply_filters():
-                    patients = oldapi.get_patients(token=app.storage.user["token"])
+                    patients = api.get_patients(token=app.storage.user["token"])
                     
                     # Apply name filter
                     by_name = _filter_by_name(patients, getattr(search, 'value', ''))

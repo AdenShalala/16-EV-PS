@@ -1,7 +1,7 @@
 from nicegui import ui, app
 from collections import OrderedDict
 from datetime import datetime, timezone
-import oldapi
+import api
 
 def header():
     with ui.header().style('background-color: #FFFFFF'):
@@ -131,7 +131,7 @@ def on_tree_select(e):
 
 def patients_tree():
     patients = []
-    for patient in oldapi.get_patients(token=app.storage.user.get("token")):
+    for patient in api.get_patients(token=app.storage.user.get("token")):
         patients.append({
             'id': f'patient.{patient.patient_id}',
             'label': f"{patient.first_name} {patient.last_name}"
@@ -156,9 +156,42 @@ def on_clinician_tree_select(e):
     app.storage.user['selected_clinician'] = id
     ui.navigate.to('/admin/clinician')
 
+def normalize_to_str(value: str | int | float | datetime) -> str:
+    """Return time as 'dd-Mon-YYYY HH:MM:SS' string, no tzinfo."""
+    if value is None:
+        return None
+
+    # if it's already a datetime
+    if isinstance(value, datetime):
+        return value.strftime("%d-%b-%Y %H:%M:%S")
+
+    # if it's a unix timestamp
+    if isinstance(value, (int, float)) or (isinstance(value, str) and value.isdigit()):
+        dt = datetime.fromtimestamp(int(value))
+        return dt.strftime("%d-%b-%Y %H:%M:%S")
+
+    # if it's a string datetime
+    value = str(value).strip()
+    formats = [
+        "%Y-%m-%d %H:%M:%S%z",   # 2023-08-28 12:33:20+00:00
+        "%Y-%m-%d %H:%M:%S",     # 2023-08-28 12:33:20
+        "%Y-%m-%dT%H:%M:%S",     # 2023-08-28T12:33:20
+        "%d-%b-%Y %H:%M:%S",     # 28-Aug-2023 12:33:20
+        "%d %b %Y",              # 28 Aug 2023
+        "%Y-%m-%d"               # 2023-08-28
+    ]
+    for fmt in formats:
+        try:
+            dt = datetime.strptime(value, fmt)
+            return dt.strftime("%d-%b-%Y %H:%M:%S")
+        except ValueError:
+            continue
+
+    raise ValueError(f"Unsupported datetime format: {value!r}")
+
 def clinicians_tree():
     current_page = app.storage.user.get('current_page', '')
-    clinicians = oldapi.get_clinicians(token=app.storage.user.get("token"))
+    clinicians = api.get_clinicians(token=app.storage.user.get("token"))
     clinician_nodes = []
     for clinician in clinicians:
         full_name = f'{clinician.first_name} {clinician.last_name}'.strip() or 'Unnamed'

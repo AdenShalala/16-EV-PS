@@ -336,7 +336,65 @@ def write_patient(patient: Patient):
 ##############
 # ACTIVITIES #
 ##############
+def get_activity(activity_id: str): 
+    database = get_database()
+    cursor = database.cursor()
 
+    cursor.execute("SELECT * FROM Activity WHERE activity_id = %s", (activity_id,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_activity(result)
+    else:
+        database.close()
+        return None    
+    
+def get_activity_from_patient(patient_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Activity WHERE patient_id = %s", (patient_id,))
+    result = cursor.fetchall()
+
+    activities = []
+
+    for i in result:
+        activities.append(create_activity(i))
+
+    database.close()
+
+    return activities
+
+def get_activity_from_clinician(activity_id: str, clinician: Clinician):
+    patients = get_patients_from_clinician(clinician)
+
+    database = get_database()
+    cursor = database.cursor()
+
+    for patient in patients:
+        cursor.execute("SELECT * FROM Activity WHERE activity_id = %s AND patient_id = %s", (activity_id, patient.patient_id,))
+        result = cursor.fetchone()
+
+        if result:
+            database.close()
+            return create_activity(result)
+
+def get_activities():
+    database = get_database()
+    cursor = database.cursor()
+
+    activities = []
+
+    cursor.execute("SELECT * FROM Activity;")
+    result = cursor.fetchall()
+
+    for i in result:
+        activities.append(create_activity(i))
+
+    database.close()
+
+    return activities
 
 def get_activities_from_clinician(clinician: Clinician):
     patients = get_patients_from_clinician(clinician)
@@ -355,7 +413,7 @@ def get_activities_from_clinician(clinician: Clinician):
 
     database.close()
 
-    return patients
+    return activities
 
 def get_activities_from_patient_id(patient_id: str):
     database = get_database()
@@ -371,8 +429,6 @@ def get_activities_from_patient_id(patient_id: str):
 
     return activities
 
-
-
 def write_activity(activity: Activity):
     database = get_database()
 
@@ -382,6 +438,11 @@ def write_activity(activity: Activity):
     
     database.commit()
     database.close()       
+
+#####################
+# ACTIVITY READINGS #
+#####################
+
 
 #####################
 # PRESSURE READINGS #
