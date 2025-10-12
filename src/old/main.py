@@ -9,7 +9,7 @@
 from fastapi import FastAPI
 from nicegui import app as nicegui_app, ui
 import pages.login
-import api
+import oldapi
 import database
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, status, Request
@@ -49,7 +49,7 @@ pages.login.create()
 #     database.delete_session(session.session_id)
 #     return {'Hello': 'World'}
 
-api.login = app.get('/login')
+oldapi.login = app.get('/login')
 
 # Integrate with your FastAPI Application
 ui.run_with(

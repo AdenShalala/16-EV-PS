@@ -1,7 +1,7 @@
 from nicegui import ui, app
 from collections import OrderedDict
 from datetime import datetime, timezone
-import api
+import oldapi
 
 def header():
     with ui.header().style('background-color: #FFFFFF'):
@@ -108,7 +108,7 @@ def on_tree_select(e):
     if isinstance(selected, str) and selected.startswith('patient.'):
         id = int(selected.split('.')[-1])
         app.storage.user['selected_patient'] = id
-        patient = api.get_patient(patient_id=id, token=app.storage.user.get("token"))
+        patient = oldapi.get_patient(patient_id=id, token=app.storage.user.get("token"))
 
         #app.storage.user['patient'] = selected_patient
         ui.navigate.to('/patient')
@@ -131,7 +131,7 @@ def on_tree_select(e):
 
 def patients_tree():
     patients = []
-    for patient in api.get_patients(token=app.storage.user.get("token")):
+    for patient in oldapi.get_patients(token=app.storage.user.get("token")):
         patients.append({
             'id': f'patient.{patient.patient_id}',
             'label': f"{patient.first_name} {patient.last_name}"
@@ -158,7 +158,7 @@ def on_clinician_tree_select(e):
 
 def clinicians_tree():
     current_page = app.storage.user.get('current_page', '')
-    clinicians = api.get_clinicians(token=app.storage.user.get("token"))
+    clinicians = oldapi.get_clinicians(token=app.storage.user.get("token"))
     clinician_nodes = []
     for clinician in clinicians:
         full_name = f'{clinician.first_name} {clinician.last_name}'.strip() or 'Unnamed'

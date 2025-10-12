@@ -89,67 +89,81 @@ def populate():
     
 
 # constructor candy
+# realistically these could be one liners in code but id like them to be functions
+# in case we need to add other stuff later :P
+def create_session(result):
+    return Session(*result)
+
+def create_admin(result):
+    return Admin(*result)
+
 def create_clinician(result):
     return Clinician(*result)
 
 def create_patient(result):
     return Patient(*result)
 
-def create_session(result):
-    #print(result)
-    return Session(*result)
-
 def create_activity(result):
     return Activity(*result)
 
-def create_admin(result):
-    return Admin(*result)
+def create_sensor(result):
+    return Sensor(*result)
 
-# accessors
-def get_clinician(clinician_id: str):
+def create_pressure_reading(result):
+    return PressureReading(*result)
+
+def create_activity_reading(result):
+    return ActivityReading(*result)
+
+############
+# SESSIONS #
+############
+def get_session(session_id: str):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM Clinician WHERE clinician_id = %s", (clinician_id,))
+    cursor.execute("SELECT * FROM Session WHERE session_id = %s", (session_id,))
     result = cursor.fetchone()
 
     if result:
         database.close()
-        return create_clinician(result)
+        return create_session(result)
     else:
         database.close()
         return None
-    
-def get_clinicians():
+
+def update_session_verified_at(session: Session):
     database = get_database()
+
     cursor = database.cursor()
-
-    cursor.execute("SELECT * FROM Clinician;")
-    result = cursor.fetchall()
-
-    clinicians = []
-
-    for i in result:
-        clinicians.append(create_clinician(i))
-
+    cursor.execute("UPDATE Session SET last_verified_at = %s WHERE session_id = %s", (session.last_verified_at, session.session_id))
+    
+    database.commit()
     database.close()
 
-    return clinicians
+def write_session(session: Session):
+    database = get_database()
 
-def get_clinician_from_email(email: str):
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO Session (session_id, id, account_type, secret_hash, created_at, last_verified_at) VALUES (%s, %s, %s, %s, %s, %s)", 
+                           (session.session_id, session.id, session.account_type, session.secret_hash, session.created_at, session.last_verified_at,))
+    
+    database.commit()
+    database.close()
+    
+def delete_session(session_id: str):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM Clinician WHERE email = %s", (email,))
-    result = cursor.fetchone()
+    cursor.execute("DELETE FROM Session WHERE session_id = %s", (session_id,))
+    database.commit()
+    database.close()
 
-    if result:
-        database.close()
-        return create_clinician(result)
-    else:
-        database.close()
-        return None
-    
+
+
+##########
+# ADMINS #
+##########
 def get_admin(admin_id: str):
     database = get_database()
     cursor = database.cursor()
@@ -178,46 +192,89 @@ def get_admin_from_email(email: str):
         database.close()
         return None
 
-def write_session(session: Session):
-    database = get_database()
-
-    cursor = database.cursor()
-    cursor.execute("INSERT INTO Session (session_id, id, account_type, secret_hash, created_at, last_verified_at) VALUES (%s, %s, %s, %s, %s, %s)", 
-                           (session.session_id, session.id, session.account_type, session.secret_hash, session.created_at, session.last_verified_at,))
-    
-    database.commit()
-    database.close()
-
-def update_session_verified_at(session: Session):
-    database = get_database()
-
-    cursor = database.cursor()
-    cursor.execute("UPDATE Session SET last_verified_at = %s WHERE session_id = %s", (session.last_verified_at, session.session_id))
-    
-    database.commit()
-    database.close()
-
-def get_session(session_id: str):
+##############
+# CLINICIANS #
+##############
+def get_clinician(clinician_id: str):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM Session WHERE session_id = %s", (session_id,))
+    cursor.execute("SELECT * FROM Clinician WHERE clinician_id = %s", (clinician_id,))
     result = cursor.fetchone()
 
     if result:
         database.close()
-        return create_session(result)
+        return create_clinician(result)
     else:
         database.close()
         return None
     
-def delete_session(session_id: str):
+def get_clinician_from_email(email: str):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("DELETE FROM Session WHERE session_id = %s", (session_id,))
+    cursor.execute("SELECT * FROM Clinician WHERE email = %s", (email,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_clinician(result)
+    else:
+        database.close()
+        return None
+
+def get_clinicians():
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Clinician;")
+    result = cursor.fetchall()
+
+    clinicians = []
+
+    for i in result:
+        clinicians.append(create_clinician(i))
+
+    database.close()
+
+    return clinicians
+
+def update_clinician(clinician: Clinician):
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("UPDATE Clinician (first_name, last_name, email, password) VALUES (%s, %s, %s, %s)", 
+                           (clinician.first_name, clinician.last_name, clinician.email, clinician.password))
+    
+    database.commit()
+    database.close()    
+
+def write_clinician(clinician: Clinician):
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO Clinician (clinician_id, first_name, last_name, email, password, created_at) VALUES (%s, %s, %s, %s, %s, %s)", 
+                           (clinician.clinician_id, clinician.first_name, clinician.last_name, clinician.email, clinician.password, datetime.now(),))
+    
     database.commit()
     database.close()
+
+############
+# PATIENTS #
+############
+def get_patient(patient_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Patient WHERE patient_id = %s", (patient_id,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_patient(result)
+    else:
+        database.close()
+        return None
 
 def get_patients_from_clinician(clinician: Clinician):
     database = get_database()
@@ -235,11 +292,12 @@ def get_patients_from_clinician(clinician: Clinician):
 
     return patients
 
+# ensures the patient is from a clinician
 def get_patient_from_clinician(patient_id: str, clinician: Clinician):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM Patient WHERE clinician_id = %s AND patient_id = %s", (clinician.clinician_id,patient_id,))
+    cursor.execute("SELECT * FROM Patient WHERE patient_id = %s AND clinician_id = %s", (patient_id, clinician.clinician_id))
     result = cursor.fetchone()
 
     if result:
@@ -248,6 +306,36 @@ def get_patient_from_clinician(patient_id: str, clinician: Clinician):
     else:
         database.close()
         return None
+
+def get_patients():
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Patient;")
+    result = cursor.fetchall()
+
+    patients = []
+
+    for i in result:
+        patients.append(create_patient(i))
+
+    database.close()
+
+    return patients
+
+def write_patient(patient: Patient):
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO Patient (patient_id, first_name, last_name, height, weight, amputation_type, prosthetic_type, email, password, user_id, clinician_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                           (patient.patient_id, patient.first_name, patient.last_name, patient.height, patient.weight, patient.amputation_type, patient.prosthetic_type, patient.email, patient.password, patient.user_id, patient.clinician_id,))
+    
+    database.commit()
+    database.close()    
+
+##############
+# ACTIVITIES #
+##############
 
 
 def get_activities_from_clinician(clinician: Clinician):
@@ -268,3 +356,38 @@ def get_activities_from_clinician(clinician: Clinician):
     database.close()
 
     return patients
+
+def get_activities_from_patient_id(patient_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Activity WHERE patient_id = %s", (patient_id,))
+    result = cursor.fetchall()
+
+    activities = []
+
+    for i in result:
+        activities.append(create_activity(i))
+
+    return activities
+
+
+
+def write_activity(activity: Activity):
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO Activity (activity_id, activity_type, start_time, end_time, is_uploaded, patient_id) VALUES (%s, %s, %s, %s, %s, %s)", 
+                           (activity.activity_id, activity.activity_type, activity.start_time, activity.end_time, activity.is_uploaded, activity.patient_id,))
+    
+    database.commit()
+    database.close()       
+
+#####################
+# PRESSURE READINGS #
+#####################
+
+
+###################
+# SENSOR READINGS #
+###################

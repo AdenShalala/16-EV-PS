@@ -1,7 +1,7 @@
 
 
 from nicegui import ui, app
-import api
+import oldapi
 import pages.utilities as utilities
 
 
@@ -9,7 +9,7 @@ def create() -> None:
     @ui.page('/patient')
     def patient():
         app.storage.user['current_page'] = '/patient'
-        patient = api.get_patient(patient_id=app.storage.user.get("selected_patient"), token=app.storage.user.get("token"))
+        patient = oldapi.get_patient(patient_id=app.storage.user.get("selected_patient"), token=app.storage.user.get("token"))
         utilities.header()
         ui.page_title('SocketFit Dashboard')
 

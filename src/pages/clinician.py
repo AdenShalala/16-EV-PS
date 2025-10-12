@@ -1,6 +1,6 @@
 from nicegui import ui, app
 import pages.utilities as utilities
-import api
+import oldapi
 from schema import Clinician
 
 # def _clinicians_tree():
@@ -14,7 +14,7 @@ def create() -> None:
     @ui.page('/admin/clinician')
     def clinician():
         app.storage.user['current_page'] = '/admin/clinician'
-        clinician: Clinician = api.get_admin_clinician(app.storage.user.get("selected_clinician"), app.storage.user.get("token"))
+        clinician: Clinician = oldapi.get_admin_clinician(app.storage.user.get("selected_clinician"), app.storage.user.get("token"))
         utilities.header()
         ui.page_title('SocketFit Admin — Clinician Information')
 

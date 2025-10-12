@@ -2,7 +2,7 @@ from nicegui import ui, app
 from pages.utilities import header
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
-import api
+import oldapi
 
 
 def create() -> None:
@@ -10,7 +10,7 @@ def create() -> None:
     def test():
         # comparing entered value
         def checkLogin():
-            x = api.login(OAuth2PasswordRequestForm(password=password.value, username=email.value))
+            x = oldapi.login(OAuth2PasswordRequestForm(password=password.value, username=email.value))
             app.storage.user['token'] = x['access_token']
 
             if x["type"] == "Clinician":

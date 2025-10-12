@@ -74,12 +74,3 @@ class ActivityReading:
     activity_id: str
     reading_series_id: str
     sensor_id: str
-
-# This is just for returning values
-@dataclass
-class PublicClinican:
-    clinician_id: str
-    first_name: str
-    last_name: str    
-    email: str
-    created_at: datetime
