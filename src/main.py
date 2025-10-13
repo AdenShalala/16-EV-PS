@@ -2,6 +2,7 @@ from nicegui import app as app, ui
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+import api
 import sessions
 
 import pages.login as login
@@ -39,7 +40,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
-app.add_middleware(AuthMiddleware)
+#app.add_middleware(AuthMiddleware)
 
 
 login.create()

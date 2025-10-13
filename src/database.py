@@ -442,7 +442,19 @@ def write_activity(activity: Activity):
 #####################
 # ACTIVITY READINGS #
 #####################
+def get_readings_from_activity_id(activity_id: str):
+    database = get_database()
+    cursor = database.cursor()
 
+    cursor.execute("SELECT * FROM ActivityReading WHERE activity_id = %s", (activity_id,))
+    result = cursor.fetchall()
+
+    activities = []
+
+    for i in result:
+        activities.append(create_activity_reading(i))
+
+    return activities
 
 #####################
 # PRESSURE READINGS #

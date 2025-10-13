@@ -22,8 +22,6 @@ def create() -> None:
 
         activities = api.get_activities(patient_id=app.storage.user.get("selected_patient"), token=app.storage.user.get("token"))
 
-        print(activities)
-
         # for activity in activities:
         #     #app.storage.user['activityList'].append(app.storage.user['activity'])
         #     # adding unique activity types to list
@@ -99,30 +97,32 @@ def create() -> None:
                             # finding min and max sensor signal values
                             # current_activity = app.storage.user['current_activity']  # Store reference for cleaner access
 
+                            readings = api.get_readings(app.storage.user.get("selected_patient"), activity.activity_id, app.storage.user.get("token"))
 
+                            print(readings)
 
-                            for sensor in activity.sensors:
-                                for reading in sensor.readings:
-                                    if reading.activity_id == activity.activity_id:
-                                        value = float(reading.pressure_value)
+                            # for sensor in activity.sensors:
+                            #     for reading in sensor.readings:
+                            #         if reading.activity_id == activity.activity_id:
+                            #             value = float(reading.pressure_value)
 
-                                        if app.storage.user['minSensor'] is None or value < app.storage.user['minSensor']:
-                                            app.storage.user['minSensor'] = round(value, 1)
+                            #             if app.storage.user['minSensor'] is None or value < app.storage.user['minSensor']:
+                            #                 app.storage.user['minSensor'] = round(value, 1)
 
-                                        if app.storage.user['maxSensor'] is None or value > app.storage.user['maxSensor']:
-                                            app.storage.user['maxSensor'] = round(value, 1)
+                            #             if app.storage.user['maxSensor'] is None or value > app.storage.user['maxSensor']:
+                            #                 app.storage.user['maxSensor'] = round(value, 1)
 
                             # creating row for each activity
                             with ui.grid(columns=24).classes('border-[2px] border-[#2C25B2] h-16 rounded items-center'):
                                 ui.label('').classes('col-span-1')
-                                ui.label(utilities.normalize_to_str(app.storage.user.get('activity').start_time)).classes('col-span-3')
+                                ui.label(utilities.normalize_to_str(activity.start_time)).classes('col-span-3')
                                 ui.label('').classes('col-span-3')
-                                ui.label(app.storage.user.get('current_activity').type).classes('col-span-2')
+                                ui.label(activity.activity_type).classes('col-span-2')
                                 ui.label('').classes('col-span-3')
                                 ui.label(f'{app.storage.user.get('hours')}h{app.storage.user.get('minutes')}m{app.storage.user.get('seconds')}s').classes('col-span-2')
                                 ui.label('').classes('col-span-3')
                                 ui.label(f"{app.storage.user.get('minSensor')} - {app.storage.user.get('maxSensor')}").classes('col-span-2')
                                 ui.button('View Activity').props('flat').classes(
                                         'col-span-5 text-white text-sm px-3 py-1 rounded-3xl bg-[#FFB030] h-1/2'
-                                        ).on_click(partial(activitypass, app.storage.user.get('current_activity')))
+                                        ).on_click(partial(activitypass, activity))
                     ui.space()

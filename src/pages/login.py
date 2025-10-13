@@ -9,7 +9,7 @@ def create() -> None:
     @ui.page('/login')
     def test():
         def checkLogin():
-            x = api.login(OAuth2PasswordRequestForm(password=password.value, username=email.value))
+            x = api.token(OAuth2PasswordRequestForm(password=password.value, username=email.value))
             app.storage.user['token'] = x['access_token']
 
             if x["type"] == "Clinician":

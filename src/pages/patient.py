@@ -1,5 +1,3 @@
-
-
 from nicegui import ui, app
 import api
 import pages.utilities as utilities

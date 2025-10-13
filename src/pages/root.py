@@ -20,7 +20,7 @@ def create() -> None:
 
         app.storage.user['current_page'] = '/'
 
-        patients = api.get_patients(token=app.storage.user["token"])
+        patients = api.get_patients(app.storage.user.get("token"))
 
         ui.page_title("SocketFit Dashboard")
         genderList = ['All', 'Male', 'Female', 'Prefer not to say']
@@ -181,7 +181,7 @@ def create() -> None:
                     return out
                 
                 def _apply_filters():
-                    patients = api.get_patients(token=app.storage.user["token"])
+                    patients = api.get_patients(token=app.storage.user.get("token"))
                     
                     # Apply name filter
                     by_name = _filter_by_name(patients, getattr(search, 'value', ''))
