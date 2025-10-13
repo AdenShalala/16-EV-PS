@@ -21,15 +21,19 @@ credentials_exception = HTTPException(
     detail="Could not validate credentials",
     headers={"WWW-Authenticate": "Bearer"},
 )
-
+unauthorized_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Unauthorized",
+    headers={"WWW-Authenticate": "Bearer"},
+)
 server_exception = HTTPException(
-            status_code=500,
-            detail="Internal Server Error"
+    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    detail="Internal Server Error",
 )
 
 login_exception = HTTPException(status_code=400, detail="Incorrect username or password")
 
-unauthorized_exception = HTTPException(status_code=401, detail="Unauthorized")
+
 
 
 # yes i know these two functions are ugly 6️⃣7️⃣
