@@ -1,7 +1,7 @@
 services:
   database:
     image: mysql:latest
-    restart: on-failure[:max-retries]
+    restart: on-failure
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
@@ -19,7 +19,7 @@ services:
       - ./src/sql/:/docker-entrypoint-initdb.d
   socketfit:
     image: socketfit
-    restart: on-failure[:max-retries]
+    restart: on-failure
     depends_on:
       database:
         condition: service_healthy
