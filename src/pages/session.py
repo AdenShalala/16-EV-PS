@@ -6,8 +6,8 @@ import pages.utilities as utilities
 import api
 
 # getting activity and navigating
-def activitypass(act):
-    app.storage.user['activity'] = act
+def activitypass(activity):
+    app.storage.user['selected_activity'] = activity.activity_id
     ui.navigate.to("/activity")
 
 def create() -> None:
@@ -74,43 +74,41 @@ def create() -> None:
                             ui.label('').classes('col-span-2')
                             ui.label('').classes('col-span-3')
 
-                        # calculating duration of activities
                         for activity in activities:
-                            app.storage.user['dt_str1'] = utilities.normalize_to_str(activity.start_time)
-                            app.storage.user['dt_str2'] = utilities.normalize_to_str(activity.end_time)
+                            hours, minutes, seconds = 0, 0, 0
+                            minSensor, maxSensor = None, None
+                            dt_str1 = utilities.normalize_to_str(activity.start_time)
+                            dt_str2 = utilities.normalize_to_str(activity.end_time)
 
                             dt_format = "%d-%b-%Y %H:%M:%S"
 
-                            dt1 = datetime.strptime(app.storage.user['dt_str1'], dt_format)
-                            dt2 = datetime.strptime(app.storage.user['dt_str2'], dt_format)
+                            dt1 = datetime.strptime(dt_str1, dt_format)
+                            dt2 = datetime.strptime(dt_str2, dt_format)
 
                             total_seconds = int((dt2 - dt1).total_seconds())
-                            app.storage.user['total_seconds'] = total_seconds
+                            #app.storage.user['total_seconds'] = total_seconds
 
-                            app.storage.user['hours'] = app.storage.user['total_seconds'] // 3600
-                            app.storage.user['minutes'] = (app.storage.user['total_seconds'] % 3600) // 60
-                            app.storage.user['seconds'] = app.storage.user['total_seconds'] % 60
-
-                            app.storage.user['minSensor'] = None
-                            app.storage.user['maxSensor'] = None
+                            hours = total_seconds // 3600
+                            minutes = (total_seconds % 3600) // 60
+                            seconds = total_seconds % 60
                             
                             # finding min and max sensor signal values
                             # current_activity = app.storage.user['current_activity']  # Store reference for cleaner access
 
-                            readings = api.get_readings(app.storage.user.get("selected_patient"), activity.activity_id, app.storage.user.get("token"))
+                            readings = api.get_activity_readings(app.storage.user.get("selected_patient"), activity.activity_id, app.storage.user.get("token"))
+                            
+                            for reading in readings:
+                                pressure = api.get_pressure_readings(app.storage.user.get("selected_patient"), activity.activity_id, reading.reading_series_id, app.storage.user.get("token"))
 
-                            print(readings)
+                                for x in pressure:
+                                    value = float(x.pressure_value)
 
-                            # for sensor in activity.sensors:
-                            #     for reading in sensor.readings:
-                            #         if reading.activity_id == activity.activity_id:
-                            #             value = float(reading.pressure_value)
+                                    if minSensor is None or value < minSensor:
+                                        minSensor = round(value, 1)
 
-                            #             if app.storage.user['minSensor'] is None or value < app.storage.user['minSensor']:
-                            #                 app.storage.user['minSensor'] = round(value, 1)
+                                    if maxSensor is None or value > maxSensor:
+                                        maxSensor = round(value, 1)
 
-                            #             if app.storage.user['maxSensor'] is None or value > app.storage.user['maxSensor']:
-                            #                 app.storage.user['maxSensor'] = round(value, 1)
 
                             # creating row for each activity
                             with ui.grid(columns=24).classes('border-[2px] border-[#2C25B2] h-16 rounded items-center'):
@@ -119,9 +117,9 @@ def create() -> None:
                                 ui.label('').classes('col-span-3')
                                 ui.label(activity.activity_type).classes('col-span-2')
                                 ui.label('').classes('col-span-3')
-                                ui.label(f'{app.storage.user.get('hours')}h{app.storage.user.get('minutes')}m{app.storage.user.get('seconds')}s').classes('col-span-2')
+                                ui.label(f'{hours}h{minutes}m{seconds}s').classes('col-span-2')
                                 ui.label('').classes('col-span-3')
-                                ui.label(f"{app.storage.user.get('minSensor')} - {app.storage.user.get('maxSensor')}").classes('col-span-2')
+                                ui.label(f"{minSensor} - {maxSensor}").classes('col-span-2')
                                 ui.button('View Activity').props('flat').classes(
                                         'col-span-5 text-white text-sm px-3 py-1 rounded-3xl bg-[#FFB030] h-1/2'
                                         ).on_click(partial(activitypass, activity))

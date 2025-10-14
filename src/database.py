@@ -20,74 +20,6 @@ def get_database():
 
     return database
 
-def drop():
-    database = get_database()
-    cursor = database.cursor()
-
-    with open(os.path.join(os.path.dirname(__file__), "sql/drop.sql"),  'r') as f:
-        cursor.execute(f.read())
-
-   # database.commit() 
-    database.close()
-
-def create():
-    # create the initial database
-    load_dotenv(override=True)
-    database = mysql.connector.connect(
-        host = os.getenv('MYSQL_HOST'), 
-        user = os.getenv('MYSQL_USER'), 
-        password = os.getenv('MYSQL_PASSWORD'),
-        port = os.getenv('MYSQL_PORT')
-    )
-
-    cursor = database.cursor()
-    cursor.execute("CREATE DATABASE IF NOT EXISTS " + str(os.getenv('MYSQL_DATABASE')) + '')
-    cursor.execute("USE " + str(os.getenv('MYSQL_DATABASE')) + '')
-    # database.close()
-
-    # # re open database
-    # database = get_database()
-    # cursor = database.cursor()
-
-    with open(os.path.join(os.path.dirname(__file__), "sql/create.sql"),  'r') as f:
-        cursor.execute(f.read())
-
-    #database.commit() 
-    database.close()
-
-def populate():
-    database = mysql.connector.connect(
-        host = os.getenv('MYSQL_HOST'), 
-        user = os.getenv('MYSQL_USER'), 
-        password = os.getenv('MYSQL_PASSWORD'),
-        port = os.getenv('MYSQL_PORT'),
-        database = os.getenv('MYSQL_DATABASE')
-    )
-    
-    with open(os.path.join(os.path.dirname(__file__), "sql/populate.sql"),  'r') as f:
-        sql_script = f.read()
-        for statement in sql_script.split(';'):
-            statement = statement.strip()
-            if statement:
-                cursor = database.cursor()
-                cursor.execute(statement + ';')
-                cursor.close()
-        
-    path = os.path.join(os.path.dirname(__file__), "sql/patients/")    
-    for sql in os.listdir(path):
-        full_path = os.path.join(path, sql)
-        with open(full_path) as f:
-            for statement in f.read().split(';'):
-                statement = statement.strip()
-                if statement:
-                    cursor = database.cursor()
-                    cursor.execute(statement + ';')
-                    cursor.close()
-
-    database.commit()
-    database.close()
-    
-
 # constructor candy
 # realistically these could be one liners in code but id like them to be functions
 # in case we need to add other stuff later :P
@@ -439,28 +371,71 @@ def write_activity(activity: Activity):
     database.commit()
     database.close()       
 
+##########
+# SENSOR #
+##########
+
+def get_sensor(sensor_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Sensor WHERE sensor_id = %s", (sensor_id,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_sensor(result)
+    else:
+        database.close()
+        return None        
+    
+def get_sensors_from_patient_id(patient_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Sensor WHERE patient_id = %s", (patient_id,))
+    result = cursor.fetchall()
+
+    sensors = []
+
+    for i in result:
+        sensors.append(create_sensor(i))
+
+    return sensors    
+
 #####################
 # ACTIVITY READINGS #
 #####################
-def get_readings_from_activity_id(activity_id: str):
+def get_activity_readings_from_activity_id(activity_id: str):
     database = get_database()
     cursor = database.cursor()
 
     cursor.execute("SELECT * FROM ActivityReading WHERE activity_id = %s", (activity_id,))
     result = cursor.fetchall()
 
-    activities = []
+    activity_readings = []
 
     for i in result:
-        activities.append(create_activity_reading(i))
+        activity_readings.append(create_activity_reading(i))
 
-    return activities
+    return activity_readings
 
 #####################
 # PRESSURE READINGS #
 #####################
+def get_pressure_readings_from_reading_series_id(reading_series_id: str):
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM PressureReading WHERE reading_series_id = %s", (reading_series_id,))
+    result = cursor.fetchall()
+
+    pressure_readings = []
+
+    for i in result:
+        pressure_readings.append(create_pressure_reading(i))
+
+    return pressure_readings    
 
 
-###################
-# SENSOR READINGS #
-###################
+

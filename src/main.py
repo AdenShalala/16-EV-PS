@@ -1,8 +1,9 @@
 from nicegui import app as app, ui
+import os
 from fastapi import Request
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-import api
+from dotenv import load_dotenv
 import sessions
 
 import pages.login as login
@@ -11,6 +12,9 @@ import pages.admin as admin
 import pages.clinician as clinician
 import pages.patient as patient
 import pages.session as session_page
+import pages.activity as activity
+
+load_dotenv()
 
 class AuthMiddleware(BaseHTTPMiddleware):
     """This middleware restricts access to all NiceGUI pages.
@@ -40,7 +44,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
-#app.add_middleware(AuthMiddleware)
+app.add_middleware(AuthMiddleware)
 
 
 login.create()
@@ -49,6 +53,7 @@ admin.create()
 clinician.create()
 patient.create()
 session_page.create()
+activity.create()
 
-
-ui.run(fastapi_docs=True, storage_secret="HELPPP")
+app.add_static_files('/assets', 'src/assets')
+ui.run(storage_secret=os.getenv("STORAGE_SECRET"), favicon="src/assets/favicon.ico")

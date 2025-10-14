@@ -19,3 +19,8 @@ pip install -r ./requirements.txt
 python ./src/setup.py
 # Run program
 fastapi dev ./src/main.py
+
+
+DOCKER BUILDING:
+sudo docker build -t socketfit .
+sudo docker compose up

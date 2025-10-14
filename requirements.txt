@@ -34,9 +34,12 @@ MarkupSafe==3.0.2
 mdurl==0.1.2
 multidict==6.6.4
 mysql-connector-python==9.4.0
+narwhals==2.7.0
 nicegui==2.24.1
 orjson==3.11.3
+packaging==25.0
 passlib==1.7.4
+plotly==6.3.1
 propcache==0.3.2
 pscript==0.7.7
 pycparser==2.23

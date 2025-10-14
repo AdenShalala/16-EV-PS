@@ -1,4 +1,3 @@
-
 DROP TABLE PressureReading;
 DROP TABLE ActivityReading;
 DROP TABLE Sensor;

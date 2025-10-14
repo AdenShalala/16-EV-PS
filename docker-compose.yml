@@ -3,19 +3,26 @@ services:
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_DATABASE: ${}
-      MYSQL_USER: ${}
-      MYSQL_PASSWORD: ${}
-      MYSQL_ROOT_PASSWORD: ${}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20      
     ports:
-      - '3306:3006'
-    expose:
-      - '3306'
+      - '3506:3306'
     volumes:
       - db:/var/lib/mysql
+      - ./src/sql/:/docker-entrypoint-initdb.d
   socketfit:
     image: socketfit
     restart: always
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - '5732:8080'
     expose:

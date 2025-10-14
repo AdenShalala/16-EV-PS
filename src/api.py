@@ -329,18 +329,13 @@ def get_activities(patient_id: str, token: Annotated[Activity, Depends(oauth2_sc
         if not found:
             raise unauthorized_exception
     
-        try:
-            return database.get_activities_from_patient_id(patient_id)
-        except:
-            raise server_exception
-    elif type(account) == Admin:
-        try:
-            return database.get_activities_from_patient_id(patient_id)
-        except:
-            raise server_exception
+    try:
+        return database.get_activities_from_patient_id(patient_id)
+    except:
+        raise server_exception
 
-@app.get("/api/patients/{patient_id}/sensors/{sensor_id}")
-def get_activities(patient_id: str, sensor_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
+@app.get("/api/patients/{patient_id}/activities/{activity_id}")
+def get_activity(patient_id: str, activity_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -363,52 +358,74 @@ def get_activities(patient_id: str, sensor_id: str, token: Annotated[Activity, D
         if not found:
             raise unauthorized_exception
     
-        try:
-            return database.get_S(patient_id)
-        except:
-            raise server_exception
-    elif type(account) == Admin:
-        try:
-            return database.get_activities_from_patient_id(patient_id)
-        except:
-            raise server_exception
+    try:
+        return database.get_activity(activity_id)
+    except:
+        raise server_exception
 
-# @app.get("/api/patients/{patient_id}/activities/{activity_id}/readings/{reading_id}")
-# def get_reading(patient_id: str, activity_id: str, reading_id: str, token: Annotated[ActivityReading, Depends(oauth2_scheme)]):
-#     session = sessions.validate_session(token=token)
 
-#     if not session:
-#         raise credentials_exception
+@app.get("/api/patients/{patient_id}/sensors/{sensor_id}")
+def get_sensor(patient_id: str, sensor_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
     
-#     account = get_account(session.id)
-#     if not account:
-#         raise server_exception
+    account = get_account(session.id)
+    if not account:
+        raise server_exception
 
-#     if type(account) == Clinician:
-#         patients = get_patients(token=token)
+    if type(account) == Clinician:
+        patients = get_patients(token=token)
 
-#         found = False
+        found = False
         
-#         for patient in patients:
-#             if patient.patient_id == patient_id:
-#                 found = True
-#                 break
+        for patient in patients:
+            if patient.patient_id == patient_id:
+                found = True
+                break
 
-#         if not found:
-#             raise unauthorized_exception
+        if not found:
+            raise unauthorized_exception
     
-#         try:
-#             return database.get_activities_from_patient_id(patient_id)
-#         except:
-#             raise server_exception
-#     elif type(account) == Admin:
-#         try:
-#             return database.get_activities_from_patient_id(patient_id)
-#         except:
-#             raise server_exception    
+    try:
+        return database.get_sensor(sensor_id)
+    except:
+        raise server_exception
+
+@app.get("/api/patients/{patient_id}/sensors")
+def get_sensors(patient_id: str, sensor_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
+    
+    account = get_account(session.id)
+    if not account:
+        raise server_exception
+
+    if type(account) == Clinician:
+        patients = get_patients(token=token)
+
+        found = False
         
+        for patient in patients:
+            if patient.patient_id == patient_id:
+                found = True
+                break
+
+        if not found:
+            raise unauthorized_exception
+    
+
+    try:
+        return database.get_sensors_from_patient_id(patient_id)
+    except:
+        raise server_exception
+
+
 @app.get("/api/patients/{patient_id}/activities/{activity_id}/readings/")
-def get_readings(patient_id: str, activity_id: str, token: Annotated[list[ActivityReading], Depends(oauth2_scheme)]):
+def get_activity_readings(patient_id: str, activity_id: str, token: Annotated[list[ActivityReading], Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -432,6 +449,36 @@ def get_readings(patient_id: str, activity_id: str, token: Annotated[list[Activi
             raise unauthorized_exception
 
     try:
-        return database.get_readings_from_activity_id(activity_id)
+        return database.get_activity_readings_from_activity_id(activity_id)
+    except:
+        raise server_exception  
+    
+
+@app.get("/api/patients/{patient_id}/activities/{activity_id}/readings/{reading_id}/pressure")
+def get_pressure_readings(patient_id: str, activity_id: str, reading_id: str, token: Annotated[list[ActivityReading], Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
+    
+    account = get_account(session.id)
+    if not account:
+        raise server_exception
+
+    if type(account) == Clinician:
+        patients = get_patients(token=token)
+
+        found = False
+        
+        for patient in patients:
+            if patient.patient_id == patient_id:
+                found = True
+                break
+
+        if not found:
+            raise unauthorized_exception
+
+    try:
+        return database.get_pressure_readings_from_reading_series_id(reading_id)
     except:
         raise server_exception  

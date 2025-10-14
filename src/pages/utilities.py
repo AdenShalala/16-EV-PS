@@ -38,41 +38,38 @@ def _date_label(dt: datetime) -> str:
 # ---------- sidebar tree for sessions & patients ----------
 def session_tree():
     current_page = app.storage.user.get('current_page', '')
-    selected_patient_index = app.storage.user.get('selected_patient_index')
+    selected_patient = app.storage.user.get('selected_patient')
     if current_page == '/activity':
-        selected_session_date = app.storage.user.get('activity').activity_id
+        activity = api.get_activity(app.storage.user.get("selected_patient"), app.storage.user.get("selected_activity"), app.storage.user.get("token"))
+        selected_session_date = activity.activity_id
     else: 
         selected_session_date = None
 
     seen_dates = OrderedDict()
-    for activity in app.storage.user.get('activityList', []):
-        start_raw = _get(activity, 'start_time')
-        dt1 = _to_dt(start_raw)
+    for activity in api.get_activities(app.storage.user.get("selected_patient"), app.storage.user.get("token")):
+        dt1 = _to_dt(activity.start_time)
         date_label = _date_label(dt1)
         
-        # Use activity_id as the unique key (assuming it exists)
-        activity_id = _get(activity, 'activity_id')  # or however you access the activity ID
-        
-        if activity_id not in seen_dates:
+        if activity.activity_id not in seen_dates:
             # Combine date and activity type first, then apply bold to the whole thing
-            full_label = date_label + " " + activity.type
+            full_label = date_label + " " + activity.activity_type
             label = full_label
-            seen_dates[activity_id] = {'id': activity_id, 'label': label}
+            seen_dates[activity.activity_id] = {'id': activity.activity_id, 'label': label}
 
     session_date_nodes = list(seen_dates.values())
 
     patient_nodes = []
-    for i, patient in enumerate(app.storage.user.get('patients', [])):
+    for patient in api.get_patients(token=app.storage.user.get("token")):
         full_name = f"{patient.first_name} {patient.last_name}"
         patient_nodes.append({
-            'id': f'patient-{i}',
+            'id': f'patient.{patient.patient_id}',
             'label': full_name
         })
 
     expand_nodes = ['Patient Records']
-    if current_page == '/sessionHistory' or current_page == '/activity':
+    if current_page == '/patient/session' or current_page == '/activity':
         expand_nodes.append('Session History')
-    if current_page == '/userInformation':
+    if current_page == '/patient':
         expand_nodes.append('Patient Information')
 
     tree_data = [{
@@ -108,7 +105,7 @@ def on_tree_select(e):
     if isinstance(selected, str) and selected.startswith('patient.'):
         id = int(selected.split('.')[-1])
         app.storage.user['selected_patient'] = id
-        patient = oldapi.get_patient(patient_id=id, token=app.storage.user.get("token"))
+        patient = api.get_patient(patient_id=id, token=app.storage.user.get("token"))
 
         #app.storage.user['patient'] = selected_patient
         ui.navigate.to('/patient')

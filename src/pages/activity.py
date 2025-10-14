@@ -3,6 +3,8 @@ import pages.utilities as utilities
 import plotly.graph_objects as go
 from datetime import datetime
 import plotly.colors as pc
+import api
+colors = pc.qualitative.Plotly
 
 def unix_to_datetime(unix_timestamp):
     """Convert Unix timestamp to datetime object."""
@@ -11,78 +13,78 @@ def unix_to_datetime(unix_timestamp):
     return datetime.fromtimestamp(unix_timestamp)
 
 def format_current_time(current_time):
-    app.storage.user['current_hours'] = int(current_time // 3600)
-    app.storage.user['current_minutes'] = int((current_time % 3600) // 60)
-    app.storage.user['current_seconds'] = int(current_time % 60)
-    return f"{app.storage.user.get('current_hours'):02}:{app.storage.user.get('current_minutes'):02}:{app.storage.user.get('current_seconds'):02}"
+    current_hours = int(current_time // 3600)
+    current_minutes = int((current_time % 3600) // 60)
+    current_seconds = int(current_time % 60)
+    return f"{current_hours:02}:{current_minutes:02}:{current_seconds:02}"
 
 def create() -> None:
-    @ui.page('/activity')
-    def activityPage():
+    @ui.page("/activity")
+    def activity():
         app.storage.user['current_page'] = '/activity'
         ui.page_title("SocketFit Dashboard")
         utilities.header()
-        # calculating duration
-        app.storage.user['dt_str1'] = utilities.normalize_to_str(app.storage.user.get('activity').start_time)
-        app.storage.user['dt_str2'] = utilities.normalize_to_str(app.storage.user.get('activity').end_time)
+
+        activity = api.get_activity(app.storage.user.get("selected_patient"), app.storage.user.get("selected_activity"), app.storage.user.get("token"))
+        
+        dt_str1 = utilities.normalize_to_str(activity.start_time)
+        dt_str2 = utilities.normalize_to_str(activity.end_time)
 
         dt_format = "%d-%b-%Y %H:%M:%S"
 
-        dt1 = datetime.strptime(app.storage.user.get('dt_str1'), dt_format)
-        dt2 = datetime.strptime(app.storage.user.get('dt_str2'), dt_format)
+        dt1 = datetime.strptime(dt_str1, dt_format)
+        dt2 = datetime.strptime(dt_str2, dt_format)
 
-        app.storage.user['total_seconds'] = int((dt2 - dt1).total_seconds())
+        total_seconds = int((dt2 - dt1).total_seconds())
 
-        app.storage.user['hours'] = app.storage.user.get('total_seconds') // 3600
-        app.storage.user['minutes'] = (app.storage.user.get('total_seconds') % 3600) // 60
-        app.storage.user['seconds'] = app.storage.user['total_seconds'] % 60
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        seconds = total_seconds % 60
         
-        app.storage.user['state'] = {'playing': False, 'current_time': 0}
-        app.storage.user['x_axis_unit'] = 'seconds'
-        app.storage.user['animation_speed'] = 1.0
-        app.storage.user['speed_value'] = {'current': 1.0}
-        
-
+        state = {'playing': False, 'current_time': 0, "current_time": 0}
+        x_axis_unit = 'seconds'
+        animation_speed = 1.0
+        speed_value = {'current': 1.0}
         ui_elements = {}
-        app.storage.user['state']['current_time'] = 0
+
         
+
         with ui.row().classes('w-full items-end'):
             ui.label("Activity").classes('text-xl font-semibold ml-[21%]')
             ui.space()
             
             # playing and pausing graph animation, setting play button to play or pause
             def toggle_play():
-                app.storage.user.get('state')['playing'] = not app.storage.user.get('state')['playing']
-                if app.storage.user.get('state')['playing']:
+                state['playing'] = not state['playing']
+                if state['playing']:
                     ui_elements['timer'].activate()
                     ui_elements['play_pause_icon'].set_name('pause_circle')
                 else:
                     ui_elements['timer'].deactivate()
                     ui_elements['play_pause_icon'].set_name('play_circle')
+
+            def toggle_x_axis_unit(e):
+                new_unit = 'minutes' if x_axis_unit == 'seconds' else 'seconds'
+                x_axis_unit = new_unit
             
-            # button to play and pause animation
+                update_x_axis()    
+
             with ui.button(color='#FFB030').classes('rounded-md text-white flex justify-between w-[230px] mr-[4%] p-2 right').on_click(toggle_play):
                 with ui.grid(columns=2).classes('w-full'):
                     with ui.column().classes('gap-0 items-start w-full'):
                         ui.label('Activity').classes('text-sm leading-tight m-0')
-                        current_time_label = ui.label(format_current_time(app.storage.user.get('state')['current_time'])).classes('text-sm leading-tight m-0')
+                        current_time_label = ui.label(format_current_time(state['current_time'])).classes('text-sm leading-tight m-0')
                     with ui.column().classes('items-end'):
                         play_pause_icon = ui.icon('play_circle').classes('text-4xl text-right').style('font-size: 40px;').props('justify-right')
             
             ui_elements['current_time_label'] = current_time_label
             ui_elements['play_pause_icon'] = play_pause_icon
 
-        def toggle_x_axis_unit(e):
-            app.storage.user['new_unit'] = 'minutes' if app.storage.user.get('x_axis_unit') == 'seconds' else 'seconds'
-            app.storage.user['x_axis_unit'] = app.storage.user.get('new_unit')
-            
-            update_x_axis()
-
         with ui.row().classes('w-full h-[500px]'):
             # left section for tree
             with ui.card().classes('w-1/5 border border-[#2C25B2]'):
                 utilities.session_tree()
-            with ui.grid(rows=10).classes('w-3/4 h-800px'):
+            with ui.grid(rows=10).classes('w-3/4 h-[800px]'):
                 # main section for graph
                 with ui.card().classes('row-span-7 border border-[#2C25B2]'):
                     with ui.row().classes('w-full justify-between items-center p-4 pb-2'):
@@ -90,15 +92,13 @@ def create() -> None:
                             with ui.row().classes('items-center gap-2 w-full'):
                                 ui.label('Speed:').classes('text-sm')
                                 
-                                app.storage.user['speed_value'] = app.storage.user.get('speed_value', {'current': 1.0})
-                                
                                 def update_speed(e):
-                                    app.storage.user['new_value'] = float(e.args)
-                                    app.storage.user.get('speed_value')['current'] = app.storage.user.get('new_value')
-                                    app.storage.user['animation_speed'] = app.storage.user.get('new_value')
-                                    ui_elements['speed_label'].text = f"{app.storage.user.get('new_value')}x"
+                                    new = float(e.args)
+                                    speed_value["current"] = new
+                                    animation_speed = new
+                                    ui_elements['speed_label'].text = f"{new}x"
                                 
-                                speed_slider = ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-3/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
+                                ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-3/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
                                 speed_label = ui.label("1.0x").classes('text-sm min-w-8')
                                 ui_elements['speed_label'] = speed_label
 
@@ -107,10 +107,10 @@ def create() -> None:
                                     x_axis_switch = ui.switch(value=False).on('update:model-value', toggle_x_axis_unit).style('--q-primary: #FFB030')
                                     ui.label('Minutes').classes('text-sm')
 
-                    colors = pc.qualitative.Plotly
+                    
                     fig = go.Figure()
-                    app.storage.user['dot_trace_indices'] = []
-                    app.storage.user['normalized_sensors'] = []
+                    dot_trace_indices = []
+                    normalized_sensors = []
 
                     def get_display_values(timestamps_in_seconds, unit):
                         if unit == 'minutes':
@@ -122,33 +122,37 @@ def create() -> None:
 
                     def get_axis_range(unit):
                         if unit == 'minutes':
-                            return [0, app.storage.user.get('total_seconds') / 60]
-                        return [0, app.storage.user.get('total_seconds')]
+                            return [0, total_seconds / 60]
+                        return [0, total_seconds]
 
                     # Get activity start time as datetime for calculations
-                    activity_start_dt = unix_to_datetime(app.storage.user.get('activity').start_time)
+                    activity_start_dt = unix_to_datetime(activity.start_time)
 
-                    for app.storage.user['i'], app.storage.user['sensor'] in enumerate(app.storage.user.get('activity').sensors):
-                        # sensor_name = f"{app.storage.user.get('sensor').location} ({app.storage.user.get('sensor').type})"
-                        sensor_name = f"{app.storage.user.get('sensor').sensor_id} ({app.storage.user.get('sensor').type})"
-                        color = colors[app.storage.user.get('i') % len(colors)]
+                    activity_readings = api.get_activity_readings(app.storage.user.get("selected_patient"), activity.activity_id, app.storage.user.get("token"))
+
+                    for i, activity_reading in enumerate(activity_readings):
+                        sensor = api.get_sensor(app.storage.user.get("selected_patient"), activity_reading.sensor_id, app.storage.user.get("token"))
+                        
+                        sensor_name = f"{sensor.sensor_id} ({sensor.sensor_type})"
+                        color = colors[i % len(colors)]
                         
                         # calculate timestamps and pressures for all readings in this sensor
                         timestamps_seconds = []
                         pressures = []
                         
-                        for reading in app.storage.user.get('sensor').readings:
-                            if reading.activity_id == app.storage.user.get('activity').activity_id:
-                                reading_time = unix_to_datetime(reading.time)
-                                
-                                # calculate seconds elapsed from activity start
-                                time_from_start_seconds = (reading_time - activity_start_dt).total_seconds()
-                                
-                                # clamp to activity bounds
-                                time_from_start_seconds = max(0, min(time_from_start_seconds, app.storage.user.get('total_seconds')))
-                                
-                                timestamps_seconds.append(time_from_start_seconds)
-                                pressures.append(float(reading.pressure_value))
+                        pressure_readings = api.get_pressure_readings(app.storage.user.get("selected_patient"), activity.activity_id, activity_reading.reading_series_id, app.storage.user.get("token"))
+
+                        for pressure_reading in pressure_readings:
+                            reading_time = unix_to_datetime(pressure_reading.time)
+                            
+                            # calculate seconds elapsed from activity start
+                            time_from_start_seconds = (reading_time - activity_start_dt).total_seconds()
+                            
+                            # clamp to activity bounds
+                            time_from_start_seconds = max(0, min(time_from_start_seconds, total_seconds))
+                            
+                            timestamps_seconds.append(time_from_start_seconds)
+                            pressures.append(float(pressure_reading.pressure_value))
 
                         # sort by timestamp
                         combined = list(zip(timestamps_seconds, pressures))
@@ -160,14 +164,14 @@ def create() -> None:
                         pressures = list(pressures)
 
                         # store sensor data for animation and axis switching
-                        app.storage.user.get('normalized_sensors').append({
+                        normalized_sensors.append({
                             'timestamps': timestamps_seconds,
                             'signals': pressures,
                             'name': sensor_name
                         })
 
                         # get display values based on current unit
-                        current_unit = app.storage.user.get('x_axis_unit')
+                        current_unit = x_axis_unit
                         display_timestamps = get_display_values(timestamps_seconds, current_unit)
 
                         # add line trace
@@ -188,10 +192,10 @@ def create() -> None:
                                 name=sensor_name,
                                 showlegend=False
                             ))
-                            app.storage.user.get('dot_trace_indices').append(len(fig.data) - 1)
+                            dot_trace_indices.append(len(fig.data) - 1)
 
                     # update graph layout
-                    current_unit = app.storage.user.get('x_axis_unit')
+                    current_unit = x_axis_unit
                     fig.update_layout(
                         hovermode='x unified', 
                         plot_bgcolor='white',
@@ -208,18 +212,19 @@ def create() -> None:
                     plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
 
                     def update_x_axis():
-                        current_unit = app.storage.user.get('x_axis_unit')
-                        for i, sensor_data in enumerate(app.storage.user.get('normalized_sensors')):
+                        current_unit = x_axis_unit
+
+                        for i, sensor_data in enumerate(normalized_sensors):
                             line_idx = i * 2  # line traces are at even indices
                             display_timestamps = get_display_values(sensor_data['timestamps'], current_unit)
                             fig.data[line_idx].x = display_timestamps
                         
-                        current_time = app.storage.user.get('state')['current_time']
+                        current_time = state["current_time"]
                         display_current_time = current_time / 60 if current_unit == 'minutes' else current_time
                         
-                        for i, sensor_data in enumerate(app.storage.user.get('normalized_sensors')):
-                            if i < len(app.storage.user.get('dot_trace_indices')):
-                                dot_idx = app.storage.user.get('dot_trace_indices')[i]
+                        for i, sensor_data in enumerate(normalized_sensors):
+                            if i < len(dot_trace_indices):
+                                dot_idx = dot_trace_indices[i]
                                 fig.data[dot_idx].x = [display_current_time]
                         
                         fig.update_layout(xaxis_title=get_axis_label(current_unit))
@@ -249,33 +254,32 @@ def create() -> None:
 
                     # moving markers based on time
                     def update_dots():
-                        state = app.storage.user.get('state')
                         if not state or not state.get('playing'):
                             return
 
-                        app.storage.user['current_speed'] = app.storage.user.get('speed_value', {'current': 1.0})['current']
-                        app.storage.user['time_increment'] = base_time_increment * app.storage.user.get('current_speed')
+                        current_speed = speed_value["current"]
+                        time_increment = base_time_increment * current_speed
 
                         current_time = state['current_time']
-                        current_time += app.storage.user.get('time_increment')
+                        current_time += time_increment
                         
-                        if current_time >= app.storage.user.get('total_seconds'):
+                        if current_time >= total_seconds:
                             current_time = 0
                         
                         state['current_time'] = current_time
 
                         ui_elements['current_time_label'].text = format_current_time(current_time)
 
-                        current_unit = app.storage.user.get('x_axis_unit')
+                        current_unit = x_axis_unit
                         display_current_time = current_time / 60 if current_unit == 'minutes' else current_time
 
-                        for app.storage.user['i'], app.storage.user['sensor_data'] in enumerate(app.storage.user.get('normalized_sensors')):
-                            if app.storage.user.get('i') < len(app.storage.user.get('dot_trace_indices')):
-                                dot_idx = app.storage.user.get('dot_trace_indices')[app.storage.user.get('i')]
+                        for i, sensor_data in enumerate(normalized_sensors):
+                            if i < len(dot_trace_indices):
+                                dot_idx = dot_trace_indices[i]
                                 
                                 signal_value = interpolate_signal(
-                                    app.storage.user.get('sensor_data')['timestamps'], 
-                                    app.storage.user.get('sensor_data')['signals'], 
+                                    sensor_data["timestamps"],
+                                    sensor_data['signals'], 
                                     current_time
                                 )
                                 
@@ -287,7 +291,7 @@ def create() -> None:
                     timer = ui.timer(interval=0.1, callback=update_dots, active=False)
                     ui_elements['timer'] = timer
                 
-                app.storage.user['toleranceList'] = []
+                toleranceList = []
 
                 with ui.row().classes('row-span-3'):
                     with ui.grid(columns=3).classes('w-full h-full'):
@@ -295,8 +299,8 @@ def create() -> None:
                         with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                             ui.label('Activity Recorded').classes('font-bold')
                             with ui.row():
-                                ui.label(app.storage.user.get('activity').type)
-                                ui.label(f'{app.storage.user.get('hours'):02}:{app.storage.user.get('minutes'):02}:{app.storage.user.get('seconds'):02}')
+                                ui.label(activity.activity_type)
+                                ui.label(f'{hours:02}:{minutes:02}:{seconds:02}')
                         # list of areas exceeding tolerance levels
                         with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                             ui.label('Area/s Exceeding Tolerance Level').classes('font-bold')
@@ -304,10 +308,11 @@ def create() -> None:
                         with ui.card().classes('col-span-1 h-full border border-[#2C25B2]'):
                             ui.label('Type of Sensor/s Connected').classes('font-bold')
                             with ui.row():
-                                app.storage.user['sensorTypeList'] = []
-                                for app.storage.user['sensor'] in app.storage.user.get('activity').sensors:
-                                    if app.storage.user.get('sensor').type not in app.storage.user.get('sensorTypeList'):
-                                        app.storage.user['sensorTypeList'].append(app.storage.user.get('sensor').type)
+                                sensorTypeList= []
+                                for i, activity_reading in enumerate(activity_readings):
+                                    sensor = api.get_sensor(app.storage.user.get("selected_patient"), activity_reading.sensor_id, app.storage.user.get("token"))
+                                    if sensor.sensor_type not in sensorTypeList:
+                                        sensorTypeList.append(sensor.sensor_type)
                                 with ui.grid(columns=1):
-                                    for app.storage.user['item'] in app.storage.user.get('sensorTypeList'):
-                                        ui.label(app.storage.user.get('item'))
+                                    for item in sensorTypeList:
+                                        ui.label(item)
