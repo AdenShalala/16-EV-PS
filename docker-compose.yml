@@ -19,7 +19,7 @@ services:
       - ./src/sql/:/docker-entrypoint-initdb.d
   socketfit:
     image: socketfit
-    restart: always
+    restart: on-failure[:5]
     depends_on:
       database:
         condition: service_healthy
