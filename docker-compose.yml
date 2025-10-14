@@ -1,7 +1,7 @@
 services:
   database:
     image: mysql:latest
-    restart: always
+    restart: on-failure[:5]
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
