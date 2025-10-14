@@ -282,35 +282,33 @@ def get_activity(activity_id: str):
         database.close()
         return None    
     
-def get_activity_from_patient(patient_id: str):
+# add close to release the connection
+def get_activities_from_patient_id(patient_id: str):
     database = get_database()
     cursor = database.cursor()
-
     cursor.execute("SELECT * FROM Activity WHERE patient_id = %s", (patient_id,))
     result = cursor.fetchall()
-
-    activities = []
-
-    for i in result:
-        activities.append(create_activity(i))
-
-    database.close()
-
+    activities = [create_activity(i) for i in result]
+    database.close()          
     return activities
+
 
 def get_activity_from_clinician(activity_id: str, clinician: Clinician):
     patients = get_patients_from_clinician(clinician)
-
     database = get_database()
     cursor = database.cursor()
-
     for patient in patients:
-        cursor.execute("SELECT * FROM Activity WHERE activity_id = %s AND patient_id = %s", (activity_id, patient.patient_id,))
+        cursor.execute(
+            "SELECT * FROM Activity WHERE activity_id = %s AND patient_id = %s",
+            (activity_id, patient.patient_id,)
+        )
         result = cursor.fetchone()
-
         if result:
-            database.close()
+            database.close()  
             return create_activity(result)
+    database.close()          
+    return None               
+
 
 def get_activities():
     database = get_database()
@@ -392,16 +390,12 @@ def get_sensor(sensor_id: str):
 def get_sensors_from_patient_id(patient_id: str):
     database = get_database()
     cursor = database.cursor()
-
     cursor.execute("SELECT * FROM Sensor WHERE patient_id = %s", (patient_id,))
     result = cursor.fetchall()
-
-    sensors = []
-
-    for i in result:
-        sensors.append(create_sensor(i))
-
-    return sensors    
+    sensors = [create_sensor(i) for i in result]
+    database.close()          
+    return sensors
+  
 
 #####################
 # ACTIVITY READINGS #
@@ -409,16 +403,12 @@ def get_sensors_from_patient_id(patient_id: str):
 def get_activity_readings_from_activity_id(activity_id: str):
     database = get_database()
     cursor = database.cursor()
-
     cursor.execute("SELECT * FROM ActivityReading WHERE activity_id = %s", (activity_id,))
     result = cursor.fetchall()
-
-    activity_readings = []
-
-    for i in result:
-        activity_readings.append(create_activity_reading(i))
-
+    activity_readings = [create_activity_reading(i) for i in result]
+    database.close()          
     return activity_readings
+
 
 #####################
 # PRESSURE READINGS #
@@ -426,16 +416,9 @@ def get_activity_readings_from_activity_id(activity_id: str):
 def get_pressure_readings_from_reading_series_id(reading_series_id: str):
     database = get_database()
     cursor = database.cursor()
-
     cursor.execute("SELECT * FROM PressureReading WHERE reading_series_id = %s", (reading_series_id,))
     result = cursor.fetchall()
-
-    pressure_readings = []
-
-    for i in result:
-        pressure_readings.append(create_pressure_reading(i))
-
-    return pressure_readings    
-
-
+    pressure_readings = [create_pressure_reading(i) for i in result]
+    database.close()        
+    return pressure_readings
 
