@@ -187,8 +187,8 @@ def create_activity_graph(activity, activity_index):
 
         plot = ui.plotly(fig).classes('w-full')
         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
-        ui_elements['plot'] = plot
-        
+        ui_elements['plot'] = plot      
+
         def update_x_axis():
             current_unit = x_axis_unit['current']
 
@@ -292,7 +292,7 @@ def create() -> None:
                 patient_id=app.storage.user.get("selected_patient"), 
                 token=app.storage.user.get('token')
             )
-            patient_name = f"{patient.first_name} {patient.last_name}'s Activities"
+            patient_name = f"{patient.first_name} {patient.last_name} Activities"
             ui.label(patient_name).classes('text-xl font-semibold')
         
         activity_container = ui.column().classes('w-full')
@@ -350,12 +350,16 @@ def create() -> None:
                                 if maxSensor is None or value > maxSensor:
                                     maxSensor = round(value, 1)
                         
-                        def changeList(act=activity):
-                            if act in showActivity:
-                                showActivity.remove(act)
-                            else:
-                                showActivity.append(act)
-                            update_activity_graphs()
+                        def make_change_handler(act):
+                            def handler(e):
+                                if e.value:
+                                    if act not in showActivity:
+                                        showActivity.append(act)
+                                else:
+                                    if act in showActivity:
+                                        showActivity.remove(act)
+                                update_activity_graphs()
+                            return handler
                         
                         with ui.grid(columns=24).classes('border-[2px] border-[#2C25B2] h-16 rounded items-center'):
                             ui.label('').classes('col-span-1')
@@ -366,7 +370,7 @@ def create() -> None:
                             ui.label(f'{hours}h{minutes}m{seconds}s').classes('col-span-2')
                             ui.label('').classes('col-span-3')
                             ui.label(f"{minSensor} - {maxSensor}").classes('col-span-2')
-                            ui.checkbox('Display Activity', value=False, on_change=lambda e, act=activity: changeList(act)).style('--q-primary: #FFB030')
+                            ui.checkbox('Display Activity', value=False, on_change=make_change_handler(activity)).style('--q-primary: #FFB030')
                     
                     ui.space()
             
