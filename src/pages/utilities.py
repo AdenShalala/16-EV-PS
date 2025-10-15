@@ -4,14 +4,19 @@ from datetime import datetime, timezone
 import api
 
 def header():
-    with ui.left_drawer(fixed=False, elevated=True).props('width=250') as left_drawer:
-        patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps color=grey-8').classes(
+    with ui.left_drawer(fixed=False, elevated=True).props('width=200') as left_drawer:
+        dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: ui.navigate.to('/activity')).props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
         )
-        dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: ui.navigate.to('/activity')).props('flat no-caps color=grey-8').classes(
+        patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
         )
-        account = ui.button('Account', icon='account_circle').props('flat no-caps color=grey-8').classes(
+        
+        account = ui.button('Account', icon='account_circle').props('flat no-caps color=grey-8 align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
+        )
+
+        settings = ui.button('Settings', icon='settings').props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
         )
     if app.storage.user.get('current_page') == '/':
