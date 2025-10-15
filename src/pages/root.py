@@ -1,7 +1,11 @@
 from nicegui import ui, app
 import pages.utilities as utilities
 import api
+from functools import partial
 
+def patientpass(patient):
+    app.storage.user['selected_patient'] = patient.patient_id
+    ui.navigate.to("/activity")
 
 def create() -> None:
     @ui.page('/')
@@ -63,17 +67,8 @@ def create() -> None:
                             full_name = f"{patient.first_name} {patient.last_name}"
                             ui.label(full_name).classes('font-bold text-black text-2xl')
 
-                        ui.button(icon='arrow_forward_ios', color='#FFB030').props('round').classes('text-white')
+                        ui.button(icon='arrow_forward_ios', color='#FFB030').props('round').classes('text-white').on_click(partial(patientpass, patient))
                     ui.separator()
-                    # with ui.row().classes('items-center w-full'):
-                    #     ui.icon('account_circle').classes('text-3xl')
-                    #     full_name = patient.first_name
-                    #     full_name += " "
-                    #     full_name += patient.last_name
-                    #     ui.label(full_name).classes('font-bold')
-                    #     with ui.row().classes('w-full justify-end'):
-                    #         ui.button(icon='arrow_forward_ios', color='#FFB030').classes('text-white items-center').props('round')
-                    # ui.separator()
                     with ui.row().classes('items-center'):
                         with ui.grid(rows=2, columns=4):
                             ui.label('Height (cm)').classes('font-bold')
