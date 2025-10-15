@@ -5,8 +5,16 @@ import api
 
 def header():
     with ui.header().style('background-color: #FFFFFF'):
-        with ui.link(target='/'):
-            ui.image('src/assets/dashboard.png').classes('h-[40px] w-[140px]')
+        with ui.row().classes('w-full justify-between items-center px-2'):
+            with ui.link(target='/'):
+                ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
+
+            def logout():
+                app.storage.user.clear()
+                ui.navigate.to('/login')
+
+            ui.button('Logout', on_click=logout, color='#FFB030').classes(
+            'text-white rounded-md px-6 py-2')
 
 def _to_dt(value):
     if value is None:
