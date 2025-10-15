@@ -133,7 +133,8 @@ def create() -> None:
                     for i, activity_reading in enumerate(activity_readings):
                         sensor = api.get_sensor(app.storage.user.get("selected_patient"), activity_reading.sensor_id, app.storage.user.get("token"))
                         
-                        sensor_name = f"{sensor.sensor_id} ({sensor.sensor_type})"
+                        # sensor name with location and type for display on graph
+                        sensor_name = f"{sensor.location_name.capitalize()} ({sensor.sensor_type})"
                         color = colors[i % len(colors)]
                         
                         # calculate timestamps and pressures for all readings in this sensor
