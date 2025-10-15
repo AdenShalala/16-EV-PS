@@ -42,6 +42,7 @@ def create() -> None:
         seconds = total_seconds % 60
         
         state = {'playing': False, 'current_time': 0, "current_time": 0}
+        global x_axis_unit
         x_axis_unit = 'seconds'
         animation_speed = 1.0
         speed_value = {'current': 1.0}
@@ -50,7 +51,7 @@ def create() -> None:
         
 
         with ui.row().classes('w-full items-end'):
-            ui.label("Activity").classes('text-xl font-semibold ml-[21%]')
+            ui.label("Activity").classes('text-xl font-semibold')
             ui.space()
             
             # playing and pausing graph animation, setting play button to play or pause
@@ -64,9 +65,13 @@ def create() -> None:
                     ui_elements['play_pause_icon'].set_name('play_circle')
 
             def toggle_x_axis_unit(e):
-                new_unit = 'minutes' if x_axis_unit == 'seconds' else 'seconds'
-                x_axis_unit = new_unit
-            
+                global x_axis_unit
+                print(x_axis_unit)
+                if x_axis_unit == 'seconds':
+                    x_axis_unit = 'minutes'
+                else:
+                    x_axis_unit = 'seconds'
+                                    
                 update_x_axis()    
 
             with ui.button(color='#FFB030').classes('rounded-md text-white flex justify-between w-[230px] mr-[4%] p-2 right').on_click(toggle_play):
@@ -82,9 +87,9 @@ def create() -> None:
 
         with ui.row().classes('w-full h-[500px]'):
             # left section for tree
-            with ui.card().classes('w-1/5 border border-[#2C25B2]'):
-                utilities.session_tree()
-            with ui.grid(rows=10).classes('w-3/4 h-[800px]'):
+            # with ui.card().classes('w-1/5 border border-[#2C25B2]'):
+                # utilities.session_tree()
+            with ui.grid(rows=10).classes('w-full h-[800px]'):
                 # main section for graph
                 with ui.card().classes('row-span-7 border border-[#2C25B2]'):
                     with ui.row().classes('w-full justify-between items-center p-4 pb-2'):

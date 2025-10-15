@@ -34,7 +34,7 @@ def create() -> None:
         
         with ui.row().classes('w-full h-full justify-center items-center'):
             with ui.card().classes('w-[300px] border rounded-md border-[#2C25B2]'):
-                email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF] left-2')
-                password = ui.input(password=True, placeholder='Password').classes('w-full border rounded-md border-[#3545FF]')
+                email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF] left-2').on('keydown.enter', checkLogin)
+                password = ui.input(password=True, placeholder='Password').classes('w-full border rounded-md border-[#3545FF]').on('keydown.enter', checkLogin)
                 ui.button('Login', on_click=checkLogin, color='#FFB030').classes('w-full text-white')
                 ui.label('Example username: amy.adams@clinician.com').classes('text-center text-gray-500 text-sm mt-2')

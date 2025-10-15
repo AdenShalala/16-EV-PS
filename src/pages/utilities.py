@@ -4,11 +4,25 @@ from datetime import datetime, timezone
 import api
 
 def header():
-    with ui.header().style('background-color: #FFFFFF'):
+    with ui.left_drawer(fixed=False, elevated=True).props('width=250') as left_drawer:
+        patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps color=grey-8').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
+        )
+        dashboard = ui.button('Dashboard', icon='dashboard').props('flat no-caps color=grey-8').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
+        )
+        account = ui.button('Account', icon='account_circle').props('flat no-caps color=grey-8').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
+        )
+    if app.storage.user.get('current_page') == '/':
+        patients.props('color=blue-700')
+    # elif app.storage.user.get('current_page') == '/':
+    with ui.header(elevated=True).style('background-color: #FFFFFF'):
         with ui.row().classes('w-full justify-between items-center px-2'):
-            with ui.link(target='/'):
-                ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
-
+            with ui.row().classes('items-center gap-4'):
+                with ui.link(target='/'):
+                    ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
+                ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=black')
             def logout():
                 app.storage.user.clear()
                 ui.navigate.to('/login')

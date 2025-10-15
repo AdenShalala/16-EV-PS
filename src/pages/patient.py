@@ -12,7 +12,7 @@ def create() -> None:
         ui.page_title('SocketFit Dashboard')
 
         with ui.row().classes('w-full'):
-            ui.label('User').classes('text-xl font-semibold ml-[21%]')
+            ui.label('Patient').classes('text-xl font-semibold ml-[21%]')
 
         with ui.row().classes('w-full h-[800px]'):
             # remove session_tree() for now if it caused the timestamp error
