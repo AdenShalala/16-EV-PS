@@ -7,14 +7,25 @@ import api
 def create() -> None:
     @ui.page('/login')
     def test():
+            # Dialog for login error, hidden by default
+        with ui.dialog() as error_dialog, ui.card():
+            ui.label('Invalid email or password. Please try again.').classes('text-red-500 text-center')
+            ui.button('OK', on_click=error_dialog.close, color='#FFB030').classes('w-full text-white mt-2')
+            
         def checkLogin():
-            x = api.token(OAuth2PasswordRequestForm(password=password.value, username=email.value))
-            app.storage.user['token'] = x['access_token']
+            try:
+                # Attempt to log in
+                x = api.token(OAuth2PasswordRequestForm(password=password.value, username=email.value))
+                app.storage.user['token'] = x['access_token']
 
-            if x["type"] == "Clinician":
-                ui.navigate.to('/')
-            else:
-                ui.navigate.to('/admin')
+                if x["type"] == "Clinician":
+                    ui.navigate.to('/')
+                else:
+                    ui.navigate.to('/admin')
+            
+            except Exception as e:
+                # If login fails, it will show dialog with error message
+                error_dialog.open()
 
         ui.page_title("SocketFit Dashboard")
         with ui.header().style('background-color: #FFFFFF'):
@@ -26,3 +37,4 @@ def create() -> None:
                 email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF] left-2')
                 password = ui.input(password=True, placeholder='Password').classes('w-full border rounded-md border-[#3545FF]')
                 ui.button('Login', on_click=checkLogin, color='#FFB030').classes('w-full text-white')
+                ui.label('Example username: amy.adams@clinician.com').classes('text-center text-gray-500 text-sm mt-2')
