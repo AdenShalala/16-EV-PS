@@ -3,15 +3,44 @@ from collections import OrderedDict
 from datetime import datetime, timezone
 import api
 
-def header():
-    with ui.left_drawer(fixed=False, elevated=True).props('width=200') as left_drawer:
-        dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: ui.navigate.to('/activity')).props('flat no-caps color=grey-8 align=left').classes(
-            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
-        )
+global toggled
+toggled = False
+
+def booltoggle(left_drawer, arrow):
+    global toggled
+    if left_drawer.value:
+        arrow.icon='arrow_forward'
+    else:
+        arrow.icon='arrow_back'
+    left_drawer.toggle()
+
+def navigatePatient():
+    patients = api.get_patients(app.storage.user.get("token"))
+    if app.storage.user.get('selected_patient') == None or app.storage.user.get('selected_patient') == '' or app.storage.user.get('selected_patient') == ' ':
+        app.storage.user['selected_patient'] = patients[0].patient_id
+    ui.navigate.to('/activity')
+
+def toggle_dark_mode(dark_button):
+    dark = ui.dark_mode()
+    if app.storage.user.get('darkbool') == True:
+        app.storage.user['darkbool'] = False
+        dark.disable()
+        # dark_button.icon='dark_mode'
+        dark_button.name='dark_mode'
+    elif app.storage.user.get('darkbool') == False:
+        app.storage.user['darkbool'] = True
+        dark.enable()
+        # dark_button.icon='light_mode'
+        dark_button.name='light_mode'
+
+def sidebar():
+    with ui.left_drawer(fixed=False, elevated=True,).props('width=200') as left_drawer:
         patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
         )
-        
+        dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: navigatePatient()).props('flat no-caps color=grey-8 align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
+        )
         account = ui.button('Account', icon='account_circle').props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
         )
@@ -19,23 +48,40 @@ def header():
         settings = ui.button('Settings', icon='settings').props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
         )
+    arrow = ui.button(color='white', on_click=lambda: booltoggle(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
+    if left_drawer.value:
+        arrow.icon='arrow_forward'
+    else:
+        arrow.icon='arrow_back'
     if app.storage.user.get('current_page') == '/':
         patients.props('color=blue-700')
     elif app.storage.user['current_page'] == '/activity':
         dashboard.props('color=blue-700')
-    # elif app.storage.user.get('current_page') == '/':
-    with ui.header(elevated=True).style('background-color: #FFFFFF'):
+def header():
+    with ui.header(elevated=True).classes('bg-[#ffffff] dark:bg-[#1d1d1d]'):
         with ui.row().classes('w-full justify-between items-center px-2'):
             with ui.row().classes('items-center gap-4'):
                 with ui.link(target='/'):
                     ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
-                ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=black')
+                # ui.button(on_click=lambda: left_drawer.toggle(left_drawer), icon='menu').props('flat color=black')
             def logout():
                 app.storage.user.clear()
                 ui.navigate.to('/login')
 
-            ui.button('Logout', on_click=logout, color='#FFB030').classes(
-            'text-white rounded-md px-6 py-2')
+            with ui.row().classes('items-center gap-4'):
+                # dark_button = ui.button(on_click=lambda: toggle_dark_mode(dark_button))
+
+                dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(dark_button)).classes('text-black dark:!text-white cursor-pointer text-3xl')
+                if app.storage.user.get('darkbool') == True:
+                    # dark_button = ui.icon('light_mode').on('click', lambda: toggle_dark_mode(dark_button)).classes('dark:!text-white cursor-pointer text-3xl')
+                    # dark_button.icon='light_mode'
+                    dark_button.name='light_mode'
+                elif app.storage.user.get('darkbool') == False:
+                    # dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(dark_button)).classes('text-black cursor-pointer text-3xl')
+                    # dark_button.icon='dark_mode'
+                    dark_button.name='dark_mode'
+                ui.button('Logout', on_click=logout, color='#FFB030').classes(
+                'text-white rounded-md px-6 py-2')
 
 def _to_dt(value):
     if value is None:

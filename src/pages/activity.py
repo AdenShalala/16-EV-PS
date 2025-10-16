@@ -270,8 +270,9 @@ def create_activity_graph(activity, activity_index):
 
 def update_activity_graphs():
     global activityGraphsContainer
-    if activityGraphsContainer:
+    if activityGraphsContainer is not None:
         activityGraphsContainer.clear()
+    if activityGraphsContainer is not None and showActivity:
         with activityGraphsContainer:
             for idx, activity in enumerate(showActivity):
                 create_activity_graph(activity, idx)
@@ -284,8 +285,12 @@ def create() -> None:
         global activityGraphsContainer
         
         app.storage.user['current_page'] = '/activity'
+        if app.storage.user.get('darkbool') == True:
+            dark = ui.dark_mode()
+            dark.enable()
         ui.page_title("SocketFit Dashboard")
         utilities.header()
+        utilities.sidebar() 
         
         with ui.row().classes('w-full'):
             patient = api.get_patient(
@@ -304,17 +309,19 @@ def create() -> None:
         with activity_container:
             with ui.row().classes('w-full'):
                 with ui.card().classes('w-9/10 border rounded-md border-[#3545FF]'):
-                    with ui.grid(columns=24):
-                        ui.label('').classes('col-span-1')
-                        ui.label('Date').classes('col-span-3')
-                        ui.label('').classes('col-span-3')
-                        ui.label('Activity').classes('col-span-2')
-                        ui.label('').classes('col-span-3')
-                        ui.label('Duration').classes('col-span-2')
-                        ui.label('').classes('col-span-3')
-                        ui.label('Pressure').classes('col-span-2')
-                        ui.label('').classes('col-span-2')
-                        ui.label('').classes('col-span-3')
+                    with ui.card().classes('w-full shadow-0 p-0 items-start'):        
+
+                        with ui.grid(columns=24).classes('w-full font-bold'):
+                            ui.label('').classes('col-span-1')
+                            ui.label('Date').classes('col-span-3')
+                            ui.label('').classes('col-span-3')
+                            ui.label('Activity').classes('col-span-2')
+                            ui.label('').classes('col-span-3')
+                            ui.label('Duration').classes('col-span-2')
+                            ui.label('').classes('col-span-3')
+                            ui.label('Pressure').classes('col-span-2')
+                            ui.label('').classes('col-span-3')
+                            ui.label('').classes('col-span-1')
                     
                     for activity in activities:
                         dt_str1 = utilities.normalize_to_str(activity.start_time)
@@ -361,6 +368,8 @@ def create() -> None:
                                 update_activity_graphs()
                             return handler
                         
+                        
+                       
                         with ui.grid(columns=24).classes('border-[2px] border-[#2C25B2] h-16 rounded items-center'):
                             ui.label('').classes('col-span-1')
                             ui.label(utilities.normalize_to_str(activity.start_time)).classes('col-span-3')
@@ -370,8 +379,9 @@ def create() -> None:
                             ui.label(f'{hours}h{minutes}m{seconds}s').classes('col-span-2')
                             ui.label('').classes('col-span-3')
                             ui.label(f"{minSensor} - {maxSensor}").classes('col-span-2')
-                            ui.checkbox('Display Activity', value=False, on_change=make_change_handler(activity)).style('--q-primary: #FFB030')
-                    
+                            ui.label('').classes('col-span-2')
+                            ui.checkbox('Display Activity', value=False, on_change=make_change_handler(activity)).style('--q-primary: #FFB030').classes('col-span-2')
+                            ui.label('').classes('col-span-1')             
                     ui.space()
             
             activityGraphsContainer = ui.column().classes('w-full mt-4')

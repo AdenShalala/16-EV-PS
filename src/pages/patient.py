@@ -9,6 +9,7 @@ def create() -> None:
         app.storage.user['current_page'] = '/patient'
         patient = api.get_patient(patient_id=app.storage.user.get("selected_patient"), token=app.storage.user.get("token"))
         utilities.header()
+        utilities.sidebar()
         ui.page_title('SocketFit Dashboard')
 
         with ui.row().classes('w-full'):
