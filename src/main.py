@@ -56,4 +56,4 @@ session_page.create()
 activity.create()
 
 app.add_static_files('/assets', 'src/assets')
-ui.run(storage_secret=os.getenv("STORAGE_SECRET"), favicon="src/assets/favicon.ico")
+ui.run(storage_secret=os.getenv("STORAGE_SECRET"), favicon="src/assets/favicon.png")

@@ -3,9 +3,14 @@ import pages.utilities as utilities
 import api
 from functools import partial
 
-def patientpass(patient):
+def activitypass(patient):
     app.storage.user['selected_patient'] = patient.patient_id
     ui.navigate.to("/activity")
+
+def patientpass(patient):
+    app.storage.user['selected_patient'] = patient.patient_id
+    ui.navigate.to("/patient")
+
 
 def create() -> None:
     @ui.page('/')
@@ -47,7 +52,7 @@ def create() -> None:
                             with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(partial(patientpass, patient)):
                                 ui.label(f"{patient.first_name} {patient.last_name}").classes('font-bold text-2xl dark:text-white')
 
-                            ui.button(icon='arrow_forward_ios', color='#FFB030').props().classes('text-white').on_click(partial(patientpass, patient))
+                            ui.button(icon='arrow_forward_ios', color='#FFB030').props().classes('text-white').on_click(partial(activitypass, patient))
                         with ui.row().classes('items-center gap-2 w-full'):
                             with ui.grid(rows=1, columns=2).classes(replace='w-full flex justify-between'):
                                 ui.label(patient.email).classes('text-xs text-grey')

@@ -57,28 +57,23 @@ def sidebar():
         patients.props('color=blue-700')
     elif app.storage.user['current_page'] == '/activity':
         dashboard.props('color=blue-700')
+
 def header():
     with ui.header(elevated=True).classes('bg-[#ffffff] dark:bg-[#1d1d1d]'):
         with ui.row().classes('w-full justify-between items-center px-2'):
             with ui.row().classes('items-center gap-4'):
                 with ui.link(target='/'):
                     ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
-                # ui.button(on_click=lambda: left_drawer.toggle(left_drawer), icon='menu').props('flat color=black')
             def logout():
                 app.storage.user.clear()
                 ui.navigate.to('/login')
 
             with ui.row().classes('items-center gap-4'):
-                # dark_button = ui.button(on_click=lambda: toggle_dark_mode(dark_button))
 
-                dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(dark_button)).classes('text-black dark:!text-white cursor-pointer text-3xl')
+                dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(dark_button)).classes('text-grey-8 dark:!text-white cursor-pointer text-3xl')
                 if app.storage.user.get('darkbool') == True:
-                    # dark_button = ui.icon('light_mode').on('click', lambda: toggle_dark_mode(dark_button)).classes('dark:!text-white cursor-pointer text-3xl')
-                    # dark_button.icon='light_mode'
                     dark_button.name='light_mode'
                 elif app.storage.user.get('darkbool') == False:
-                    # dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(dark_button)).classes('text-black cursor-pointer text-3xl')
-                    # dark_button.icon='dark_mode'
                     dark_button.name='dark_mode'
                 ui.button('Logout', on_click=logout, color='#FFB030').classes(
                 'text-white rounded-md px-6 py-2')

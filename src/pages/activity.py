@@ -297,7 +297,7 @@ def create() -> None:
                 patient_id=app.storage.user.get("selected_patient"), 
                 token=app.storage.user.get('token')
             )
-            patient_name = f"{patient.first_name} {patient.last_name} Activities"
+            patient_name = f"{patient.first_name} {patient.last_name}'s Activities"
             ui.label(patient_name).classes('text-xl font-semibold')
         
         activity_container = ui.column().classes('w-full')
