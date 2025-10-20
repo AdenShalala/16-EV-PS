@@ -263,29 +263,64 @@ def makeGraph(activity, fig, graph_data):
 def create() -> None:
     @ui.page("/activity")
     def activity():
-        def handle_theme_change(e):
-            print(e)
-
-        ui.add_head_html('''
-                <script>
-                    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
-                    console.log(`changed to ${e.matches ? "dark" : "light"} mode`)
-                    });
-                </script>
-            ''')
-
         app.storage.user['current_page'] = '/activity'
         ui.page_title("SocketFit Dashboard")
-        ui.on('theme-change', lambda e: handle_theme_change(e))
-        utilities.header()
-        utilities.sidebar() 
 
-        ee = utilities.ee
-        @ee.on('dark-mode')
+        figs = {}
+        plots = {}
+
         def handle_dark(data):
             for id, fig in figs.items():
                 setFigStyling(fig)
                 plots[id].update()
+
+        # GOD THIS IS ANNOYING
+        # We have to replace the header in THIS SPECIFIC PAGE BECAUSE OF PLOTLY :)
+        def toggle_dark_mode(value, button):
+            dark = ui.dark_mode()
+            if value == True:
+                app.storage.user['dark_mode'] = False
+                dark.disable()
+                button.name='dark_mode'
+            else:
+                app.storage.user['dark_mode'] = True
+                dark.enable()
+                button.name='light_mode'
+                
+            handle_dark(value)
+
+
+        def header():
+            if not "dark_mode" in app.storage.user:
+                dark = ui.dark_mode()
+                app.storage.user["dark_mode"] = dark.value
+
+            with ui.header(elevated=True).classes('bg-[#ffffff] dark:bg-[#1d1d1d]'):
+                with ui.row().classes('w-full justify-between items-center px-2'):
+                    with ui.row().classes('items-center gap-4'):
+                        with ui.link(target='/'):
+                            ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
+                    def logout():
+                        api.logout(token=app.storage.user.get("token"))
+                        app.storage.user.clear()
+                        ui.navigate.to('/login')
+
+                    with ui.row().classes('items-center gap-4'):
+
+                        dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(app.storage.user.get("dark_mode"), dark_button)).classes('!text-gray-600 dark:!text-gray-400 cursor-pointer text-3xl')
+                        toggle_dark_mode(not app.storage.user["dark_mode"], dark_button)
+                        if app.storage.user.get('dark_mode') == True:
+                            dark_button.name='light_mode'
+                        elif app.storage.user.get('dark_mode') == False:
+                            dark_button.name='dark_mode'
+                        ui.button('Logout', on_click=logout, color='#FFB030').classes(
+                        'text-white rounded-md px-6 py-2')
+
+        header()
+
+        utilities.sidebar() 
+
+
                       
         # {activity_id: {activity_reading_id: {timestamps, signals, name}}}
         graph_data = {}
@@ -297,8 +332,7 @@ def create() -> None:
         plot_containers = {}
 
         # Figure dictionary
-        figs = {}
-        plots = {}
+
 
         def toggle_graph_visibility(e):
             plot = plot_containers[activity_checkboxes[e.sender]]

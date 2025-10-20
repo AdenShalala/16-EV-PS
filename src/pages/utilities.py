@@ -2,9 +2,7 @@ from nicegui import ui, app
 from collections import OrderedDict
 from datetime import datetime, timezone
 import api
-from pyee import EventEmitter
 
-ee = EventEmitter()
 
 def toggle_sidebar(left_drawer, arrow):
     if left_drawer.value:
@@ -29,8 +27,6 @@ def toggle_dark_mode(value, button):
         app.storage.user['dark_mode'] = True
         dark.enable()
         button.name='light_mode'
-        
-    ee.emit('dark-mode', value)
 
 def sidebar():
     with ui.left_drawer(fixed=False, elevated=True,).props('width=200') as left_drawer:
