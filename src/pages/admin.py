@@ -13,6 +13,8 @@ def create() -> None:
         app.storage.user['current_page'] = '/admin'
         ui.page_title('SocketFit Admin')
         utilities.header()
+        left_drawer = utilities.admin_sidebar()
+        utilities.arrow(left_drawer)
         
 
 

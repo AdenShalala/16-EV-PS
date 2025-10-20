@@ -20,15 +20,18 @@ def create() -> None:
         id = ""
 
         if type(account) == Clinician:
-            utilities.sidebar()
+            left_drawer = utilities.sidebar()
+            utilities.arrow(left_drawer=left_drawer)
             id = account.clinician_id
         elif type(account) == Admin: 
-            utilities.admin_sidebar()
+            left_drawer = utilities.admin_sidebar()
+            utilities.arrow(left_drawer=left_drawer)
+
             id = account.admin_id       
 
 
         with ui.row().classes(' w-full flex justify-center'):
-            with ui.card().classes('w-2/5 justify-center items-center bg-[#F5F5F5] dark:bg-[#0A0A0A] border border-[#2C25B2]'):
+            with ui.card().classes('w-2/5 justify-center items-center bg-[#F5F5F5] dark:bg-[#1d1d1d] border border-[#2C25B2] no-shadow'):
                 if not account:
                     ui.label('Account not loaded yet.').classes('p-4 text-gray-600')
                     return
@@ -40,9 +43,9 @@ def create() -> None:
 
 
                     with ui.row().classes('w-full items-start'):
-                        first_name = ui.input(label='First Name', value=account.first_name).classes('w-full border rounded-md border-[#3545FF]')
-                        last_name = ui.input(label='Last Name', value=account.last_name).classes('w-full border rounded-md border-[#3545FF]')
-                        email = ui.input(label='Email', value=account.email).classes('w-full border rounded-md border-[#3545FF]')
+                        first_name = ui.input(label='First Name', value=account.first_name).classes('w-full border rounded-md border-[#3545FF] p-1')
+                        last_name = ui.input(label='Last Name', value=account.last_name).classes('w-full border rounded-md border-[#3545FF] p-1')
+                        email = ui.input(label='Email', value=account.email).classes('w-full border rounded-md border-[#3545FF] p-1')
 
 
                         def save():

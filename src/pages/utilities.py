@@ -36,8 +36,10 @@ def toggle_dark_mode(value, button):
         dark.enable()
         button.name='light_mode'
 
+
+
 def sidebar():
-    with ui.left_drawer(fixed=False, elevated=True,).props('width=200') as left_drawer:
+    with ui.left_drawer(fixed=False, elevated=False).props('width=200').classes('shadow-2xl') as left_drawer:
         patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
@@ -47,11 +49,8 @@ def sidebar():
         account = ui.button('Account', icon='account_circle', on_click=lambda: ui.navigate.to('/account')).props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
-    arrow = ui.button(color='white', on_click=lambda: toggle_sidebar(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
-    if left_drawer.value:
-        arrow.icon='arrow_forward'
-    else:
-        arrow.icon='arrow_back'
+
+
     if app.storage.user.get('current_page') == '/':
         patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
     elif app.storage.user['current_page'] == '/dashboard':
@@ -59,8 +58,19 @@ def sidebar():
     elif app.storage.user['current_page'] == '/account':
         account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
 
+    return left_drawer
+
+def arrow(left_drawer):
+    arrow = ui.button(color='white', on_click=lambda: toggle_sidebar(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
+    if left_drawer.value:
+        arrow.icon='arrow_forward'
+    else:
+        arrow.icon='arrow_back'
+    
+    return arrow
+
 def admin_sidebar():
-    with ui.left_drawer(fixed=False, elevated=True,).props('width=200') as left_drawer:
+    with ui.left_drawer(fixed=False, elevated=False).props('width=200') as left_drawer:
         clinicians = ui.button('Clinicians', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
@@ -71,11 +81,7 @@ def admin_sidebar():
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
 
-    arrow = ui.button(color='white', on_click=lambda: toggle_sidebar(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
-    if left_drawer.value:
-        arrow.icon='arrow_forward'
-    else:
-        arrow.icon='arrow_back'
+
     if app.storage.user.get('current_page') == '/admin':
         clinicians.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
     elif app.storage.user['current_page'] == '/account':
@@ -83,12 +89,16 @@ def admin_sidebar():
     elif app.storage.user['current_page'] == "/settings":
         settings.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
 
+    return left_drawer
+
+
+
 def header():
     if not "dark_mode" in app.storage.user:
         dark = ui.dark_mode()
         app.storage.user["dark_mode"] = dark.value
 
-    with ui.header(elevated=True).classes('bg-[#ffffff] dark:bg-[#1d1d1d]'):
+    with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
         with ui.row().classes('w-full justify-between items-center px-2'):
             with ui.row().classes('items-center gap-4'):
                 with ui.link(target='/'):

@@ -11,7 +11,6 @@ import pages.root as root
 import pages.admin as admin
 import pages.clinician as clinician
 import pages.patient as patient
-import pages.session as session_page
 import pages.dashboard as dashboard
 import pages.account as account
 
@@ -53,7 +52,6 @@ root.create()
 admin.create()
 clinician.create()
 patient.create()
-session_page.create()
 dashboard.create()
 account.create()
 

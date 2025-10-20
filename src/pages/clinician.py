@@ -26,19 +26,19 @@ def create() -> None:
                 with ui.row():
                     with ui.row().classes('w-2/5 items-start'):
                         with ui.input(label='First Name', value=clinician.first_name) \
-                            .classes('w-full border rounded-md border-[#3545FF]'):
+                            .classes('w-full border rounded-md border-[#3545FF] p-1'):
                             ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
 
                         with ui.input(label='Last Name', value=clinician.last_name) \
-                            .classes('w-full border rounded-md border-[#3545FF]'):
+                            .classes('w-full border rounded-md border-[#3545FF] p-1'):
                             ui.icon('badge').classes('text-black text-3xl h-full flex items-center mr-2')
 
                         with ui.input(label='Email', value=clinician.email) \
-                            .classes('w-full border rounded-md border-[#3545FF]'):
+                            .classes('w-full border rounded-md border-[#3545FF] p-1'):
                             ui.icon('mail').classes('text-black text-3xl h-full flex items-center mr-2')
 
                         with ui.input(label='Clinician ID', value=clinician.clinician_id) \
-                            .classes('w-full border rounded-md border-[#3545FF]'):
+                            .classes('w-full border rounded-md border-[#3545FF] p-1'):
                             ui.icon('person').classes('text-black text-3xl h-full flex items-center mr-2')
 
                     ui.space()

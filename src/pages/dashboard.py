@@ -20,8 +20,8 @@ def setFigStyling(fig):
 
     if app.storage.user.get('dark_mode') == True:
         fig.update_layout(
-            plot_bgcolor='#0A0A0A',
-            paper_bgcolor='#0A0A0A',
+            plot_bgcolor='#202020',
+            paper_bgcolor='#202020',
             font_color='white',
         )
         fig.update_xaxes(linecolor='grey', gridcolor='grey', zeroline=True, zerolinecolor='white', zerolinewidth=1)
@@ -61,7 +61,7 @@ def makeGraph(activity, fig, graph_data):
     ui_elements = {}
     
     
-    plot_container = ui.column().classes('w-full p-4 shadow-2 rounded-md border border-[#3545FF] bg-[#F5F5F5] dark:bg-[#0A0A0A] relative')
+    plot_container = ui.column().classes('w-full p-4 rounded-md border border-[#3545FF] bg-[#F5F5F5] dark:bg-[#1d1d1d] relative')
 
     sensor_types = [
         'Cushion',
@@ -295,7 +295,7 @@ def create() -> None:
                 dark = ui.dark_mode()
                 app.storage.user["dark_mode"] = dark.value
 
-            with ui.header(elevated=True).classes('bg-[#ffffff] dark:bg-[#1d1d1d]'):
+            with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d]'):
                 with ui.row().classes('w-full justify-between items-center px-2'):
                     with ui.row().classes('items-center gap-4'):
                         with ui.link(target='/'):
@@ -312,8 +312,8 @@ def create() -> None:
 
         header()
 
-        utilities.sidebar() 
-
+        left_drawer = utilities.sidebar() 
+        utilities.arrow(left_drawer)
 
                       
         # {activity_id: {activity_reading_id: {timestamps, signals, name}}}
@@ -427,8 +427,8 @@ def create() -> None:
         # Activity container
         with ui.column().classes('w-full'):
             with ui.row().classes('w-full'):
-                with ui.card().classes('w-full border rounded-md bg-[#F5F5F5] dark:bg-[#0A0A0A] border-[#2C25B2]'):
-                    with ui.card().classes('w-full shadow-0 p-0 items-start bg-[#F5F5F5] dark:bg-[#0A0A0A]'):        
+                with ui.card().classes('w-full border rounded-md bg-[#F5F5F5] dark:bg-[#1d1d1d] border-[#2C25B2] no-shadow'):
+                    with ui.card().classes('no-shadow w-full 0 p-0 items-start bg-[#F5F5F5] dark:bg-[#1d1d1d]'):        
 
                         with ui.grid(columns=14).classes('px-2 w-full rounded items-center'):
                             ui.label('Date').classes('col-span-4 font-bold')
@@ -440,7 +440,7 @@ def create() -> None:
                     for activity in activities:
                         data = activity_data[activity.activity_id]
                        
-                        with ui.grid(columns=14).classes('px-2 shadow-1 border-[1.5px] w-full border-[#2C25B2] rounded items-center'):
+                        with ui.grid(columns=14).classes('px-2 border-[1.5px] w-full border-[#3545FF] rounded items-center'):
                             ui.label(datetime.fromtimestamp(activity.start_time).strftime("%A, %B %d, %Y at %I:%M %p")).classes('col-span-4')
                             ui.label(activity.activity_type).classes('col-span-2')
                             ui.label(data["duration"]).classes('col-span-2')

@@ -9,12 +9,13 @@ def create() -> None:
         app.storage.user['current_page'] = '/patient'
         patient = api.get_patient(patient_id=app.storage.user.get("selected_patient"), token=app.storage.user.get("token"))
         utilities.header()
-        utilities.sidebar()
+        left_drawer = utilities.sidebar()
+        utilities.arrow(left_drawer)
         ui.page_title('SocketFit Dashboard')
 
 
         with ui.row().classes(' w-full flex justify-center'):
-            with ui.card().classes('w-2/5 justify-center items-center bg-[#F5F5F5] dark:bg-[#0A0A0A] border border-[#2C25B2]'):
+            with ui.card().classes('no-shadow w-2/5 justify-center items-center bg-[#F5F5F5] dark:bg-[#1d1d1d] border border-[#2C25B2]'):
                 if not patient:
                     ui.label('No patients loaded yet.').classes('p-4 text-gray-600')
                     return
@@ -27,13 +28,13 @@ def create() -> None:
 
 
                     with ui.row().classes('w-full items-start'):
-                        first_name = ui.input(label='First Name', value=patient.first_name).classes('w-full border rounded-md border-[#3545FF]')
-                        last_name = ui.input(label='Last Name', value=patient.last_name).classes('w-full border rounded-md border-[#3545FF]')
-                        email = ui.input(label='Email', value=patient.email).classes('w-full border rounded-md border-[#3545FF]')
-                        weight = ui.number(label='Weight (kg)', value=patient.weight).classes('w-full border rounded-md border-[#3545FF]').props('no-spinners')
-                        height = ui.number(label='Height (cm)', value=patient.height).classes('w-full border rounded-md border-[#3545FF]').props('no-spinners')
-                        amputation = ui.input(label='Amputation Type', value=patient.amputation_type).classes('w-full border rounded-md border-[#3545FF]')
-                        prosthetic = ui.input(label='Prosthetic Type', value=patient.prosthetic_type).classes('w-full border rounded-md border-[#3545FF]')
+                        first_name = ui.input(label='First Name', value=patient.first_name).classes('w-full border rounded-md border-[#3545FF] p-1')
+                        last_name = ui.input(label='Last Name', value=patient.last_name).classes('w-full border rounded-md border-[#3545FF] p-1')
+                        email = ui.input(label='Email', value=patient.email).classes('w-full border rounded-md border-[#3545FF] p-1')
+                        weight = ui.number(label='Weight (kg)', value=patient.weight).classes('w-full border rounded-md border-[#3545FF] p-1').props('no-spinners')
+                        height = ui.number(label='Height (cm)', value=patient.height).classes('w-full border rounded-md border-[#3545FF] p-1').props('no-spinners')
+                        amputation = ui.input(label='Amputation Type', value=patient.amputation_type).classes('w-full border rounded-md border-[#3545FF] p-1')
+                        prosthetic = ui.input(label='Prosthetic Type', value=patient.prosthetic_type).classes('w-full border rounded-md border-[#3545FF] p-1')
                             
                         def save():
                             if not utilities.validate_email(email.value):
