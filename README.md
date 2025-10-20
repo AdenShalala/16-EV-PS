@@ -1,5 +1,6 @@
 # SocketFit Dashboard
 ![Socketfit Dashboard Logo.](/src/assets/dashboard.png "Socketfit Dashboard Logo.")
+
 The SocketFit Dashboard is a clinician dashboard designed to help assist clinicians in viewing patient's prosthesis data in a user friendly way.
 This dashboard is designed to link with the SocketFit mobile application, and can be updated in future for this capability.
 
