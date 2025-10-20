@@ -65,6 +65,30 @@ def get_account_by_email(email: str) -> Clinician | Admin:
         # ????
         return clinician, admin
 
+def verify_email(email: str):
+    result = database.get_clinician_from_email(email)
+
+    if result:
+        return False
+    else:
+        return True
+    
+def verify_patient_email(email: str):
+    result = database.get_patient_from_email(email)
+
+    if result:
+        return False
+    else:
+        return True    
+
+def verify_admin_email(email: str):
+    result = database.get_admin_from_email(email)
+
+    if result:
+        return False
+    else:
+        return True
+
 '''
 POST
 /login -> Creates a session and returns it
@@ -498,3 +522,57 @@ def get_pressure_readings(patient_id: str, activity_id: str, reading_id: str, to
         return database.get_pressure_readings_from_reading_series_id(reading_id)
     except:
         raise server_exception  
+    
+
+@app.put("/api/me")
+def put_me(updated_account: Clinician | Admin, token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
+    
+    account = get_account(session.id)   
+
+    if not account:
+        raise server_exception
+
+    if type(account) == Clinician:
+        try:
+            database.update_clinician(updated_account)
+        except: 
+            raise server_exception
+    else:
+        try:
+            database.update_admin(updated_account)
+        except: 
+            raise server_exception
+        
+@app.put("/api/patient/{patient_id}")
+def put_patient(patient_id: str, updated_patient: Patient, token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
+    
+    account = get_account(session.id)   
+
+    if not account:
+        raise server_exception
+    
+    if type(account) == Clinician:
+        patients = get_patients(token=token)
+
+        found = False
+        
+        for patient in patients:
+            if patient.patient_id == patient_id:
+                found = True
+                break
+
+        if not found:
+            raise unauthorized_exception    
+
+    try:
+        database.update_patient(updated_patient)
+    except: 
+        raise server_exception

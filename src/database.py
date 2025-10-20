@@ -51,6 +51,9 @@ def create_activity_reading(result):
 # SESSIONS #
 ############
 def get_session(session_id: str):
+    """
+    Gets a Session from a session_id
+    """    
     database = get_database()
     cursor = database.cursor()
 
@@ -65,6 +68,9 @@ def get_session(session_id: str):
         return None
 
 def update_session_verified_at(session: Session):
+    """
+    Updates a Session's session_verified_at field
+    """        
     database = get_database()
 
     cursor = database.cursor()
@@ -74,6 +80,10 @@ def update_session_verified_at(session: Session):
     database.close()
 
 def write_session(session: Session):
+    """
+    Writes a Session to the database
+    """    
+
     database = get_database()
 
     cursor = database.cursor()
@@ -84,6 +94,9 @@ def write_session(session: Session):
     database.close()
     
 def delete_session(session_id: str):
+    """
+    Deletes a Session from the database from a session_id
+    """        
     database = get_database()
     cursor = database.cursor()
 
@@ -97,6 +110,9 @@ def delete_session(session_id: str):
 # ADMINS #
 ##########
 def get_admin(admin_id: str):
+    """
+    Gets an Admin from an admin_id
+    """        
     database = get_database()
     cursor = database.cursor()
 
@@ -111,6 +127,9 @@ def get_admin(admin_id: str):
         return None
     
 def get_admin_from_email(email: str):
+    """
+    Gets an Admin from an email
+    """         
     database = get_database()
     cursor = database.cursor()
 
@@ -123,11 +142,28 @@ def get_admin_from_email(email: str):
     else:
         database.close()
         return None
+    
+def update_admin(admin: Admin):
+    """
+    Updates an Admin from an Admin dataclass
+    """         
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("UPDATE Admin SET first_name = %s, last_name = %s, email = %s WHERE admin_id = %s;", 
+                           (admin.first_name, admin.last_name, admin.email, admin.admin_id))
+    
+    database.commit()
+    database.close()    
+
 
 ##############
 # CLINICIANS #
 ##############
 def get_clinician(clinician_id: str):
+    """
+    Gets a Clinician from a clinician_id
+    """         
     database = get_database()
     cursor = database.cursor()
 
@@ -142,6 +178,9 @@ def get_clinician(clinician_id: str):
         return None
     
 def get_clinician_from_email(email: str):
+    """
+    Gets a Clinician from an email
+    """         
     database = get_database()
     cursor = database.cursor()
 
@@ -156,6 +195,9 @@ def get_clinician_from_email(email: str):
         return None
 
 def get_clinicians():
+    """
+    Gets all Clinicians
+    """         
     database = get_database()
     cursor = database.cursor()
 
@@ -172,16 +214,22 @@ def get_clinicians():
     return clinicians
 
 def update_clinician(clinician: Clinician):
+    """
+    Updates a Clinician from a Clinician dataclass
+    """         
     database = get_database()
 
     cursor = database.cursor()
-    cursor.execute("UPDATE Clinician (first_name, last_name, email, password) VALUES (%s, %s, %s, %s)", 
-                           (clinician.first_name, clinician.last_name, clinician.email, clinician.password))
+    cursor.execute("UPDATE Clinician SET first_name = %s, last_name = %s, email = %s WHERE clinician_id = %s;", 
+                           (clinician.first_name, clinician.last_name, clinician.email, clinician.clinician_id))
     
     database.commit()
     database.close()    
 
 def write_clinician(clinician: Clinician):
+    """
+    Writes a Clinician from a Clinician dataclass
+    """         
     database = get_database()
 
     cursor = database.cursor()
@@ -195,6 +243,9 @@ def write_clinician(clinician: Clinician):
 # PATIENTS #
 ############
 def get_patient(patient_id: str):
+    """
+    Gets a Patient from a patient_id
+    """         
     database = get_database()
     cursor = database.cursor()
 
@@ -207,8 +258,28 @@ def get_patient(patient_id: str):
     else:
         database.close()
         return None
+    
+def get_patient_from_email(email: str):
+    """
+    Gets a Patient from an email
+    """         
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Patient WHERE email = %s", (email,))
+    result = cursor.fetchone()
+
+    if result:
+        database.close()
+        return create_patient(result)
+    else:
+        database.close()
+        return None    
 
 def get_patients_from_clinician(clinician: Clinician):
+    """
+    Gets all Patients linked to a Clinician
+    """      
     database = get_database()
     cursor = database.cursor()
 
@@ -226,6 +297,10 @@ def get_patients_from_clinician(clinician: Clinician):
 
 # ensures the patient is from a clinician
 def get_patient_from_clinician(patient_id: str, clinician: Clinician):
+    """
+    Gets a Patient from a patient_id and a Clinician
+    Ensures that the Clinician has access to the patient.
+    """      
     database = get_database()
     cursor = database.cursor()
 
@@ -240,6 +315,9 @@ def get_patient_from_clinician(patient_id: str, clinician: Clinician):
         return None
 
 def get_patients():
+    """
+    Gets all patients.
+    """      
     database = get_database()
     cursor = database.cursor()
 
@@ -256,6 +334,9 @@ def get_patients():
     return patients
 
 def write_patient(patient: Patient):
+    """
+    Gets a Patient from a patient_id
+    """      
     database = get_database()
 
     cursor = database.cursor()
@@ -265,10 +346,26 @@ def write_patient(patient: Patient):
     database.commit()
     database.close()    
 
+def update_patient(patient: Patient):
+    """
+    Gets a Patient from a patient_id
+    """      
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("UPDATE Patient SET first_name = %s, last_name = %s, height = %s, weight = %s, amputation_type = %s, prosthetic_type = %s, email = %s WHERE patient_id = %s;", 
+                           (patient.first_name, patient.last_name, patient.height, patient.weight, patient.amputation_type, patient.prosthetic_type, patient.email, patient.patient_id))
+    
+    database.commit()
+    database.close()        
+
 ##############
 # ACTIVITIES #
 ##############
 def get_activity(activity_id: str): 
+    """
+    Gets an Activity from an activity_id
+    """          
     database = get_database()
     cursor = database.cursor()
 
@@ -282,18 +379,29 @@ def get_activity(activity_id: str):
         database.close()
         return None    
     
-# add close to release the connection
 def get_activities_from_patient_id(patient_id: str):
+    """
+    Gets all Activities connected to a patient
+    """       
     database = get_database()
     cursor = database.cursor()
+
     cursor.execute("SELECT * FROM Activity WHERE patient_id = %s", (patient_id,))
     result = cursor.fetchall()
-    activities = [create_activity(i) for i in result]
-    database.close()          
+
+    activities = []
+
+    for i in result:
+        activities.append(create_activity(i))
+
     return activities
 
 
 def get_activity_from_clinician(activity_id: str, clinician: Clinician):
+    """
+    Gets an activity from an activity_id and a Clinician
+    Ensures clinician has access to activity
+    """       
     patients = get_patients_from_clinician(clinician)
     database = get_database()
     cursor = database.cursor()
@@ -311,6 +419,9 @@ def get_activity_from_clinician(activity_id: str, clinician: Clinician):
 
 
 def get_activities():
+    """
+    Gets all Activities
+    """       
     database = get_database()
     cursor = database.cursor()
 
@@ -327,6 +438,9 @@ def get_activities():
     return activities
 
 def get_activities_from_clinician(clinician: Clinician):
+    """
+    Gets all Activities connected to a Clinician
+    """       
     patients = get_patients_from_clinician(clinician)
 
     database = get_database()
@@ -345,21 +459,12 @@ def get_activities_from_clinician(clinician: Clinician):
 
     return activities
 
-def get_activities_from_patient_id(patient_id: str):
-    database = get_database()
-    cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM Activity WHERE patient_id = %s", (patient_id,))
-    result = cursor.fetchall()
-
-    activities = []
-
-    for i in result:
-        activities.append(create_activity(i))
-
-    return activities
 
 def write_activity(activity: Activity):
+    """
+    Writes an Activity to the database from an Activity dataclass
+    """           
     database = get_database()
 
     cursor = database.cursor()
@@ -374,6 +479,9 @@ def write_activity(activity: Activity):
 ##########
 
 def get_sensor(sensor_id: str):
+    """
+    Gets a Sensor from a sensor_id
+    """           
     database = get_database()
     cursor = database.cursor()
 
@@ -388,11 +496,17 @@ def get_sensor(sensor_id: str):
         return None        
     
 def get_sensors_from_patient_id(patient_id: str):
+    """
+    Gets all Sensors from a patient_id
+    """       
     database = get_database()
     cursor = database.cursor()
+
     cursor.execute("SELECT * FROM Sensor WHERE patient_id = %s", (patient_id,))
     result = cursor.fetchall()
+
     sensors = [create_sensor(i) for i in result]
+
     database.close()          
     return sensors
   
@@ -401,11 +515,17 @@ def get_sensors_from_patient_id(patient_id: str):
 # ACTIVITY READINGS #
 #####################
 def get_activity_readings_from_activity_id(activity_id: str):
+    """
+    Gets all ActivityReadings from an activity_id
+    """           
     database = get_database()
     cursor = database.cursor()
+
     cursor.execute("SELECT * FROM ActivityReading WHERE activity_id = %s", (activity_id,))
     result = cursor.fetchall()
+
     activity_readings = [create_activity_reading(i) for i in result]
+
     database.close()          
     return activity_readings
 
@@ -414,11 +534,17 @@ def get_activity_readings_from_activity_id(activity_id: str):
 # PRESSURE READINGS #
 #####################
 def get_pressure_readings_from_reading_series_id(reading_series_id: str):
+    """
+    Gets all PressureReadings from a reading_series_id
+    """               
     database = get_database()
     cursor = database.cursor()
+
     cursor.execute("SELECT * FROM PressureReading WHERE reading_series_id = %s", (reading_series_id,))
     result = cursor.fetchall()
+
     pressure_readings = [create_pressure_reading(i) for i in result]
+
     database.close()        
     return pressure_readings
 

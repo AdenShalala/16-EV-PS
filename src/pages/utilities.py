@@ -2,7 +2,15 @@ from nicegui import ui, app
 from collections import OrderedDict
 from datetime import datetime, timezone
 import api
+import re
 
+def validate_email(value):
+    email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    if not value:
+        return False
+    if not re.fullmatch(email_regex, value):
+        return False
+    return True
 
 def toggle_sidebar(left_drawer, arrow):
     if left_drawer.value:
@@ -15,7 +23,7 @@ def navigatePatient():
     patients = api.get_patients(app.storage.user.get("token"))
     if app.storage.user.get('selected_patient') == None or app.storage.user.get('selected_patient') == '' or app.storage.user.get('selected_patient') == ' ':
         app.storage.user['selected_patient'] = patients[0].patient_id
-    ui.navigate.to('/activity')
+    ui.navigate.to('/dashboard')
 
 def toggle_dark_mode(value, button):
     dark = ui.dark_mode()
@@ -36,7 +44,7 @@ def sidebar():
         dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: navigatePatient()).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
-        account = ui.button('Account', icon='account_circle').props('flat no-caps color=grey-8 align=left').classes(
+        account = ui.button('Account', icon='account_circle', on_click=lambda: ui.navigate.to('/account')).props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
     arrow = ui.button(color='white', on_click=lambda: toggle_sidebar(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
@@ -46,8 +54,34 @@ def sidebar():
         arrow.icon='arrow_back'
     if app.storage.user.get('current_page') == '/':
         patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
-    elif app.storage.user['current_page'] == '/activity':
+    elif app.storage.user['current_page'] == '/dashboard':
         dashboard.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+    elif app.storage.user['current_page'] == '/account':
+        account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+
+def admin_sidebar():
+    with ui.left_drawer(fixed=False, elevated=True,).props('width=200') as left_drawer:
+        clinicians = ui.button('Clinicians', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
+        )
+        account = ui.button('Account', icon='account_circle').props('flat no-caps color=grey-8 align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
+        )
+        settings = ui.button('Settings', icon='settings').props('flat no-caps color=grey-8 align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
+        )
+
+    arrow = ui.button(color='white', on_click=lambda: toggle_sidebar(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
+    if left_drawer.value:
+        arrow.icon='arrow_forward'
+    else:
+        arrow.icon='arrow_back'
+    if app.storage.user.get('current_page') == '/admin':
+        clinicians.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+    elif app.storage.user['current_page'] == '/account':
+        account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+    elif app.storage.user['current_page'] == "/settings":
+        settings.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
 
 def header():
     if not "dark_mode" in app.storage.user:
@@ -59,10 +93,7 @@ def header():
             with ui.row().classes('items-center gap-4'):
                 with ui.link(target='/'):
                     ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
-            def logout():
-                api.logout(token=app.storage.user.get("token"))
-                app.storage.user.clear()
-                ui.navigate.to('/login')
+
 
             with ui.row().classes('items-center gap-4'):
 
@@ -72,10 +103,6 @@ def header():
                     dark_button.name='light_mode'
                 elif app.storage.user.get('dark_mode') == False:
                     dark_button.name='dark_mode'
-                ui.button('Logout', on_click=logout, color='#FFB030').classes(
-                'text-white rounded-md px-6 py-2')
-
-
 
 def normalize_to_str(value: str | int | float | datetime) -> str:
     """Return time as 'dd-Mon-YYYY HH:MM:SS' string, no tzinfo."""

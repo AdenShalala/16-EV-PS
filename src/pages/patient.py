@@ -27,25 +27,55 @@ def create() -> None:
 
 
                     with ui.row().classes('w-full items-start'):
-                        with ui.input(label='First Name', value=patient.first_name).classes('w-full border rounded-md border-[#3545FF]') as first_name:
-                            ui.button(icon="edit").classes('h-full flex items-center mr-2').props('flat no-caps color=black')
-                        with ui.input(label='Last Name', value=patient.last_name).classes('w-full border rounded-md border-[#3545FF]') as last_name:
-                            last_name.disable()
-                            ui.button(icon="edit").classes('h-full flex items-center mr-2').props('flat no-caps color=black')
-                        with ui.input(label='Email', value=patient.email).classes('w-full border rounded-md border-[#3545FF]') as email:
-                            email.disable()
-                            ui.button(icon="edit").classes('h-full flex items-center mr-2').props('flat no-caps color=black')
-                        with ui.input(label='Weight (kg)', value=patient.weight).classes('w-full border rounded-md border-[#3545FF]') as weight:
-                            weight.disable()
-                            ui.button(icon="edit").classes('h-full flex items-center mr-2').props('flat no-caps color=black')
-                        with ui.input(label='Height (cm)', value=patient.height).classes('w-full border rounded-md border-[#3545FF]') as height:
-                            height.disable()
-                            ui.button(icon="edit").classes('h-full flex items-center mr-2').props('flat no-caps color=black')
-                        with ui.input(label='Amputation Type', value=patient.amputation_type).classes('w-full border rounded-md border-[#3545FF]') as amputation:
-                            amputation.disable()
-                            ui.button(icon="edit").classes('h-full flex items-center mr-2').props('flat no-caps color=black')
-                        with ui.input(label='Prosthetic Type', value=patient.prosthetic_type).classes('w-full border rounded-md border-[#3545FF]') as prosthetic:
-                            prosthetic.disable()
-                            ui.button(icon="edit", on_click=lambda: ui.notify('You clicked me!')).classes('h-full flex items-center mr-2').props('flat no-caps color=black')
+                        first_name = ui.input(label='First Name', value=patient.first_name).classes('w-full border rounded-md border-[#3545FF]')
+                        last_name = ui.input(label='Last Name', value=patient.last_name).classes('w-full border rounded-md border-[#3545FF]')
+                        email = ui.input(label='Email', value=patient.email).classes('w-full border rounded-md border-[#3545FF]')
+                        weight = ui.number(label='Weight (kg)', value=patient.weight).classes('w-full border rounded-md border-[#3545FF]').props('no-spinners')
+                        height = ui.number(label='Height (cm)', value=patient.height).classes('w-full border rounded-md border-[#3545FF]').props('no-spinners')
+                        amputation = ui.input(label='Amputation Type', value=patient.amputation_type).classes('w-full border rounded-md border-[#3545FF]')
+                        prosthetic = ui.input(label='Prosthetic Type', value=patient.prosthetic_type).classes('w-full border rounded-md border-[#3545FF]')
                             
-                    ui.space()
+                        def save():
+                            if not utilities.validate_email(email.value):
+                                ui.notify('Invalid email', color='red')
+                                return
+                            
+                            if len(first_name.value) < 1 or len(last_name.value) < 1:
+                                ui.notify('Invalid name', color='red')
+                                return                                
+                                                             
+                            if not height.value:
+                                ui.notify('Invalid height', color='red')
+                                return   
+
+                            if not weight.value:
+                                ui.notify('Invalid height', color='red')
+                                return                                                             
+
+                            if int(height.value) < 1 or int(height.value) > 300:
+                                ui.notify('Invalid height', color='red')
+                                return                                
+
+                            if int(weight.value) < 1 or int(weight.value) > 1000:
+                                ui.notify('Invalid weight', color='red')
+                                return          
+
+                            if len(amputation.value) < 1:
+                                ui.notify('Invalid amputation type', color='red')
+                                return      
+
+                            if len(prosthetic.value) < 1:
+                                ui.notify('Invalid prosthetic type', color='red')
+                                return                                          
+
+                            patient.first_name = first_name.value
+                            patient.last_name = last_name.value
+                            patient.email = email.value
+                            patient.weight = str(weight.value)
+                            patient.height = str(height.value)
+                            patient.amputation_type = amputation.value
+                            patient.prosthetic_type = prosthetic.value
+                            api.put_patient(patient_id=patient.patient_id, updated_patient=patient, token=app.storage.user.get("token"))
+                            ui.run_javascript('location.reload();')
+
+                        ui.button('Save', on_click=save, color='#FFB030').classes('text-white rounded-md px-6 py-2')

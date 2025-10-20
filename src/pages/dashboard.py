@@ -261,9 +261,9 @@ def makeGraph(activity, fig, graph_data):
     return plot_container, plot
 
 def create() -> None:
-    @ui.page("/activity")
-    def activity():
-        app.storage.user['current_page'] = '/activity'
+    @ui.page("/dashboard")
+    def dashboard():
+        app.storage.user['current_page'] = '/dashboard'
         ui.page_title("SocketFit Dashboard")
 
         figs = {}
@@ -300,10 +300,6 @@ def create() -> None:
                     with ui.row().classes('items-center gap-4'):
                         with ui.link(target='/'):
                             ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
-                    def logout():
-                        api.logout(token=app.storage.user.get("token"))
-                        app.storage.user.clear()
-                        ui.navigate.to('/login')
 
                     with ui.row().classes('items-center gap-4'):
 
@@ -313,8 +309,6 @@ def create() -> None:
                             dark_button.name='light_mode'
                         elif app.storage.user.get('dark_mode') == False:
                             dark_button.name='dark_mode'
-                        ui.button('Logout', on_click=logout, color='#FFB030').classes(
-                        'text-white rounded-md px-6 py-2')
 
         header()
 
@@ -433,10 +427,10 @@ def create() -> None:
         # Activity container
         with ui.column().classes('w-full'):
             with ui.row().classes('w-full'):
-                with ui.card().classes('w-full border rounded-md bg-[#F5F5F5] dark:bg-[#0A0A0A] border-[#3545FF]'):
+                with ui.card().classes('w-full border rounded-md bg-[#F5F5F5] dark:bg-[#0A0A0A] border-[#2C25B2]'):
                     with ui.card().classes('w-full shadow-0 p-0 items-start bg-[#F5F5F5] dark:bg-[#0A0A0A]'):        
 
-                        with ui.grid(columns=14).classes('w-full rounded items-center'):
+                        with ui.grid(columns=14).classes('px-2 w-full rounded items-center'):
                             ui.label('Date').classes('col-span-4 font-bold')
                             ui.label('Activity').classes('col-span-2 font-bold')
                             ui.label('Duration').classes('col-span-2 font-bold')
@@ -446,7 +440,7 @@ def create() -> None:
                     for activity in activities:
                         data = activity_data[activity.activity_id]
                        
-                        with ui.grid(columns=14).classes('border-[1.5px] w-full border-[#2C25B2] rounded items-center'):
+                        with ui.grid(columns=14).classes('px-2 shadow-1 border-[1.5px] w-full border-[#2C25B2] rounded items-center'):
                             ui.label(datetime.fromtimestamp(activity.start_time).strftime("%A, %B %d, %Y at %I:%M %p")).classes('col-span-4')
                             ui.label(activity.activity_type).classes('col-span-2')
                             ui.label(data["duration"]).classes('col-span-2')

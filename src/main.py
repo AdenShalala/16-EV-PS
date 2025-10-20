@@ -12,7 +12,8 @@ import pages.admin as admin
 import pages.clinician as clinician
 import pages.patient as patient
 import pages.session as session_page
-import pages.activity as activity
+import pages.dashboard as dashboard
+import pages.account as account
 
 load_dotenv()
 
@@ -34,7 +35,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             if s.account_type == "Admin":
                 # redirect if admin
-                if not request.url.path.startswith('/_nicegui') and not request.url.path.startswith('/admin'):
+                if not request.url.path.startswith('/_nicegui') and not request.url.path.startswith('/admin') and not request.url.path.startswith('/account') and not request.url.path.startswith('/settings'):
                     return RedirectResponse('/admin')
             else:
                 # redirect if not admin
@@ -53,7 +54,8 @@ admin.create()
 clinician.create()
 patient.create()
 session_page.create()
-activity.create()
+dashboard.create()
+account.create()
 
 app.add_static_files('/assets', 'src/assets')
 ui.run(storage_secret=os.getenv("STORAGE_SECRET"), favicon="src/assets/favicon.png")

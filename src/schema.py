@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+# This file contains the dataclasses for each SQL table
+
 @dataclass
 class Session:
     session_id: str

@@ -5,7 +5,7 @@ import api
 
 def create() -> None:
     @ui.page('/login')
-    def test():
+    def login():
             # Dialog for login error, hidden by default
         with ui.dialog() as error_dialog, ui.card():
             ui.label('Invalid email or password. Please try again.').classes('text-red-500 text-center')

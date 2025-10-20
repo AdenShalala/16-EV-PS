@@ -6,9 +6,9 @@ import pages.utilities as utilities
 import api
 
 # getting activity and navigating
-def activitypass(activity):
+def navigate_dashboard(activity):
     app.storage.user['selected_activity'] = activity.activity_id
-    ui.navigate.to("/activity")
+    ui.navigate.to("/dashboard")
 
 def create() -> None:
     @ui.page('/patient/session')
@@ -138,7 +138,7 @@ def create() -> None:
                                         ui.label(f"{minSensor} - {maxSensor}").classes('col-span-2')
                                         ui.button('View Activity').props('flat').classes(
                                             'col-span-5 text-white text-sm px-3 py-1 rounded-3xl bg-[#FFB030] h-1/2'
-                                        ).on_click(partial(activitypass, activity))
+                                        ).on_click(partial(navigate_dashboard, activity))
                             ui.space()
                 
                 activity_filter.on_value_change(lambda: filter_activities())

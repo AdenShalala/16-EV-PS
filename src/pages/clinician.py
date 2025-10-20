@@ -3,13 +3,6 @@ import pages.utilities as utilities
 import api
 from schema import Clinician
 
-# def _clinicians_tree():
-#     clinicians = app.storage.user.get('clinicians') or []
-#     for c in clinicians:
-#         name = f"{_get(c, 'first_name')} {_get(c, 'last_name')}".strip() or 'Unnamed'
-#         ui.link(name, '#').on('click', lambda _=None, cc=c: navigateClinician(cc)) \
-#                                .style('color: black; text-decoration: none;')
-
 def create() -> None:
     @ui.page('/admin/clinician')
     def clinician():
@@ -22,13 +15,9 @@ def create() -> None:
             ui.label('Admin').classes('text-xl font-semibold ml-[21%]')
 
         with ui.row().classes('w-full h-[800px]'):
-            # LEFT: sidetree (clinicians list)
             with ui.card().classes('w-1/5 h-full border border-[#2C25B2]'):
                 utilities.clinicians_tree()
-                #ui.link('Database Configuration', '/config').style('color: black; text-decoration: none;')
-                #ui.link('Write from file', '/writeFile').style('color: black; text-decoration: none;')
 
-            # RIGHT: clinician info panel
             with ui.card().classes('w-3/4 h-full border border-[#2C25B2]'):
                 if not clinician:
                     ui.label('No clinicians loaded yet.').classes('p-4 text-gray-600')
