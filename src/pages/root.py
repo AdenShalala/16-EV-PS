@@ -42,8 +42,9 @@ def create() -> None:
                             with ui.row().classes('w-full flex justify-between'):
                                 with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(partial(navigate_patient, patient)):
                                     ui.label(f"{patient.first_name} {patient.last_name}").classes('font-bold text-2xl dark:text-white')
-
-                                ui.button(icon='arrow_forward_ios', color='#FFB030').props().classes('text-white').on_click(partial(navigate_dashboard, patient))
+                                with ui.row().classes('w-full justify-end items-center'):
+                                    ui.button(icon='sym_o_info_i', color='#FFB030').classes('text-white').props('round').on_click(partial(navigate_patient, patient))
+                                    ui.button(icon='arrow_forward_ios', color='#FFB030').classes('text-white').on_click(partial(navigate_dashboard, patient))
                             with ui.row().classes('items-center gap-2 w-full'):
                                 with ui.grid(rows=1, columns=2).classes(replace='w-full flex justify-between'):
                                     ui.label(patient.email).classes('text-xs text-grey')
