@@ -14,7 +14,7 @@ def create() -> None:
 
 
         with ui.row().classes(' w-full flex justify-center'):
-            with ui.card().classes('w-1/5 justify-center items-center bg-[#F5F5F5] dark:bg-[#0A0A0A] border border-[#2C25B2]'):
+            with ui.card().classes('w-2/5 justify-center items-center bg-[#F5F5F5] dark:bg-[#0A0A0A] border border-[#2C25B2]'):
                 if not patient:
                     ui.label('No patients loaded yet.').classes('p-4 text-gray-600')
                     return
