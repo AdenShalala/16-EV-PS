@@ -3,11 +3,8 @@ from collections import OrderedDict
 from datetime import datetime, timezone
 import api
 
-global toggled
-toggled = False
 
-def booltoggle(left_drawer, arrow):
-    global toggled
+def toggle_sidebar(left_drawer, arrow):
     if left_drawer.value:
         arrow.icon='arrow_forward'
     else:
@@ -20,208 +17,65 @@ def navigatePatient():
         app.storage.user['selected_patient'] = patients[0].patient_id
     ui.navigate.to('/activity')
 
-def toggle_dark_mode(dark_button):
+def toggle_dark_mode(value, button):
     dark = ui.dark_mode()
-    if app.storage.user.get('darkbool') == True:
-        app.storage.user['darkbool'] = False
+    if value == True:
+        app.storage.user['dark_mode'] = False
         dark.disable()
-        # dark_button.icon='dark_mode'
-        dark_button.name='dark_mode'
-    elif app.storage.user.get('darkbool') == False:
-        app.storage.user['darkbool'] = True
+        button.name='dark_mode'
+    else:
+        app.storage.user['dark_mode'] = True
         dark.enable()
-        # dark_button.icon='light_mode'
-        dark_button.name='light_mode'
+        button.name='light_mode'
 
 def sidebar():
     with ui.left_drawer(fixed=False, elevated=True,).props('width=200') as left_drawer:
-        patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps color=grey-8 align=left').classes(
-            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
+        patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
-        dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: navigatePatient()).props('flat no-caps color=grey-8 align=left').classes(
-            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
+        dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: navigatePatient()).props('flat no-caps align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
         account = ui.button('Account', icon='account_circle').props('flat no-caps color=grey-8 align=left').classes(
-            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
-
-        settings = ui.button('Settings', icon='settings').props('flat no-caps color=grey-8 align=left').classes(
-            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0'
-        )
-    arrow = ui.button(color='white', on_click=lambda: booltoggle(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
+    arrow = ui.button(color='white', on_click=lambda: toggle_sidebar(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
     if left_drawer.value:
         arrow.icon='arrow_forward'
     else:
         arrow.icon='arrow_back'
     if app.storage.user.get('current_page') == '/':
-        patients.props('color=blue-700')
+        patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
     elif app.storage.user['current_page'] == '/activity':
-        dashboard.props('color=blue-700')
+        dashboard.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
 
 def header():
+    if not "dark_mode" in app.storage.user:
+        dark = ui.dark_mode()
+        app.storage.user["dark_mode"] = dark.value
+
     with ui.header(elevated=True).classes('bg-[#ffffff] dark:bg-[#1d1d1d]'):
         with ui.row().classes('w-full justify-between items-center px-2'):
             with ui.row().classes('items-center gap-4'):
                 with ui.link(target='/'):
                     ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
             def logout():
+                api.logout(token=app.storage.user.get("token"))
                 app.storage.user.clear()
                 ui.navigate.to('/login')
 
             with ui.row().classes('items-center gap-4'):
 
-                dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(dark_button)).classes('text-grey-8 dark:!text-white cursor-pointer text-3xl')
-                if app.storage.user.get('darkbool') == True:
+                dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(app.storage.user.get("dark_mode"), dark_button)).classes('!text-gray-600 dark:!text-gray-400 cursor-pointer text-3xl')
+                toggle_dark_mode(not app.storage.user["dark_mode"], dark_button)
+                if app.storage.user.get('dark_mode') == True:
                     dark_button.name='light_mode'
-                elif app.storage.user.get('darkbool') == False:
+                elif app.storage.user.get('dark_mode') == False:
                     dark_button.name='dark_mode'
                 ui.button('Logout', on_click=logout, color='#FFB030').classes(
                 'text-white rounded-md px-6 py-2')
 
-def _to_dt(value):
-    if value is None:
-        return None
-    if isinstance(value, (int, float)):                  
-        return datetime.fromtimestamp(value, tz=timezone.utc)
-    if isinstance(value, datetime):
-        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
-    if isinstance(value, str):
-        v = value.strip()
-        if v.isdigit():                                  
-            return datetime.fromtimestamp(int(v), tz=timezone.utc)
-        for fmt in ('%d-%b-%Y %H:%M:%S',
-                    '%Y-%m-%d %H:%M:%S',
-                    '%Y-%m-%dT%H:%M:%S',
-                    '%Y-%m-%d'):
-            try:
-                return datetime.strptime(v, fmt).replace(tzinfo=timezone.utc)
-            except ValueError:
-                pass
-    raise TypeError(f'Unsupported timestamp: {value!r}')
 
-def _get(obj, name, default=None):
-    return obj.get(name, default) if isinstance(obj, dict) else getattr(obj, name, default)
-
-def _date_label(dt: datetime) -> str:
-    return dt.astimezone().strftime('%d %b %Y')  # e.g., "31 Aug 2023"
-
-# ---------- sidebar tree for sessions & patients ----------
-def session_tree():
-    current_page = app.storage.user.get('current_page', '')
-    selected_patient = app.storage.user.get('selected_patient')
-    if current_page == '/activity':
-        activity = api.get_activity(app.storage.user.get("selected_patient"), app.storage.user.get("selected_activity"), app.storage.user.get("token"))
-        selected_session_date = activity.activity_id
-    else: 
-        selected_session_date = None
-
-    seen_dates = OrderedDict()
-    for activity in api.get_activities(app.storage.user.get("selected_patient"), app.storage.user.get("token")):
-        dt1 = _to_dt(activity.start_time)
-        date_label = _date_label(dt1)
-        
-        if activity.activity_id not in seen_dates:
-            # Combine date and activity type first, then apply bold to the whole thing
-            full_label = date_label + " " + activity.activity_type
-            label = full_label
-            seen_dates[activity.activity_id] = {'id': activity.activity_id, 'label': label}
-
-    session_date_nodes = list(seen_dates.values())
-
-    patient_nodes = []
-    for patient in api.get_patients(token=app.storage.user.get("token")):
-        full_name = f"{patient.first_name} {patient.last_name}"
-        patient_nodes.append({
-            'id': f'patient.{patient.patient_id}',
-            'label': full_name
-        })
-
-    expand_nodes = ['Patient Records']
-    if current_page == '/patient/session' or current_page == '/activity':
-        expand_nodes.append('Session History')
-    if current_page == '/patient':
-        expand_nodes.append('Patient Information')
-
-    tree_data = [{
-        'id': 'Patient Records',
-        'label': 'Patient Records',
-        'children': [
-            {
-                'id': 'Patient Information',
-                'label': 'Patient Information',
-                'children': patient_nodes,
-            },
-            {
-                'id': 'Session History',
-                'label': 'Session History',
-                'children': session_date_nodes,
-            },
-        ],
-    }]
-
-    ui.tree(tree_data, label_key='label', on_select=on_tree_select).expand(expand_nodes)
-
-def on_tree_select(e):
-    label_to_path = {
-        'Patient Records': '/',
-        'Patient Information': '/patient',
-        'Session History': '/patient/session',
-    }
-
-    selected = e.value
-
-
-
-    if isinstance(selected, str) and selected.startswith('patient.'):
-        id = int(selected.split('.')[-1])
-        app.storage.user['selected_patient'] = id
-        patient = api.get_patient(patient_id=id, token=app.storage.user.get("token"))
-
-        #app.storage.user['patient'] = selected_patient
-        ui.navigate.to('/patient')
-        return
-
-    # Check if selected is an activity_id
-    # for activity in app.storage.user.get('activityList', []):
-    #     activity_id = _get(activity, 'activity_id')
-    #     if activity_id == selected:
-    #         app.storage.user['selected_session_date'] = selected  # Store the activity_id
-    #         app.storage.user['activity'] = activity
-    #         #ActivityPage.navigateActivity()
-    #         return
-
-    if selected in label_to_path:
-        if selected == 'Session History':
-            app.storage.user['filter_date'] = None
-            app.storage.user['selected_session_date'] = None
-        ui.navigate.to(label_to_path[selected])
-
-def patients_tree():
-    patients = []
-    for patient in api.get_patients(token=app.storage.user.get("token")):
-        patients.append({
-            'id': f'patient.{patient.patient_id}',
-            'label': f"{patient.first_name} {patient.last_name}"
-        })
-    tree_data = [{
-        'id': 'Patient Records',
-        'label': 'Patient Records',
-        'children': patient,
-    }]
-    ui.tree(tree_data, label_key='label', on_select=on_tree_select).expand(['Patient Records'])
-
-def on_clinician_tree_select(e):
-    node_id = e.value
-    
-    if node_id == "Clinician Records":
-        ui.navigate.to('/admin')
-
-    if not node_id or not node_id.startswith('clinician.'):
-        return
-    id = node_id.split('.', 1)[1]
-
-    app.storage.user['selected_clinician'] = id
-    ui.navigate.to('/admin/clinician')
 
 def normalize_to_str(value: str | int | float | datetime) -> str:
     """Return time as 'dd-Mon-YYYY HH:MM:SS' string, no tzinfo."""
@@ -255,25 +109,3 @@ def normalize_to_str(value: str | int | float | datetime) -> str:
             continue
 
     raise ValueError(f"Unsupported datetime format: {value!r}")
-
-def clinicians_tree():
-    current_page = app.storage.user.get('current_page', '')
-    clinicians = api.get_clinicians(token=app.storage.user.get("token"))
-    clinician_nodes = []
-    for clinician in clinicians:
-        full_name = f'{clinician.first_name} {clinician.last_name}'.strip() or 'Unnamed'
-        clinician_nodes.append({
-            'id': f'clinician.{clinician.clinician_id}',
-            'label': full_name,
-        })
-
-    tree_data = [{
-        'id': 'Clinician Records',
-        'label': 'Clinician Records',
-        'children': clinician_nodes,
-    }]
-
-   
-    ui.tree(tree_data, label_key='label', on_select=on_clinician_tree_select) \
-      .expand(['Clinician Records'] if current_page in {'/admin/clinician', '/admin'} else [])
-
