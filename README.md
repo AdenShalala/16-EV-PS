@@ -17,21 +17,21 @@ or use Docker Desktop to run the containers.
 
 Alternatively, you can host it locally:
 ```
-    sudo apt update && sudo apt upgrade
-    sudo apt install mysql-server python3 python3-pip python3-venv
-    sudo mysql -u root
-    CREATE DATABASE socketfit;
-    // Note, you can create a user here opposed to altering root.
-    ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'password';
-    FLUSH PRIVILEGES;
-    use socketfit;
-    SOURCE /src/sql/create.sql;
-    SOURCE /src/sql/populate.sql;
-    exit
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install -r ./requirements.txt
-    python3 ./src/main.py
+sudo apt update && sudo apt upgrade
+sudo apt install mysql-server python3 python3-pip python3-venv
+sudo mysql -u root
+CREATE DATABASE socketfit;
+// Note, you can create a user here opposed to altering root.
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'password';
+FLUSH PRIVILEGES;
+use socketfit;
+SOURCE /src/sql/create.sql;
+SOURCE /src/sql/populate.sql;
+exit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r ./requirements.txt
+python3 ./src/main.py
 ```
 This process is for Ubuntu, but you follow the logical steps for each operating system: Install MySQL and Python3.12, fill out the database with the test data, and run the ./src/main.py file in a virtual environment after installing dependencies.
 Please note if you host it locally you need to create a .env file and fill it out with the details you used in setup, for example:
