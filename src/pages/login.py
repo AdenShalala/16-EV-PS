@@ -27,7 +27,6 @@ def create() -> None:
                 ui.notify('Invalid email or password. Please try again.', color='red')
                 # error_dialog.open()
 
-        app.storage.user['darkbool'] = False
         ui.page_title("SocketFit Dashboard")
         with ui.header().style('background-color: #FFFFFF'):
             with ui.row().classes('w-full justify-center items-center'):

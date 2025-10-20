@@ -182,6 +182,22 @@ def post_patient(patient: Patient, token: Annotated[OAuth2PasswordRequestForm, D
 ###############
 # GET METHODS #
 ###############
+@app.get('/api/logout')
+def logout(token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
+    
+    account = get_account(session.id)
+    
+    if not account:
+        raise server_exception
+
+    sessions.delete_session(session)
+    return 200
+
+
 
 @app.get('/api/me')
 def get_me(token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
