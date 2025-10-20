@@ -576,3 +576,23 @@ def put_patient(patient_id: str, updated_patient: Patient, token: Annotated[Clin
         database.update_patient(updated_patient)
     except: 
         raise server_exception
+    
+@app.put("/api/patient/{patient_id}")
+def put_clinician(clinician_id: str, updated_clinician: Clinician, token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
+    
+    account = get_account(session.id)   
+
+    if not account:
+        raise server_exception
+    
+    if type(account) != Admin:
+        raise unauthorized_exception    
+
+    try:
+        database.update_clinician(updated_clinician)
+    except: 
+        raise server_exception

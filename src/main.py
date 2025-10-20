@@ -13,8 +13,12 @@ import pages.clinician as clinician
 import pages.patient as patient
 import pages.dashboard as dashboard
 import pages.account as account
+import pages.settings as settings
 
 load_dotenv()
+
+admin_pages = {'/admin', '/clinician', 'settings', '/docs'}
+clinician_pages = {'/dashboard', '/patient', '/'}
 
 class AuthMiddleware(BaseHTTPMiddleware):
     """This middleware restricts access to all NiceGUI pages.
@@ -34,18 +38,18 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
             if s.account_type == "Admin":
                 # redirect if admin
-                if not request.url.path.startswith('/_nicegui') and not request.url.path.startswith('/admin') and not request.url.path.startswith('/account') and not request.url.path.startswith('/settings'):
+                if not request.url.path.startswith('/_nicegui') and request.url.path in clinician_pages:
                     return RedirectResponse('/admin')
             else:
                 # redirect if not admin
-                if not request.url.path.startswith('/_nicegui') and request.url.path.startswith('/admin'):
+                if not request.url.path.startswith('/_nicegui') and request.url.path in admin_pages:
                     return RedirectResponse('/')
                 
         return await call_next(request)
 
 
 app.add_middleware(AuthMiddleware)
-
+from argon2 import PasswordHasher
 
 login.create()
 root.create()
@@ -54,6 +58,9 @@ clinician.create()
 patient.create()
 dashboard.create()
 account.create()
+settings.create()
+
+ph = PasswordHasher()
 
 app.add_static_files('/assets', 'src/assets')
-ui.run(storage_secret=os.getenv("STORAGE_SECRET"), favicon="src/assets/favicon.png")
+ui.run(storage_secret=os.getenv("STORAGE_SECRET"), favicon="src/assets/favicon.png", fastapi_docs=True)

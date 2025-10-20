@@ -156,6 +156,19 @@ def update_admin(admin: Admin):
     database.commit()
     database.close()    
 
+def write_admin(admin: Admin):
+    """
+    Writes an Admin from an Admin dataclass
+    """         
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO Admin (admin_id, first_name, last_name, email, password) VALUES (%s, %s, %s, %s, %s)", 
+                           (admin.admin_id, admin.first_name, admin.last_name, admin.email, admin.password))
+    
+    database.commit()
+    database.close()        
+
 
 ##############
 # CLINICIANS #
@@ -233,8 +246,8 @@ def write_clinician(clinician: Clinician):
     database = get_database()
 
     cursor = database.cursor()
-    cursor.execute("INSERT INTO Clinician (clinician_id, first_name, last_name, email, password, created_at) VALUES (%s, %s, %s, %s, %s, %s)", 
-                           (clinician.clinician_id, clinician.first_name, clinician.last_name, clinician.email, clinician.password, datetime.now(),))
+    cursor.execute("INSERT INTO Clinician (clinician_id, first_name, last_name, email, password) VALUES (%s, %s, %s, %s, %s)", 
+                           (clinician.clinician_id, clinician.first_name, clinician.last_name, clinician.email, clinician.password,))
     
     database.commit()
     database.close()
@@ -511,6 +524,19 @@ def get_sensors_from_patient_id(patient_id: str):
     return sensors
   
 
+def write_sensor(sensor: Sensor):
+    """
+    Writes a Sensor to the database from a Sensor dataclass
+    """           
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO Sensor (sensor_id, patient_id, sensor_type, location_name, location_id, sensor_location_id, is_connected) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
+                           (sensor.sensor_id, sensor.patient_id, sensor.sensor_type, sensor.location_name, sensor.location_id, sensor.sensor_location_id, sensor.is_connected,))
+    
+    database.commit()
+    database.close()         
+
 #####################
 # ACTIVITY READINGS #
 #####################
@@ -530,6 +556,19 @@ def get_activity_readings_from_activity_id(activity_id: str):
     return activity_readings
 
 
+def write_activity_reading(activity_reading: ActivityReading):
+    """
+    Writes an ActivityReading to the database from an ActivityReading dataclass
+    """           
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO ActivityReading (activity_id, reading_series_id, sensor_id) VALUES (%s, %s, %s)", 
+                           (activity_reading.activity_id, activity_reading.reading_series_id, activity_reading.sensor_id,))
+    
+    database.commit()
+    database.close()         
+
 #####################
 # PRESSURE READINGS #
 #####################
@@ -548,3 +587,16 @@ def get_pressure_readings_from_reading_series_id(reading_series_id: str):
     database.close()        
     return pressure_readings
 
+
+def write_pressure_reading(pressure_reading: PressureReading):
+    """
+    Writes a PressureReading to the database from a PressureReading dataclass
+    """           
+    database = get_database()
+
+    cursor = database.cursor()
+    cursor.execute("INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES (%s, %s, %s, %s, %s)", 
+                           (pressure_reading.pressure_reading_id, pressure_reading.pressure_value, pressure_reading.time, pressure_reading.is_uploaded, pressure_reading.reading_series_id,))
+    
+    database.commit()
+    database.close()

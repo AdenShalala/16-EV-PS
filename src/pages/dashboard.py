@@ -20,8 +20,8 @@ def setFigStyling(fig):
 
     if app.storage.user.get('dark_mode') == True:
         fig.update_layout(
-            plot_bgcolor='#202020',
-            paper_bgcolor='#202020',
+            plot_bgcolor='#1d1d1d',
+            paper_bgcolor='#1d1d1d',
             font_color='white',
         )
         fig.update_xaxes(linecolor='grey', gridcolor='grey', zeroline=True, zerolinecolor='white', zerolinewidth=1)
@@ -256,6 +256,7 @@ def makeGraph(activity, fig, graph_data):
         fig.update_xaxes(range=get_axis_range(current_unit))
 
         plot = ui.plotly(fig).classes('w-full h-[500px]')  
+        plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
         ui_elements['plot'] = plot
 
     return plot_container, plot
@@ -295,7 +296,7 @@ def create() -> None:
                 dark = ui.dark_mode()
                 app.storage.user["dark_mode"] = dark.value
 
-            with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d]'):
+            with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
                 with ui.row().classes('w-full justify-between items-center px-2'):
                     with ui.row().classes('items-center gap-4'):
                         with ui.link(target='/'):
@@ -324,6 +325,10 @@ def create() -> None:
         activity_checkboxes = {}
         # plot cotnainer dictionary
         plot_containers = {}
+
+        filter_icons = {}
+        current_filter = "Date"
+        descending = True
 
         # Figure dictionary
 
@@ -424,6 +429,10 @@ def create() -> None:
                 "duration": f'{hours}h{minutes}m{seconds}s',
             }
 
+        def filter_activities(filter_type: str):
+            global current_filter
+            print(current_filter)
+
         # Activity container
         with ui.column().classes('w-full'):
             with ui.row().classes('w-full'):
@@ -431,11 +440,21 @@ def create() -> None:
                     with ui.card().classes('no-shadow w-full 0 p-0 items-start bg-[#F5F5F5] dark:bg-[#1d1d1d]'):        
 
                         with ui.grid(columns=14).classes('px-2 w-full rounded items-center'):
-                            ui.label('Date').classes('col-span-4 font-bold')
-                            ui.label('Activity').classes('col-span-2 font-bold')
-                            ui.label('Duration').classes('col-span-2 font-bold')
-                            ui.label('Pressure').classes('col-span-3 font-bold')
-                            ui.label('Display').classes('col-span-3 font-bold')
+                            with ui.button(on_click=filter_activities).classes('px-0 col-span-4').props('flat no-caps color=black align="left"'):
+                                button = ui.label("Date").classes('font-bold dark:text-white')
+                                filter_icons["Date"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white')
+                            with ui.button().classes('px-0 col-span-2').props('flat no-caps color=black align="left"'):
+                                button = ui.label("Activity").classes('font-bold dark:text-white')
+                                filter_icons["Activity"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white').set_visibility(False)
+                            with ui.button().classes('px-0 col-span-2').props('flat no-caps color=black align="left"'):
+                                button = ui.label("Duration").classes('font-bold dark:text-white')
+                                filter_icons["Duration"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white').set_visibility(False)
+                            with ui.button().classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
+                                button = ui.label("Pressure").classes('font-bold dark:text-white')
+                                filter_icons["Pressure"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white').set_visibility(False)
+                            with ui.button().classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
+                                button = ui.label("Display").classes('font-bold dark:text-white')
+                                filter_icons["Button"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white').set_visibility(False)
                     
                     for activity in activities:
                         data = activity_data[activity.activity_id]

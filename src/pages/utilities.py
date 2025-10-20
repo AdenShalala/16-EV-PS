@@ -25,6 +25,18 @@ def navigatePatient():
         app.storage.user['selected_patient'] = patients[0].patient_id
     ui.navigate.to('/dashboard')
 
+def navigate_patient_details():
+    if app.storage.user.get('selected_patient') == None or app.storage.user.get('selected_patient') == '' or app.storage.user.get('selected_patient') == ' ':
+        ui.notify('Please select a patient.', type='warning')
+    else:
+        ui.navigate.to('/patient')
+
+def navigate_clinician_details():
+    if app.storage.user.get('selected_clinician') == None or app.storage.user.get('selected_clinician') == '' or app.storage.user.get('selected_clinician') == ' ':
+        ui.notify('Please select a clinician.', type='warning')
+    else:
+        ui.navigate.to('/clinician')
+
 def toggle_dark_mode(value, button):
     dark = ui.dark_mode()
     if value == True:
@@ -43,6 +55,9 @@ def sidebar():
         patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
+        details = ui.button('Details', icon='person', on_click=lambda: navigate_patient_details()).props('flat no-caps align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
+        )        
         dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: navigatePatient()).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
@@ -53,6 +68,8 @@ def sidebar():
 
     if app.storage.user.get('current_page') == '/':
         patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+    elif app.storage.user['current_page'] == '/patient':
+        details.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')        
     elif app.storage.user['current_page'] == '/dashboard':
         dashboard.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
     elif app.storage.user['current_page'] == '/account':
@@ -69,25 +86,33 @@ def arrow(left_drawer):
     
     return arrow
 
+
+
 def admin_sidebar():
-    with ui.left_drawer(fixed=False, elevated=False).props('width=200') as left_drawer:
-        clinicians = ui.button('Clinicians', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
+    with ui.left_drawer(fixed=False, elevated=False).props('width=200').classes('shadow-2xl') as left_drawer:
+        clinicians = ui.button('Clinicians', icon='groups', on_click=lambda: ui.navigate.to('/admin')).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
-        account = ui.button('Account', icon='account_circle').props('flat no-caps color=grey-8 align=left').classes(
+        details = ui.button('Details', icon='person', on_click=lambda: navigate_clinician_details()).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
-        settings = ui.button('Settings', icon='settings').props('flat no-caps color=grey-8 align=left').classes(
+        account = ui.button('Account', icon='account_circle', on_click=lambda: ui.navigate.to('/account')).props('flat no-caps color=grey-8 align=left').classes(
+            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
+        )
+        settings = ui.button('Settings', icon='settings', on_click=lambda: ui.navigate.to('/settings')).props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
 
 
     if app.storage.user.get('current_page') == '/admin':
         clinicians.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+    elif app.storage.user['current_page'] == '/clinician':
+        details.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
     elif app.storage.user['current_page'] == '/account':
         account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
     elif app.storage.user['current_page'] == "/settings":
         settings.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+    
 
     return left_drawer
 

@@ -20,8 +20,7 @@ CREATE TABLE IF NOT EXISTS Clinician (
     first_name           VARCHAR(100) NOT NULL,
     last_name            VARCHAR(100) NOT NULL,
     email          VARCHAR(100) NOT NULL UNIQUE,
-    password  VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL
+    password  VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Patient (
@@ -48,7 +47,6 @@ CREATE TABLE IF NOT EXISTS Activity (
     patient_id VARCHAR(50),
     FOREIGN KEY (patient_id) REFERENCES Patient(patient_id)
 );
-
 
 
 CREATE TABLE IF NOT EXISTS Sensor (

@@ -27,7 +27,6 @@ class Clinician:
     last_name: str    
     email: str
     password: str
-    created_at: datetime
 
 @dataclass
 class Patient:

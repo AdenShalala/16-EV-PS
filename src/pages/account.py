@@ -15,15 +15,17 @@ def create() -> None:
         account = api.get_me(token=app.storage.user.get("token", None))
         utilities.header()
         
-        ui.page_title('SocketFit Dashboard')
+        
         
         id = ""
 
         if type(account) == Clinician:
+            ui.page_title('SocketFit Dashboard')
             left_drawer = utilities.sidebar()
             utilities.arrow(left_drawer=left_drawer)
             id = account.clinician_id
         elif type(account) == Admin: 
+            ui.page_title('SocketFit Admin')
             left_drawer = utilities.admin_sidebar()
             utilities.arrow(left_drawer=left_drawer)
 
