@@ -11,6 +11,10 @@ def navigate_patient(patient):
     app.storage.user['selected_patient'] = patient.patient_id
     ui.navigate.to("/patient")
 
+def sort(e):
+  return f'{e.first_name} {e.last_name}'
+
+
 
 def create() -> None:
     @ui.page('/')
@@ -23,11 +27,16 @@ def create() -> None:
         utilities.header()
         left_drawer = utilities.sidebar()
         
+        options = []
 
+        patients.sort(key=sort)
+
+        for patient in patients:
+            options.append(f'{patient.first_name} {patient.last_name}')
 
         with ui.row().classes('w-full h-full justify-between'):
             arrow = utilities.arrow(left_drawer)
-            patient_search = ui.input(placeholder='Search').classes('border-[#2C25B2] border rounded-md p-1').props('autocomplete="off"').on_value_change(lambda: patients_display())
+            patient_search = ui.input(placeholder='Search', autocomplete=options).classes('border-[#2C25B2] border rounded-md p-1').on_value_change(lambda: patients_display())
 
         patients_container = ui.row().classes('w-full h-full')
         def patients_display():
@@ -42,7 +51,7 @@ def create() -> None:
                             with ui.row().classes('w-full flex justify-between'):
                                 with ui.row().classes('w-full justify-between items-center'):
                                     with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(partial(navigate_patient, patient)):
-                                        ui.icon('sym_o_info_i').classes('text-white bg-[#FFB030] rounded-full mr-2 shadow-md').props('round')
+                                        ui.icon('sym_o_info_i').classes('text-white bg-[#FFB030] rounded-md mr-2 shadow-md').props('round')
                                         ui.label(f"{patient.first_name} {patient.last_name}").classes('font-bold text-2xl dark:text-white')
 
                                     

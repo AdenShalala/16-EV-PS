@@ -119,6 +119,7 @@ def makeGraph(activity, fig, graph_data):
         fig.update_xaxes(range=get_axis_range(current_unit))
         
         ui_elements['plot'].update()
+        ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
     def interpolate_signal(timestamps, signals, target_time):
         if not timestamps or not signals:
@@ -171,13 +172,14 @@ def makeGraph(activity, fig, graph_data):
                 fig.data[dot_idx].y = [signal_value]
 
         ui_elements['plot'].update()
+        ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
     timer = ui.timer(interval=0.1, callback=update_dots, active=False)
     ui_elements['timer'] = timer
 
 
     with plot_container:
-        with ui.row().classes('w-full items-center justify-between'):
+        with ui.row().classes('w-full flex items-center justify-between'):
             with ui.grid(rows=2, columns=1).classes(replace=''):
                 ui.label(f'{activity.activity_type} - {dt_str_1}').classes('text-lg font-semibold')      
                 ui.label(activity.activity_id).classes('py-2 text-xs text-grey')
@@ -253,11 +255,10 @@ def makeGraph(activity, fig, graph_data):
 
         setFigStyling(fig)
         fig.update_layout(xaxis_title=get_axis_label(current_unit))
-        fig.update_layout(autosize=True)
         fig.update_xaxes(range=get_axis_range(current_unit))
 
         plot = ui.plotly(fig).classes('w-full h-[500px]')  
-        plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
+        plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
         ui_elements['plot'] = plot
 
     return plot_container, plot
@@ -275,6 +276,7 @@ def create() -> None:
             for id, fig in figs.items():
                 setFigStyling(fig)
                 plots[id].update()
+                plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
         # GOD THIS IS ANNOYING
         # We have to replace the header in THIS SPECIFIC PAGE BECAUSE OF PLOTLY :)
@@ -297,14 +299,18 @@ def create() -> None:
                 dark = ui.dark_mode()
                 app.storage.user["dark_mode"] = dark.value
 
+            me = api.get_me(token=app.storage.user.get("token"))
+
             with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
                 with ui.row().classes('w-full justify-between items-center px-2'):
                     with ui.row().classes('items-center gap-4'):
                         with ui.link(target='/'):
                             ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
 
-                    with ui.row().classes('items-center gap-4'):
 
+                    with ui.row().classes('items-center gap-4'):
+                        with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
+                            ui.label(f'{me.first_name} {me.last_name} [{type(me).__name__}]').classes(' font-bold !text-gray-600 dark:!text-gray-400')
                         dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(app.storage.user.get("dark_mode"), dark_button)).classes('!text-gray-600 dark:!text-gray-400 cursor-pointer text-3xl')
                         toggle_dark_mode(not app.storage.user["dark_mode"], dark_button)
                         if app.storage.user.get('dark_mode') == True:
@@ -315,8 +321,22 @@ def create() -> None:
         header()
 
         left_drawer = utilities.sidebar() 
-        utilities.arrow(left_drawer)
+        arrow = utilities.arrow(left_drawer)
 
+        def update_plots():
+            def test():
+                for i in range(25):
+                    for id, plot in plots.items():
+                        plot.update()
+                        plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
+                
+                timer.cancel()
+
+
+            timer = ui.timer(interval=0.01, callback=test, immediate=True)
+
+
+        arrow.on_click(lambda: update_plots())
                       
         # {activity_id: {activity_reading_id: {timestamps, signals, name}}}
         graph_data = {}

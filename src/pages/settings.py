@@ -5,6 +5,9 @@ import api
 from functools import partial
 import xml_util
 from starlette.formparsers import MultiPartParser
+import threading
+
+from tqdm import tqdm
 
 MultiPartParser.spool_max_size = 1024 * 1024 * 5  
 
@@ -42,7 +45,10 @@ def create() -> None:
 
                 async def handle_upload(e: events.UploadEventArguments):
                     x = e.content.read().decode('utf-8')
-                    await xml_util.read(x)
+                    
+                    def read_thread(x):
+                        thread = threading.Thread(target=xml_util.read, args=x)
+                        thread.start()
 
                 ui.upload(on_upload=handle_upload, max_file_size=10_485_760).props('accept=.xml').classes('max-w-full flat')
 

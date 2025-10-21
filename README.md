@@ -40,6 +40,7 @@ python3 ./src/main.py
 ```
 This process is for Ubuntu, but you follow the logical steps for each operating system: Install MySQL and Python3.12, fill out the database with the test data, and run the ./src/main.py file in a virtual environment after installing dependencies.
 Please note if you host it locally you need to create a .env file and fill it out with the details you used in setup, for example:
+(Note, if you're using docker, the MYSQL_HOST should be database)
 ```
 MYSQL_HOST=localhost
 MYSQL_USER=root
