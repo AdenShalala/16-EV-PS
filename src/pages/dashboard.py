@@ -253,6 +253,7 @@ def makeGraph(activity, fig, graph_data):
 
         setFigStyling(fig)
         fig.update_layout(xaxis_title=get_axis_label(current_unit))
+        fig.update_layout(autosize=True)
         fig.update_xaxes(range=get_axis_range(current_unit))
 
         plot = ui.plotly(fig).classes('w-full h-[500px]')  
@@ -327,8 +328,8 @@ def create() -> None:
         plot_containers = {}
 
         filter_icons = {}
-        current_filter = "Date"
-        descending = True
+
+        filter_data = {'current': "", 'descending': True}
 
         # Figure dictionary
 
@@ -430,8 +431,85 @@ def create() -> None:
             }
 
         def filter_activities(filter_type: str):
-            global current_filter
-            print(current_filter)
+            if filter_data['current'] == filter_type:
+                filter_data['descending'] = not filter_data['descending']
+            else:
+                filter_data['current'] = filter_type
+                filter_data['descending'] = True
+            
+            # Update icon visibility and direction
+            for key, icon in filter_icons.items():
+                if key == filter_type:
+                    icon.set_visibility(True)
+                    if filter_data['descending']:
+                        icon.name = 'arrow_drop_down'
+                    else:
+                        icon.name = 'arrow_drop_up'
+                else:
+                    icon.set_visibility(False)
+            
+            filtered_activities = activities.copy()
+            
+            visibility_state = {}
+            for checkbox, act_id in activity_checkboxes.items():
+                visibility_state[act_id] = checkbox.value
+
+            # Sort activities based on filter type
+            if filter_type == "Date":
+                filtered_activities.sort(key=lambda a: a.start_time, reverse=filter_data['descending'])
+            elif filter_type == "Activity":
+                filtered_activities.sort(key=lambda a: a.activity_type, reverse=filter_data['descending'])
+            elif filter_type == "Duration":
+                filtered_activities.sort(
+                    key=lambda a: (datetime.fromtimestamp(a.end_time) - datetime.fromtimestamp(a.start_time)).total_seconds(),
+                    reverse=filter_data['descending']
+                )
+            elif filter_type == "Pressure":
+                filtered_activities.sort(
+                    key=lambda a: activity_data[a.activity_id]['pressure_max'] if activity_data[a.activity_id]['pressure_max'] is not None else 0,
+                    reverse=filter_data['descending']
+                )
+            elif filter_type == "Display":
+                # Sort by checkbox state (checked first if descending, unchecked first if ascending)
+                filtered_activities.sort(
+                    key=lambda a: visibility_state.get(a.activity_id, False),
+                    reverse=filter_data['descending']
+                )        
+            
+
+            
+            activity_container.clear()
+            activity_checkboxes.clear()
+
+            with activity_container:
+                for activity in filtered_activities:
+                    data = activity_data[activity.activity_id]
+                    visible = visibility_state.get(activity.activity_id, False)
+            
+                    with ui.grid(columns=14).classes('px-2 border-[1.5px] w-full border-[#3545FF] rounded items-center'):
+                        ui.label(datetime.fromtimestamp(activity.start_time).strftime("%A, %B %d, %Y at %I:%M %p")).classes('col-span-4')
+                        ui.label(activity.activity_type).classes('col-span-2')
+                        ui.label(data["duration"]).classes('col-span-2')
+                        ui.label(f"{data["pressure_min"]} - {data["pressure_max"]}").classes('col-span-3')
+                        
+                        # Create a closure to capture the correct activity_id
+                        def make_toggle_handler(activity_id):
+                            def handler(e):
+                                plot = plot_containers[activity_id]
+                                if e.value:
+                                    plot.move(graphsContainer)
+                                else:
+                                    plot.move(invisibleContainer)
+                            return handler
+                        
+                        checkbox = ui.checkbox(
+                            'Display Activity', 
+                            value=visible, 
+                            on_change=make_toggle_handler(activity.activity_id)
+                        ).style('--q-primary: #FFB030').classes('col-span-3')
+                        
+                        activity_checkboxes[checkbox] = activity.activity_id
+            
 
         # Activity container
         with ui.column().classes('w-full'):
@@ -440,32 +518,29 @@ def create() -> None:
                     with ui.card().classes('no-shadow w-full 0 p-0 items-start bg-[#F5F5F5] dark:bg-[#1d1d1d]'):        
 
                         with ui.grid(columns=14).classes('px-2 w-full rounded items-center'):
-                            with ui.button(on_click=filter_activities).classes('px-0 col-span-4').props('flat no-caps color=black align="left"'):
-                                button = ui.label("Date").classes('font-bold dark:text-white')
-                                filter_icons["Date"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white')
-                            with ui.button().classes('px-0 col-span-2').props('flat no-caps color=black align="left"'):
-                                button = ui.label("Activity").classes('font-bold dark:text-white')
-                                filter_icons["Activity"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white').set_visibility(False)
-                            with ui.button().classes('px-0 col-span-2').props('flat no-caps color=black align="left"'):
-                                button = ui.label("Duration").classes('font-bold dark:text-white')
-                                filter_icons["Duration"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white').set_visibility(False)
-                            with ui.button().classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
-                                button = ui.label("Pressure").classes('font-bold dark:text-white')
-                                filter_icons["Pressure"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white').set_visibility(False)
-                            with ui.button().classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
-                                button = ui.label("Display").classes('font-bold dark:text-white')
-                                filter_icons["Button"] = ui.icon('arrow_drop_down').classes('dark:!bg-[#1d1d1d] dark:!text-white').set_visibility(False)
+                            with ui.button(on_click=lambda: filter_activities("Date")).classes('px-0 col-span-4').props('flat no-caps color=black align="left"'):
+                                ui.label("Date").classes('font-bold dark:text-white')
+                                filter_icons["Date"] = ui.icon('arrow_drop_down').classes('dark:!text-white').props('flat')
+                            with ui.button(on_click=lambda: filter_activities("Activity")).classes('px-0 col-span-2').props('flat no-caps color=black align="left"'):
+                                ui.label("Activity").classes('font-bold dark:text-white')
+                                filter_icons["Activity"] = ui.icon('arrow_drop_down').classes('dark:!text-white')
+                                filter_icons["Activity"].set_visibility(False)
+                            with ui.button(on_click=lambda: filter_activities("Duration")).classes('px-0 col-span-2').props('flat no-caps color=black align="left"'):
+                                ui.label("Duration").classes('font-bold dark:text-white')
+                                filter_icons["Duration"] = ui.icon('arrow_drop_down').classes('dark:!text-white')
+                                filter_icons["Duration"].set_visibility(False)
+                            with ui.button(on_click=lambda: filter_activities("Pressure")).classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
+                                ui.label("Pressure").classes('font-bold dark:text-white')
+                                filter_icons["Pressure"] = ui.icon('arrow_drop_down').classes('dark:!text-white')
+                                filter_icons["Pressure"].set_visibility(False)
+                            with ui.button(on_click=lambda: filter_activities("Display")).classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
+                                ui.label("Display").classes('font-bold dark:text-white')
+                                filter_icons["Display"] = ui.icon('arrow_drop_down').classes('dark:!text-white')
+                                filter_icons["Display"].set_visibility(False)
                     
-                    for activity in activities:
-                        data = activity_data[activity.activity_id]
-                       
-                        with ui.grid(columns=14).classes('px-2 border-[1.5px] w-full border-[#3545FF] rounded items-center'):
-                            ui.label(datetime.fromtimestamp(activity.start_time).strftime("%A, %B %d, %Y at %I:%M %p")).classes('col-span-4')
-                            ui.label(activity.activity_type).classes('col-span-2')
-                            ui.label(data["duration"]).classes('col-span-2')
-                            ui.label(f"{data["pressure_min"]} - {data["pressure_max"]}").classes('col-span-3')
-                            checkbox = ui.checkbox('Display Activity', value=False, on_change=toggle_graph_visibility).style('--q-primary: #FFB030').classes('col-span-3')
-                            activity_checkboxes[checkbox] = activity.activity_id
+                    activity_container = ui.row().classes('w-full')
+                    filter_activities("Date")
+
                     ui.space()
             
                 # make graphs

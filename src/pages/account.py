@@ -33,7 +33,7 @@ def create() -> None:
 
 
         with ui.row().classes(' w-full flex justify-center'):
-            with ui.card().classes('w-2/5 justify-center items-center bg-[#F5F5F5] dark:bg-[#1d1d1d] border border-[#2C25B2] no-shadow'):
+            with ui.card().classes('w-1/2 justify-center items-center bg-[#F5F5F5] dark:bg-[#1d1d1d] border border-[#2C25B2] no-shadow'):
                 if not account:
                     ui.label('Account not loaded yet.').classes('p-4 text-gray-600')
                     return

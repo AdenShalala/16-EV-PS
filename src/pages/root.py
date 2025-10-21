@@ -40,10 +40,12 @@ def create() -> None:
                     with ui.card().classes('w-full h-full bg-[#F5F5F5] dark:bg-[#1d1d1d] border border-[#2C25B2] no-shadow'):
                         with ui.row().classes(replace='items-center justify-between w-full '):
                             with ui.row().classes('w-full flex justify-between'):
-                                with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(partial(navigate_patient, patient)):
-                                    ui.label(f"{patient.first_name} {patient.last_name}").classes('font-bold text-2xl dark:text-white')
-                                with ui.row().classes('w-full justify-end items-center'):
-                                    ui.button(icon='sym_o_info_i', color='#FFB030').classes('text-white').props('round').on_click(partial(navigate_patient, patient))
+                                with ui.row().classes('w-full justify-between items-center'):
+                                    with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(partial(navigate_patient, patient)):
+                                        ui.icon('sym_o_info_i').classes('text-white bg-[#FFB030] rounded-full mr-2 shadow-md').props('round')
+                                        ui.label(f"{patient.first_name} {patient.last_name}").classes('font-bold text-2xl dark:text-white')
+
+                                    
                                     ui.button(icon='arrow_forward_ios', color='#FFB030').classes('text-white').on_click(partial(navigate_dashboard, patient))
                             with ui.row().classes('items-center gap-2 w-full'):
                                 with ui.grid(rows=1, columns=2).classes(replace='w-full flex justify-between'):

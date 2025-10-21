@@ -51,7 +51,7 @@ def toggle_dark_mode(value, button):
 
 
 def sidebar():
-    with ui.left_drawer(fixed=False, elevated=False).props('width=200').classes('shadow-2xl') as left_drawer:
+    with ui.left_drawer(fixed=False, elevated=False).props('width=200 ').classes('shadow-2xl') as left_drawer:
         patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
@@ -123,6 +123,8 @@ def header():
         dark = ui.dark_mode()
         app.storage.user["dark_mode"] = dark.value
 
+    me = api.get_me(token=app.storage.user.get("token"))
+
     with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
         with ui.row().classes('w-full justify-between items-center px-2'):
             with ui.row().classes('items-center gap-4'):
@@ -131,7 +133,8 @@ def header():
 
 
             with ui.row().classes('items-center gap-4'):
-
+                with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
+                    ui.label(f'{me.first_name} {me.last_name} [{type(me).__name__}]').classes(' font-bold !text-gray-600 dark:!text-gray-400')
                 dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(app.storage.user.get("dark_mode"), dark_button)).classes('!text-gray-600 dark:!text-gray-400 cursor-pointer text-3xl')
                 toggle_dark_mode(not app.storage.user["dark_mode"], dark_button)
                 if app.storage.user.get('dark_mode') == True:

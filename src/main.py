@@ -35,6 +35,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             
             if s == None:
                 app.storage.user.clear()
+                return RedirectResponse('/login')
 
             if s.account_type == "Admin":
                 # redirect if admin
