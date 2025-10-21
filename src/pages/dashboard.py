@@ -257,6 +257,7 @@ def makeGraph(activity, fig, graph_data):
         fig.update_layout(xaxis_title=get_axis_label(current_unit))
         fig.update_layout(autosize=True)
         fig.update_xaxes(range=get_axis_range(current_unit))
+        fig.update_yaxes(title_text='Pressure (kPa)')
 
         plot = ui.plotly(fig).classes('w-full h-[500px]')  
         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
