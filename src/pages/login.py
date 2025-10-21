@@ -35,5 +35,5 @@ def create() -> None:
         with ui.row().classes('w-full h-full justify-center items-center'):
             with ui.card().classes('w-[300px] border rounded-md border-[#2C25B2] no-shadow'):
                 email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF] p-1').on('keydown.enter', checkLogin)
-                password = ui.input(password=True, placeholder='Password').classes('w-full border rounded-md border-[#3545FF] p-1').on('keydown.enter', checkLogin)
+                password = ui.input(password=True, placeholder='Password', password_toggle_button=True).classes('w-full border rounded-md border-[#3545FF] p-1').on('keydown.enter', checkLogin)
                 ui.button('Login', on_click=checkLogin, color='#FFB030').classes('w-full text-white')
