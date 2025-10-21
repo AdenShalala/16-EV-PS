@@ -67,13 +67,13 @@ def sidebar():
 
 
     if app.storage.user.get('current_page') == '/':
-        patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+        patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == '/patient':
-        details.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')        
+        details.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')        
     elif app.storage.user['current_page'] == '/dashboard':
-        dashboard.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+        dashboard.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == '/account':
-        account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+        account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
 
     return left_drawer
 
@@ -105,13 +105,13 @@ def admin_sidebar():
 
 
     if app.storage.user.get('current_page') == '/admin':
-        clinicians.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+        clinicians.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == '/clinician':
-        details.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+        details.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == '/account':
-        account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+        account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == "/settings":
-        settings.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-blue-700')
+        settings.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     
 
     return left_drawer

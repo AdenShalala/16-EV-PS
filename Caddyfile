@@ -1,3 +1,0 @@
-socketfit.local {
-    reverse_proxy socketfit:8080
-}
