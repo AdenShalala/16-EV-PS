@@ -15,6 +15,8 @@ import pages.dashboard as dashboard
 import pages.account as account
 import pages.settings as settings
 
+import database
+
 load_dotenv()
 
 admin_pages = {'/admin', '/clinician', 'settings', '/docs'}
@@ -50,7 +52,6 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(AuthMiddleware)
-from argon2 import PasswordHasher
 
 login.create()
 root.create()
@@ -60,8 +61,6 @@ patient.create()
 dashboard.create()
 account.create()
 settings.create()
-
-ph = PasswordHasher()
 
 app.add_static_files('/assets', 'src/assets')
 ui.run(storage_secret=os.getenv("STORAGE_SECRET"), favicon="src/assets/favicon.png", fastapi_docs=True)

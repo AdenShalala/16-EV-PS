@@ -25,7 +25,7 @@ fi
 
 declare -A env
 
-HOST="database"
+MYSQL_HOST="database"
 MYSQL_USER="socketfit"
 MYSQL_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 12)
 MYSQL_ROOT_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 12)
@@ -39,9 +39,9 @@ select opt in "${options[@]}"
 do
     case $opt in
         "Normal Installation")
-            touch .testenv
+            touch .env
             echo "Creating .env file"
-            echo "HOST="${HOST} >> .env
+            echo "MYSQL_HOST="${MYSQL_HOST} >> .env
             echo "MYSQL_USER="${MYSQL_USER} >> .env
             echo "MYSQL_PASSWORD="${MYSQL_PASSWORD} >> .env
             echo "MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD} >> .env
@@ -56,8 +56,9 @@ do
             break
             ;;
         "Manual Installation")
-            read -p "HOST=" HOST
-            echo "HOST="${HOST} >> .env
+            touch .env
+            read -p "MYSQL_HOST=" MYSQL_HOST
+            echo "MYSQL_HOST="${MYSQL_HOST} >> .env
             read -p "MYSQL_USER=" MYSQL_USER
             echo "MYSQL_USER="${MYSQL_USER} >> .env
             read -p "MYSQL_PASSWORD=" MYSQL_PASSWORD
