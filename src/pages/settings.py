@@ -178,6 +178,10 @@ def create() -> None:
                         ui.notify('Patients must be greater than 1', color='red')
                         return
                     
+                    if bool(pressure_readings.value) == True and (int(activities.value) < 1 or int(patients.value) < 1):
+                        ui.notify('Patients or activities be greater than 1', color='red')
+                        return                        
+                    
                     
 
                     xml = generate(int(admins.value), int(clinicians.value), int(patients.value), int(sensors.value), int(activities.value))

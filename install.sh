@@ -34,7 +34,7 @@ MYSQL_PORT=3306
 STORAGE_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20)
 
 PS3='Please enter your choice: '
-options=("Normal Installation" "Advanced Installation" "Quit")
+options=("Normal Installation" "Manual Installation" "Quit")
 select opt in "${options[@]}"
 do
     case $opt in
@@ -56,7 +56,25 @@ do
             break
             ;;
         "Manual Installation")
-            echo "you chose choice 2"
+            read -p "HOST=" HOST
+            echo "HOST="${HOST} >> .env
+            read -p "MYSQL_USER=" MYSQL_USER
+            echo "MYSQL_USER="${MYSQL_USER} >> .env
+            read -p "MYSQL_PASSWORD=" MYSQL_PASSWORD
+            echo "MYSQL_PASSWORD="${MYSQL_PASSWORD} >> .env
+            read -p "MYSQL_ROOT_PASSWORD=" MYSQL_ROOT_PASSWORD
+            echo "MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD} >> .env
+            read -p "MYSQL_DATABASE=" MYSQL_DATABASE
+            echo "MYSQL_DATABASE="${MYSQL_DATABASE} >> .env
+            read -p "MYSQL_PORT=" MYSQL_PORT
+            echo "MYSQL_PORT="${MYSQL_PORT} >> .env
+            read -p "STORAGE_SECRET=" STORAGE_SECRET
+            echo "STORAGE_SECRET="${STORAGE_SECRET} >> .env
+            echo ".env successfully created."
+            echo "Creating Dockerfile image"
+            sudo docker build -t socketfit .
+            echo "Dockerfile image successfully created!"
+            echo "Run the application with sudo docker compose up"
             break
             ;;
         "Quit")
