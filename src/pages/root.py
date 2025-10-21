@@ -51,7 +51,7 @@ def create() -> None:
                             with ui.row().classes('w-full flex justify-between'):
                                 with ui.row().classes('w-full justify-between items-center'):
                                     with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(partial(navigate_patient, patient)):
-                                        ui.icon('sym_o_info_i').classes('text-white bg-[#FFB030] rounded-md mr-2 shadow-md').props('round')
+                                        ui.icon('sym_o_info_i').classes('text-white bg-[#FFB030] rounded-full mr-2 shadow-md').props('round')
                                         ui.label(f"{patient.first_name} {patient.last_name}").classes('font-bold text-2xl dark:text-white')
 
                                     

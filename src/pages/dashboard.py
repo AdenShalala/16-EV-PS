@@ -197,7 +197,7 @@ def makeGraph(activity, fig, graph_data):
                         speed_value["current"] = new
                         ui_elements['speed_label'].text = f"{new}x"
                     speed_slider = ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-1/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
-                    speed_label = ui.number(value=1.0, precision=1, min=0.1, max=100).classes('text-sm min-w-8 w-8').bind_value(speed_slider).on('update:model-value', update_speed)
+                    speed_label = ui.number(value=1.0, precision=1, min=0.1, max=100).classes('text-sm min-w-12 w-12').bind_value(speed_slider).on('update:model-value', update_speed)
                     ui_elements['speed_label'] = speed_label
 
                     with ui.row().classes('items-center gap-2'):
@@ -258,6 +258,7 @@ def makeGraph(activity, fig, graph_data):
         setFigStyling(fig)
         fig.update_layout(xaxis_title=get_axis_label(current_unit))
         fig.update_xaxes(range=get_axis_range(current_unit))
+        fig.update_yaxes(title_text='Pressure (kPa)')
 
         plot = ui.plotly(fig).classes('w-full h-[500px]')  
         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
