@@ -14,8 +14,6 @@ def navigate_clinician(clinician):
     app.storage.user['selected_clinician'] = clinician.clinician_id
     ui.navigate.to("/clinician")
 
-
-
 def create() -> None:
     @ui.page('/settings')
     def settings():
@@ -34,7 +32,7 @@ def create() -> None:
                     
                     ui.download.content(xml[0] + xml[1] + xml[2], 'generated_data.xml')
 
-                ui.button('Download XML', on_click=lambda: generate_xml())
+                ui.button('Download XML', color='#FFB030', on_click=lambda: generate_xml()).classes('text-white')
 
                 ui.separator()
 
@@ -44,7 +42,7 @@ def create() -> None:
                     x = e.content.read().decode('utf-8')
                     await xml_util.read(x)
 
-                ui.upload(on_upload=handle_upload, max_file_size=10_485_760).props('accept=.xml').classes('max-w-full flat')
+                ui.upload(on_upload=handle_upload, max_file_size=10_485_760).props('accept=.xml').classes('max-w-full flat').style('--q-primary: #FFB030')
 
                 
 

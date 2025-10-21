@@ -188,12 +188,14 @@ def makeGraph(activity, fig, graph_data):
                     ui.label('Speed:').classes('text-sm')
                     
                     def update_speed(e):
-                        new = float(e.args)
+                        if e.args:
+                            new = float(e.args)
+                        else:
+                            new = 0.0
                         speed_value["current"] = new
                         ui_elements['speed_label'].text = f"{new}x"
-                    
-                    ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-1/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
-                    speed_label = ui.label("1.0x").classes('text-sm min-w-8')
+                    speed_slider = ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-1/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
+                    speed_label = ui.number(value=1.0, precision=1, min=0.1, max=100).classes('text-sm min-w-8 w-8').bind_value(speed_slider).on('update:model-value', update_speed)
                     ui_elements['speed_label'] = speed_label
 
                     with ui.row().classes('items-center gap-2'):
