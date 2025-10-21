@@ -18,17 +18,20 @@ if  [[! -v docker &> /dev/null ]]; then
     exit
 fi
 
+if [[ -e ".env" ]]; then
+    echo ".env already exists, exiting."
+    exit
+fi
+
 declare -A env
 
 HOST="database"
 MYSQL_USER="socketfit"
 MYSQL_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 12)
 MYSQL_ROOT_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 12)
-MYSQL_DATABASE="database"
+MYSQL_DATABASE="socketfit"
 MYSQL_PORT=3306
 STORAGE_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20)
-
-echo "${RANDOM_STRING}"
 
 PS3='Please enter your choice: '
 options=("Normal Installation" "Advanced Installation" "Quit")
@@ -36,7 +39,20 @@ select opt in "${options[@]}"
 do
     case $opt in
         "Normal Installation")
-            echo "you chose choice 1"
+            touch .testenv
+            echo "Creating .env file"
+            echo "HOST="${HOST} >> .env
+            echo "MYSQL_USER="${MYSQL_USER} >> .env
+            echo "MYSQL_PASSWORD="${MYSQL_PASSWORD} >> .env
+            echo "MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD} >> .env
+            echo "MYSQL_DATABASE="${MYSQL_DATABASE} >> .env
+            echo "MYSQL_PORT="${MYSQL_PORT} >> .env
+            echo "STORAGE_SECRET="${STORAGE_SECRET} >> .env
+            echo ".env successfully created."
+            echo "Creating Dockerfile image"
+            sudo docker build -t socketfit .
+            echo "Dockerfile image successfully created!"
+            echo "Run the application with sudo docker compose up"
             break
             ;;
         "Manual Installation")

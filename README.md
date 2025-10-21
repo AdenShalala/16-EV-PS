@@ -15,6 +15,11 @@ sudo docker compose up
 ```
 or use Docker Desktop to run the containers.
 
+You can also just build the docker image yourself, just make sure to set the .env accordingly (see below)
+```
+sudo docker build -t sockerfit .
+```
+
 Alternatively, you can host it locally:
 ```
 sudo apt update && sudo apt upgrade
