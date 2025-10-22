@@ -15,8 +15,6 @@ def create() -> None:
         account = api.get_me(token=app.storage.user.get("token", None))
         utilities.header()
         
-        
-        
         id = ""
 
         if type(account) == Clinician:
@@ -77,9 +75,4 @@ def create() -> None:
                         with ui.row().classes('w-full items-center justify-between'):
                             ui.button('Save', on_click=save, color='#FFB030').classes('text-white rounded-md px-6 py-2')
                             ui.button('Logout', on_click=logout, color='#FFB030').classes('text-white rounded-md px-6 py-2')
-
-
-
-
-                # # user information boxes
 

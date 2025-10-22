@@ -22,8 +22,10 @@ def toggle_sidebar(left_drawer, arrow):
 def navigatePatient():
     patients = api.get_patients(app.storage.user.get("token"))
     if app.storage.user.get('selected_patient') == None or app.storage.user.get('selected_patient') == '' or app.storage.user.get('selected_patient') == ' ':
-        app.storage.user['selected_patient'] = patients[0].patient_id
-    ui.navigate.to('/dashboard')
+        # app.storage.user['selected_patient'] = patients[0].patient_id
+        ui.notify('Please select a patient.', type='warning')
+    else:
+        ui.navigate.to('/dashboard')
 
 def navigate_patient_details():
     if app.storage.user.get('selected_patient') == None or app.storage.user.get('selected_patient') == '' or app.storage.user.get('selected_patient') == ' ':
@@ -37,8 +39,7 @@ def navigate_clinician_details():
     else:
         ui.navigate.to('/clinician')
 
-def toggle_dark_mode(value, button):
-    dark = ui.dark_mode()
+def toggle_dark_mode(value, button, dark):
     if value == True:
         app.storage.user['dark_mode'] = False
         dark.disable()
@@ -119,11 +120,8 @@ def admin_sidebar():
 
 
 def header():
-    if not "dark_mode" in app.storage.user:
-        dark = ui.dark_mode()
-        app.storage.user["dark_mode"] = dark.value
-
     me = api.get_me(token=app.storage.user.get("token"))
+    dark = ui.dark_mode(app.storage.user.get("dark_mode", False))
 
     with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
         with ui.row().classes('w-full justify-between items-center px-2'):
@@ -135,8 +133,7 @@ def header():
             with ui.row().classes('items-center gap-4'):
                 with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
                     ui.label(f'{me.first_name} {me.last_name} [{type(me).__name__}]').classes(' font-bold !text-gray-600 dark:!text-gray-400')
-                dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(app.storage.user.get("dark_mode"), dark_button)).classes('!text-gray-600 dark:!text-gray-400 cursor-pointer text-3xl')
-                toggle_dark_mode(not app.storage.user["dark_mode"], dark_button)
+                dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(app.storage.user.get("dark_mode", False), dark_button, dark)).classes('!text-gray-600 dark:!text-gray-400 cursor-pointer text-3xl')
                 if app.storage.user.get('dark_mode') == True:
                     dark_button.name='light_mode'
                 elif app.storage.user.get('dark_mode') == False:

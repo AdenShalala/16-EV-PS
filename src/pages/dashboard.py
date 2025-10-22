@@ -283,8 +283,7 @@ def create() -> None:
 
         # GOD THIS IS ANNOYING
         # We have to replace the header in THIS SPECIFIC PAGE BECAUSE OF PLOTLY :)
-        def toggle_dark_mode(value, button):
-            dark = ui.dark_mode()
+        def toggle_dark_mode(value, button, dark):
             if value == True:
                 app.storage.user['dark_mode'] = False
                 dark.disable()
@@ -298,10 +297,7 @@ def create() -> None:
 
 
         def header():
-            if not "dark_mode" in app.storage.user:
-                dark = ui.dark_mode()
-                app.storage.user["dark_mode"] = dark.value
-
+            dark = ui.dark_mode(app.storage.user.get("dark_mode", False))            
             me = api.get_me(token=app.storage.user.get("token"))
 
             with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
@@ -314,8 +310,7 @@ def create() -> None:
                     with ui.row().classes('items-center gap-4'):
                         with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
                             ui.label(f'{me.first_name} {me.last_name} [{type(me).__name__}]').classes(' font-bold !text-gray-600 dark:!text-gray-400')
-                        dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(app.storage.user.get("dark_mode"), dark_button)).classes('!text-gray-600 dark:!text-gray-400 cursor-pointer text-3xl')
-                        toggle_dark_mode(not app.storage.user["dark_mode"], dark_button)
+                        dark_button = ui.icon('dark_mode').on('click', lambda: toggle_dark_mode(app.storage.user.get("dark_mode", False), dark_button, dark)).classes('!text-gray-600 dark:!text-gray-400 cursor-pointer text-3xl')
                         if app.storage.user.get('dark_mode') == True:
                             dark_button.name='light_mode'
                         elif app.storage.user.get('dark_mode') == False:
@@ -328,7 +323,7 @@ def create() -> None:
 
         def update_plots():
             def test():
-                for i in range(25):
+                for i in range(100):
                     for id, plot in plots.items():
                         plot.update()
                         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}

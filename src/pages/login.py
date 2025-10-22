@@ -6,6 +6,10 @@ import api
 def create() -> None:
     @ui.page('/login')
     def login():
+
+        dark = ui.dark_mode()
+        dark.auto()
+        app.storage.user["dark_mode"] = dark.value
             # Dialog for login error, hidden by default
         with ui.dialog() as error_dialog, ui.card():
             ui.label('Invalid email or password. Please try again.').classes('text-red-500 text-center')
@@ -28,12 +32,12 @@ def create() -> None:
                 # error_dialog.open()
 
         ui.page_title("SocketFit Dashboard")
-        with ui.header().style('background-color: #FFFFFF'):
+        with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#121212]'):
             with ui.row().classes('w-full justify-center items-center'):
-                ui.image('src/assets/dashboard.png').classes('h-[40px] w-[140px]')
+                ui.image('/assets/dashboard.png').classes('h-[40px] w-[140px]')
         
         with ui.row().classes('w-full h-full justify-center items-center'):
-            with ui.card().classes('w-[300px] border rounded-md border-[#2C25B2] no-shadow'):
+            with ui.card().classes('w-[300px] bg-[#F5F5F5] dark:bg-[#1d1d1d] border rounded-md border-[#2C25B2] no-shadow'):
                 email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF] p-1').on('keydown.enter', checkLogin)
                 password = ui.input(password=True, placeholder='Password', password_toggle_button=True).classes('w-full border rounded-md border-[#3545FF] p-1').on('keydown.enter', checkLogin)
                 ui.button('Login', on_click=checkLogin, color='#FFB030').classes('w-full text-white')
