@@ -4,16 +4,21 @@ import pages.utilities as utilities
 
 
 def create() -> None:
+    # clinician details page
     @ui.page('/clinician')
     def clinician():
+        # setting current page in storage
         app.storage.user['current_page'] = '/clinician'
+        # getting selected clinician
         clinician = api.get_clinician(clinician_id=app.storage.user.get("selected_clinician"), token=app.storage.user.get("token"))
+        
+        # adding in title, header, sidebar and arrow
         utilities.header()
         left_drawer = utilities.admin_sidebar()
         utilities.arrow(left_drawer)
         ui.page_title('SocketFit Admin')
 
-
+        # clinician details card
         with ui.row().classes(' w-full flex justify-center'):
             with ui.card().classes('no-shadow w-1/2 justify-center items-center bg-[#F5F5F5] dark:bg-[#1d1d1d] border border-[#2C25B2]'):
                 if not clinician:
@@ -31,7 +36,8 @@ def create() -> None:
                         first_name = ui.input(label='First Name', value=clinician.first_name).classes('w-full border rounded-md border-[#3545FF] p-1')
                         last_name = ui.input(label='Last Name', value=clinician.last_name).classes('w-full border rounded-md border-[#3545FF] p-1')
                         email = ui.input(label='Email', value=clinician.email).classes('w-full border rounded-md border-[#3545FF] p-1')
-                            
+                        
+                        # saving updated clinician information
                         def save():
                             if not utilities.validate_email(email.value):
                                 ui.notify('Invalid email', color='red')
@@ -40,7 +46,6 @@ def create() -> None:
                             if len(first_name.value) < 1 or len(last_name.value) < 1:
                                 ui.notify('Invalid name', color='red')
                                 return                                
-                                                                           
 
                             clinician.first_name = first_name.value
                             clinician.last_name = last_name.value

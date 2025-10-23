@@ -3,20 +3,25 @@ import api
 import pages.utilities as utilities
 from schema import Clinician, Admin
 
+# logout function
 def logout():
     api.logout(token=app.storage.user.get("token"))
     app.storage.user.clear()
     ui.navigate.to('/login')
 
 def create() -> None:
+    # account details page
     @ui.page('/account')
     def account():
+        # setting current page in storage
         app.storage.user['current_page'] = '/account'
         account = api.get_me(token=app.storage.user.get("token", None))
+        # adding in header
         utilities.header()
         
         id = ""
-
+        
+        # checking account type
         if type(account) == Clinician:
             ui.page_title('SocketFit Dashboard')
             left_drawer = utilities.sidebar()
@@ -29,7 +34,7 @@ def create() -> None:
 
             id = account.admin_id       
 
-
+        # account details card
         with ui.row().classes(' w-full flex justify-center'):
             with ui.card().classes('w-1/2 justify-center items-center bg-[#F5F5F5] dark:bg-[#1d1d1d] border border-[#2C25B2] no-shadow'):
                 if not account:
@@ -47,7 +52,7 @@ def create() -> None:
                         last_name = ui.input(label='Last Name', value=account.last_name).classes('w-full border rounded-md border-[#3545FF] p-1')
                         email = ui.input(label='Email', value=account.email).classes('w-full border rounded-md border-[#3545FF] p-1')
 
-
+                        # saving updated account information
                         def save():
                             if not utilities.validate_email(email.value):
                                 ui.notify('Invalid email', color='red')

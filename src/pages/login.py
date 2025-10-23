@@ -4,25 +4,22 @@ from fastapi.responses import RedirectResponse
 import api
 
 def create() -> None:
+    # login page
     @ui.page('/login')
     def login():
-
+        # checking dark mode status
         async def get_dark_mode():
             enabled = await ui.run_javascript('Quasar.Dark.isActive')
             app.storage.user["dark_mode"] = enabled
 
         dark = ui.dark_mode(on_change=get_dark_mode)
+        # set dark mode based on users default preference
         dark.auto()
         
-
-        # Dialog for login error, hidden by default
-        with ui.dialog() as error_dialog, ui.card():
-            ui.label('Invalid email or password. Please try again.').classes('text-red-500 text-center')
-            ui.button('OK', on_click=error_dialog.close, color='#FFB030').classes('w-full text-white mt-2')
-            
+        # check login credentials
         def checkLogin():
             try:
-                # Attempt to log in
+                # attempt to log in
                 x = api.token(OAuth2PasswordRequestForm(password=password.value, username=email.value))
                 app.storage.user['token'] = x['access_token']
 
@@ -32,15 +29,17 @@ def create() -> None:
                     ui.navigate.to('/admin')
             
             except Exception as e:
-                # If login fails, it will show dialog with error message
+                # if login fails, it will show dialog with error message
                 ui.notify('Invalid email or password. Please try again.', color='red')
-                # error_dialog.open()
 
+        # setting page title
         ui.page_title("SocketFit Dashboard")
+        # creating header
         with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#121212]'):
             with ui.row().classes('w-full justify-center items-center'):
                 ui.image('/assets/dashboard.png').classes('h-[40px] w-[140px]')
         
+        # creating login card
         with ui.row().classes('w-full h-full justify-center items-center'):
             with ui.card().classes('w-[300px] bg-[#F5F5F5] dark:bg-[#1d1d1d] border rounded-md border-[#2C25B2] no-shadow'):
                 email = ui.input(placeholder='Email').classes('w-full border rounded-md border-[#3545FF] p-1').on('keydown.enter', checkLogin)

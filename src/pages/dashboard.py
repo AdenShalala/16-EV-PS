@@ -6,11 +6,13 @@ import plotly.colors as pc
 import api
 colors = pc.qualitative.Plotly
 
+# get display values based on selected unit
 def get_display_values(timestamps_in_seconds, unit):
     if unit == 'minutes':
         return [t / 60 for t in timestamps_in_seconds]
     return timestamps_in_seconds
 
+# set figure styling based on dark mode
 def setFigStyling(fig):
     fig.update_layout(
         hovermode='x unified',
@@ -35,13 +37,14 @@ def setFigStyling(fig):
         fig.update_xaxes(linecolor='black', gridcolor='lightgrey', zeroline=True, zerolinecolor='black', zerolinewidth=1)
         fig.update_yaxes(linecolor='black', gridcolor='lightgrey', zeroline=True, zerolinecolor='black', zerolinewidth=1)
 
-
+# format current time for display
 def format_current_time(current_time):
     current_hours = int(current_time // 3600)
     current_minutes = int((current_time % 3600) // 60)
     current_seconds = int(current_time % 60)
     return f"{current_hours:02}:{current_minutes:02}:{current_seconds:02}"
 
+# make graph for activity
 def makeGraph(activity, fig, graph_data):
     start = datetime.fromtimestamp(activity.start_time)
     dt_str_1 = start.strftime("%A, %B %d, %Y at %I:%M %p")
@@ -70,6 +73,7 @@ def makeGraph(activity, fig, graph_data):
 
     dot_trace_indices = []
 
+    # toggle play/pause of graph
     def toggle_play():
         state['playing'] = not state['playing']
         if state['playing']:
@@ -79,19 +83,23 @@ def makeGraph(activity, fig, graph_data):
             ui_elements['timer'].deactivate()
             ui_elements['play_pause_icon'].set_name('play_circle')
 
+    # get display values based on selected unit
     def get_display_values(timestamps_in_seconds, unit):
         if unit == 'minutes':
             return [t / 60 for t in timestamps_in_seconds]
         return timestamps_in_seconds
 
+    # get axis label based on unit
     def get_axis_label(unit):
         return f"Time ({unit})"
 
+    # get axis range based on unit
     def get_axis_range(unit):
         if unit == 'minutes':
             return [0, total_seconds / 60]
         return [0, total_seconds]
 
+    # toggle x-axis unit between seconds and minutes
     def toggle_x_axis_unit(e):
         if x_axis_unit['current'] == 'seconds':
             x_axis_unit['current'] = 'minutes'
@@ -99,6 +107,7 @@ def makeGraph(activity, fig, graph_data):
             x_axis_unit['current'] = 'seconds'
         update_x_axis()
 
+    # update x-axis based on selected unit
     def update_x_axis():
         current_unit = x_axis_unit['current']
 
@@ -119,8 +128,11 @@ def makeGraph(activity, fig, graph_data):
         fig.update_xaxes(range=get_axis_range(current_unit))
         
         ui_elements['plot'].update()
+
+        # removing unwanted plotly buttons
         ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
+    # interpolate signal value at target time
     def interpolate_signal(timestamps, signals, target_time):
         if not timestamps or not signals:
             return 0
@@ -138,6 +150,7 @@ def makeGraph(activity, fig, graph_data):
         
         return signals[-1] if signals else 0
 
+    # update dot positions based on current time
     def update_dots():
         if not state or not state.get('playing'):
             return
@@ -177,7 +190,7 @@ def makeGraph(activity, fig, graph_data):
     timer = ui.timer(interval=0.1, callback=update_dots, active=False)
     ui_elements['timer'] = timer
 
-
+    # building plot container
     with plot_container:
         with ui.row().classes('w-full flex items-center justify-between'):
             with ui.grid(rows=2, columns=1).classes(replace=''):
@@ -189,6 +202,7 @@ def makeGraph(activity, fig, graph_data):
                 with ui.row().classes('items-center gap-2 w-4/6'):
                     ui.label('Speed:').classes('text-sm')
                     
+                    # updating playing speed
                     def update_speed(e):
                         if e.args:
                             new = float(e.args)
@@ -219,6 +233,7 @@ def makeGraph(activity, fig, graph_data):
 
         current_unit = 'seconds'
         
+        # getting readings for activity
         activity_readings = api.get_activity_readings(
             app.storage.user.get("selected_patient"), 
             activity.activity_id, 
@@ -255,6 +270,7 @@ def makeGraph(activity, fig, graph_data):
                 ))
                 dot_trace_indices.append(len(fig.data) - 1)
 
+        # setting figure styling 
         setFigStyling(fig)
         fig.update_layout(xaxis_title=get_axis_label(current_unit))
         fig.update_xaxes(range=get_axis_range(current_unit))
@@ -267,9 +283,12 @@ def makeGraph(activity, fig, graph_data):
     return plot_container, plot
 
 def create() -> None:
+    # dashboard page
     @ui.page("/dashboard")
     def dashboard():
+        # setting current page in storage
         app.storage.user['current_page'] = '/dashboard'
+        # adding in page title
         ui.page_title("SocketFit Dashboard")
 
         figs = {}
@@ -295,7 +314,7 @@ def create() -> None:
                 
             handle_dark(value)
 
-
+        # setting up header
         def header():
             dark = ui.dark_mode(app.storage.user.get("dark_mode", False))            
             me = api.get_me(token=app.storage.user.get("token"))
@@ -318,9 +337,11 @@ def create() -> None:
 
         header()
 
+        # setting up sidebar and arrow
         left_drawer = utilities.sidebar() 
         arrow = utilities.arrow(left_drawer)
 
+        # updating plots on sidebar toggle
         def update_plots():
             def test():
                 for i in range(100):
@@ -329,7 +350,6 @@ def create() -> None:
                         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
                 
                 timer.cancel()
-
 
             timer = ui.timer(interval=0.01, callback=test, immediate=True)
 
@@ -349,9 +369,7 @@ def create() -> None:
 
         filter_data = {'current': "", 'descending': True}
 
-        # Figure dictionary
-
-
+        # toggle graph visibility
         def toggle_graph_visibility(e):
             plot = plot_containers[activity_checkboxes[e.sender]]
             if e.value:
@@ -359,7 +377,7 @@ def create() -> None:
             else:
                 plot.move(invisibleContainer)
 
-        # Title bar
+        # title bar
         with ui.row().classes('w-full'):
             patient = api.get_patient(
                 patient_id=app.storage.user.get("selected_patient"), 
@@ -367,11 +385,9 @@ def create() -> None:
             )
 
             with ui.row().classes('items-center gap-2 w-full'):
-                ui.label(f"{patient.first_name} {patient.last_name}'s Activities").classes('text-xl font-semibold') 
-
-            
+                ui.label(f"{patient.first_name} {patient.last_name}'s Activities").classes('text-xl font-semibold')  
         
-        # Get graph data
+        # get graph data
         activities = api.get_activities(
             patient_id=app.storage.user.get("selected_patient"), 
             token=app.storage.user.get("token")
@@ -448,6 +464,7 @@ def create() -> None:
                 "duration": f'{hours}h{minutes}m{seconds}s',
             }
 
+        # filtering activities
         def filter_activities(filter_type: str):
             if filter_data['current'] == filter_type:
                 filter_data['descending'] = not filter_data['descending']
@@ -455,7 +472,7 @@ def create() -> None:
                 filter_data['current'] = filter_type
                 filter_data['descending'] = True
             
-            # Update icon visibility and direction
+            # update icon visibility and direction
             for key, icon in filter_icons.items():
                 if key == filter_type:
                     icon.set_visibility(True)
@@ -472,7 +489,7 @@ def create() -> None:
             for checkbox, act_id in activity_checkboxes.items():
                 visibility_state[act_id] = checkbox.value
 
-            # Sort activities based on filter type
+            # sort activities based on filter type
             if filter_type == "Date":
                 filtered_activities.sort(key=lambda a: a.start_time, reverse=filter_data['descending'])
             elif filter_type == "Activity":
@@ -488,14 +505,13 @@ def create() -> None:
                     reverse=filter_data['descending']
                 )
             elif filter_type == "Display":
-                # Sort by checkbox state (checked first if descending, unchecked first if ascending)
+                # sort by checkbox state
                 filtered_activities.sort(
                     key=lambda a: visibility_state.get(a.activity_id, False),
                     reverse=filter_data['descending']
                 )        
             
-
-            
+            # clear and repopulate activity container
             activity_container.clear()
             activity_checkboxes.clear()
 
@@ -510,7 +526,7 @@ def create() -> None:
                         ui.label(data["duration"]).classes('col-span-2')
                         ui.label(f"{data["pressure_min"]} - {data["pressure_max"]}").classes('col-span-3')
                         
-                        # Create a closure to capture the correct activity_id
+                        # create a closure to capture the correct activity_id
                         def make_toggle_handler(activity_id):
                             def handler(e):
                                 plot = plot_containers[activity_id]
@@ -529,7 +545,7 @@ def create() -> None:
                         activity_checkboxes[checkbox] = activity.activity_id
             
 
-        # Activity container
+        # qctivity container
         with ui.column().classes('w-full'):
             with ui.row().classes('w-full'):
                 with ui.card().classes('w-full border rounded-md bg-[#F5F5F5] dark:bg-[#1d1d1d] border-[#2C25B2] no-shadow'):

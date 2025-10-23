@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import api
 import re
 
+# email validation
 def validate_email(value):
     email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     if not value:
@@ -12,6 +13,7 @@ def validate_email(value):
         return False
     return True
 
+# sidebar toggle function
 def toggle_sidebar(left_drawer, arrow):
     if left_drawer.value:
         arrow.icon='arrow_forward'
@@ -19,6 +21,7 @@ def toggle_sidebar(left_drawer, arrow):
         arrow.icon='arrow_back'
     left_drawer.toggle()
 
+# navigating to patient dashboard
 def navigatePatient():
     patients = api.get_patients(app.storage.user.get("token"))
     if app.storage.user.get('selected_patient') == None or app.storage.user.get('selected_patient') == '' or app.storage.user.get('selected_patient') == ' ':
@@ -27,18 +30,21 @@ def navigatePatient():
     else:
         ui.navigate.to('/dashboard')
 
+# navigating to patient details
 def navigate_patient_details():
     if app.storage.user.get('selected_patient') == None or app.storage.user.get('selected_patient') == '' or app.storage.user.get('selected_patient') == ' ':
         ui.notify('Please select a patient.', type='warning')
     else:
         ui.navigate.to('/patient')
 
+# navigating to clinician details
 def navigate_clinician_details():
     if app.storage.user.get('selected_clinician') == None or app.storage.user.get('selected_clinician') == '' or app.storage.user.get('selected_clinician') == ' ':
         ui.notify('Please select a clinician.', type='warning')
     else:
         ui.navigate.to('/clinician')
 
+# dark mode toggle function
 def toggle_dark_mode(value, button, dark):
     if value == True:
         app.storage.user['dark_mode'] = False
@@ -49,8 +55,7 @@ def toggle_dark_mode(value, button, dark):
         dark.enable()
         button.name='light_mode'
 
-
-
+# sidebar creation
 def sidebar():
     with ui.left_drawer(fixed=False, elevated=False).props('width=200 ').classes('shadow-2xl') as left_drawer:
         patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
@@ -66,7 +71,7 @@ def sidebar():
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
 
-
+    # highlighting current page in sidebar
     if app.storage.user.get('current_page') == '/':
         patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == '/patient':
@@ -78,6 +83,7 @@ def sidebar():
 
     return left_drawer
 
+# sidebar arrow creation
 def arrow(left_drawer):
     arrow = ui.button(color='white', on_click=lambda: toggle_sidebar(left_drawer, arrow)).classes('p-[-10px] ml-[-15px] z-100 !text-black dark:!bg-[#1d1d1d] dark:!text-white')
     if left_drawer.value:
@@ -87,8 +93,7 @@ def arrow(left_drawer):
     
     return arrow
 
-
-
+# admin sidebar creation
 def admin_sidebar():
     with ui.left_drawer(fixed=False, elevated=False).props('width=200').classes('shadow-2xl') as left_drawer:
         clinicians = ui.button('Clinicians', icon='groups', on_click=lambda: ui.navigate.to('/admin')).props('flat no-caps align=left').classes(
@@ -104,7 +109,7 @@ def admin_sidebar():
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
 
-
+    # highlighting current page in sidebar
     if app.storage.user.get('current_page') == '/admin':
         clinicians.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == '/clinician':
@@ -117,8 +122,7 @@ def admin_sidebar():
 
     return left_drawer
 
-
-
+# header creation
 def header():
     me = api.get_me(token=app.storage.user.get("token"))
     dark = ui.dark_mode(app.storage.user.get("dark_mode", False))
@@ -140,6 +144,7 @@ def header():
                 elif app.storage.user.get('dark_mode') == False:
                     dark_button.name='dark_mode'
 
+# normalise datetime to string
 def normalize_to_str(value: str | int | float | datetime) -> str:
     """Return time as 'dd-Mon-YYYY HH:MM:SS' string, no tzinfo."""
     if value is None:

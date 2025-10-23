@@ -3,26 +3,31 @@ import pages.utilities as utilities
 import api
 from functools import partial
 
+# navigating to dashboard page
 def navigate_dashboard(patient):
     app.storage.user['selected_patient'] = patient.patient_id
     ui.navigate.to("/dashboard")
 
+# navigating to a selected patient
 def navigate_patient(patient):
     app.storage.user['selected_patient'] = patient.patient_id
     ui.navigate.to("/patient")
 
+# sorting patients alphabetically
 def sort(e):
   return f'{e.first_name} {e.last_name}'
 
-
-
 def create() -> None:
+    # root page
     @ui.page('/')
     def root():
+        # setting current page in storage
         app.storage.user['current_page'] = '/'
 
+        # getting patients
         patients = api.get_patients(app.storage.user.get("token"))
 
+        # adding in title header and sidebar
         ui.page_title("SocketFit Dashboard")
         utilities.header()
         left_drawer = utilities.sidebar()
@@ -34,11 +39,13 @@ def create() -> None:
         for patient in patients:
             options.append(f'{patient.first_name} {patient.last_name}')
 
+        # adding in sidebar arrow and patient search filter
         with ui.row().classes('w-full h-full justify-between'):
             arrow = utilities.arrow(left_drawer)
             patient_search = ui.input(placeholder='Search', autocomplete=options).classes('border-[#2C25B2] border rounded-md p-1').on_value_change(lambda: patients_display())
 
         patients_container = ui.row().classes('w-full h-full')
+        # displaying patients
         def patients_display():
             filtered_patients = patients
             if patient_search.value:

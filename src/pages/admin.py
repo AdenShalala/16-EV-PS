@@ -4,23 +4,27 @@ import pages.utilities as utilities
 import api
 from functools import partial
 
-
+# function to navigate to clinician details page
 def navigate_clinician(clinician):
     app.storage.user['selected_clinician'] = clinician.clinician_id
     ui.navigate.to("/clinician")
 
+# sorting clinicians alphabetically
 def sort(e):
   return f'{e.first_name} {e.last_name}'
 
 def create() -> None:
+    # admin page
     @ui.page('/admin')
     def admin():
+        # setting current page in storage
         app.storage.user['current_page'] = '/admin'
+        # adding in title, header and sidebar
         ui.page_title('SocketFit Admin')
         utilities.header()
         left_drawer = utilities.admin_sidebar()
         
-
+        # getting clinicians
         clinicians = api.get_clinicians(app.storage.user.get("token"))
         clinicians.sort(key=sort)
 
@@ -30,12 +34,13 @@ def create() -> None:
         for clinician in clinicians:
             options.append(f'{clinician.first_name} {clinician.last_name}')
 
-
+        # adding in sidebar arrow and clinician search filter
         with ui.row().classes('w-full h-full justify-between'):
             arrow = utilities.arrow(left_drawer)
             clinicians_search = ui.input(placeholder='Search', autocomplete=options).classes('border-[#2C25B2] border rounded-md p-1').on_value_change(lambda: clinicians_display())
 
         clinicians_container = ui.row().classes('w-full h-full')
+        # displaying clinicians
         def clinicians_display():
             filtered_clinicians = clinicians
             if clinicians_search.value:
