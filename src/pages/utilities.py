@@ -122,6 +122,7 @@ def admin_sidebar():
 def header():
     me = api.get_me(token=app.storage.user.get("token"))
     dark = ui.dark_mode(app.storage.user.get("dark_mode", False))
+    print(dark.value)
 
     with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
         with ui.row().classes('w-full justify-between items-center px-2'):

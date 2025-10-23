@@ -7,10 +7,15 @@ def create() -> None:
     @ui.page('/login')
     def login():
 
-        dark = ui.dark_mode()
+        async def get_dark_mode():
+            enabled = await ui.run_javascript('Quasar.Dark.isActive')
+            app.storage.user["dark_mode"] = enabled
+
+        dark = ui.dark_mode(on_change=get_dark_mode)
         dark.auto()
-        app.storage.user["dark_mode"] = dark.value
-            # Dialog for login error, hidden by default
+        
+
+        # Dialog for login error, hidden by default
         with ui.dialog() as error_dialog, ui.card():
             ui.label('Invalid email or password. Please try again.').classes('text-red-500 text-center')
             ui.button('OK', on_click=error_dialog.close, color='#FFB030').classes('w-full text-white mt-2')
