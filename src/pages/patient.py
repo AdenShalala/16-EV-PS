@@ -78,8 +78,8 @@ def create() -> None:
                             patient.first_name = first_name.value
                             patient.last_name = last_name.value
                             patient.email = email.value
-                            patient.weight = str(weight.value)
-                            patient.height = str(height.value)
+                            patient.weight = str(int(weight.value))
+                            patient.height = str(int(height.value))
                             patient.amputation_type = amputation.value
                             patient.prosthetic_type = prosthetic.value
                             api.put_patient(patient_id=patient.patient_id, updated_patient=patient, token=app.storage.user.get("token"))

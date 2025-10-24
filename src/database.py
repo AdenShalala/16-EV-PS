@@ -367,7 +367,7 @@ def update_patient(patient: Patient):
 
     cursor = database.cursor()
     cursor.execute("UPDATE Patient SET first_name = %s, last_name = %s, height = %s, weight = %s, amputation_type = %s, prosthetic_type = %s, email = %s WHERE patient_id = %s;", 
-                           (patient.first_name, patient.last_name, patient.height, patient.weight, patient.amputation_type, patient.prosthetic_type, patient.email, patient.patient_id))
+                           (patient.first_name, patient.last_name, int(patient.height), int(patient.weight), patient.amputation_type, patient.prosthetic_type, patient.email, patient.patient_id))
     
     database.commit()
     database.close()        
