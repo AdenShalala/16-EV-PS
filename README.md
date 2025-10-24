@@ -53,3 +53,9 @@ STORAGE_SECRET=somerandomsecret
 
 ## Design
 This web application is built off of NiceGUI and FastAPI. We utilize FastAPI for our endpoints and token handling, and all our webpages are made in NiceGUI. Additionally, the installation script builds a Dockerfile and runs a docker compose with MySQL and the Dockerfile.
+
+## Credits
+
+This web application was made by the following individuals:
+
+Ethan Dakin, Aden Shalala, Jayden11git, Tahir Kamal, Iven Yan
