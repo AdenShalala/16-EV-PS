@@ -20,7 +20,7 @@ def create() -> None:
         def checkLogin():
             try:
                 # attempt to log in
-                x = api.token(OAuth2PasswordRequestForm(password=password.value, username=email.value))
+                x = api.login(OAuth2PasswordRequestForm(password=password.value, username=email.value))
                 app.storage.user['token'] = x['access_token']
 
                 if x["type"] == "Clinician":

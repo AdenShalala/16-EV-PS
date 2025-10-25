@@ -9,11 +9,60 @@ import sessions
 import database
 from schema import *
 
+'''
+POST
+/login -> Creates a Session and returns it
+/logout -> Deletes current session
+/clinician -> Creates a Clinician and returns it (Admin)
+/patients -> Creates a Patient and returns it
+/activities -> Creates an Activity and returns it
+/sensors -> Creates a Sensor and returns it
+/activity_readings -> Creates an ActivityReading and returns it
+/pressure_readings -> Creates a PressureReading and returns it
+
+GET
+/me -> Returns the user information
+/clinicians/{clinician_id} -> Returns a Clinician
+/clinicians -> Returns all Clinicians (Admin)
+/patients/{patient_id} -> Returns a Patient
+/patients -> Returns all Patients
+/activities/{activity_id} -> Returns an Activity
+/activities -> Returns all Activities
+/sensors/{sensor_id} -> Returns a Sensor
+/sensors -> Returns all Sensors
+/activity_readings/{reading_id} -> Returns an ActivityReading
+/activity_readings -> Returns all ActivityReadings
+/pressure_readings/{pressure_reading_id} -> Returns a PressureReading
+/pressure_readings -> Returns all PressureReadings
+
+/graph_data -> Special endpoint, returns filtered graph data
+
+PUT
+/me -> Updates user information
+/clinicians/{id} -> Update a Clinician
+/patients/{id} -> Update a Patient
+/activities/{id} -> Update an Activity
+/sensors/{id} -> Update a Sensor
+/activity_readings/{id} -> Update an ActivityReading
+/pressure_readings/{id} -> Update a Sensor
+
+DELETE
+/me -> Deletes current user
+/clinicians/{id} -> Deletes a Clinician
+/patients/{id} -> Deletes a Patient
+/activities/{id} -> Deletes an Activity
+/sensors/{id} -> Deletes a Sensor
+/activity_readings/{id} -> Deletes an ActivityReading
+/pressure_readings/{id} -> Deletes a Sensor
+'''
+
 # OAuth2 password-bearer scheme. Clients will first POST to /token to get a bearer token,
 # then send it as "Authorization: Bearer <token>" on every request.
 # tokenUrl="token" means our token endpoint is /api/token. Keep this in sync with the route below.
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
+api_version = "/api/v1/"
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=api_version + "token")
 
 # exceptions
 credentials_exception = HTTPException(
@@ -30,10 +79,7 @@ server_exception = HTTPException(
     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     detail="Internal Server Error",
 )
-
 login_exception = HTTPException(status_code=400, detail="Incorrect username or password")
-
-
 
 
 # yes i know these two functions are ugly 6️⃣7️⃣
@@ -89,53 +135,13 @@ def verify_admin_email(email: str):
     else:
         return True
 
-'''
-POST
-/login -> Creates a session and returns it
-/clinician -> Creates a clinican and returns it (ADMIN ONLY)
-/patient -> Creates a patient and returns it
-/patient/activity -> Creates an activity and returns it
-/sensor -> Creates a sensor and returns it
-/activityreading -> Creates an activity reading and returns it
 
-
-GET
-/me -> Returns the user information
-/clinicians/{clinician_id} -> Returns a clinician (ADMIN ONLY)
-/clinicians -> Returns all clinicians (ADMIN ONLY)
-
-/patients/{patient_id} -> Returns a patient
-/patients -> Returns all patients
-
-/patients/{patient_id}/activities/{activity_id} -> Returns an activity
-/patients/{patient_id}/activities -> Returns all activities
-
-/patients/{patient_id}/sensors/{sensor_id} -> Returns a sensor
-/patients/{patient_id}/sensors -> Returns all sensors
-
-/patient/{patient_id}/activities/{activity_id}/readings/{reading_id} -> Returns an activity reading
-/patient/{patient_id}/activities/{activity_id}/readings -> Returns all activity readings
-
-/patient/{patient_id}/activities/{activity_id}/readings/{reading_id}/pressure/{pressure_reading_id} -> Returns a pressure reading
-/patient/{patient_id}/activities/{activity_id}/readings/{reading_id}/pressure/ -> Returns all pressure readings
-
-PUT
-/me -> Updates user information
-/clinician/{id} -> Update a clinician (ADMIN ONLY)
-/patient/{id} -> Update a patient
-/activity/{id} -> Update an activity
-/sensor/{id} -> Update a sensor
-
-DELETE: Err see if i need this.
-
-'''
 
 ################
 # POST METHODS #
 ################
-
 @app.post("/api/token")
-def token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     account = get_account_by_email(email=form_data.username)
     
     ph = PasswordHasher()
@@ -160,6 +166,21 @@ def token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     except:
         raise server_exception
 
+@app.post('/api/logout')
+def logout(token: Annotated[str, Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
+    
+    account = get_account(session.id)
+    
+    if not account:
+        raise server_exception
+
+    sessions.delete_session(session)
+    return 200
+
 @app.post("/api/clinician")
 def post_clinician(clinician: Clinician, token: Annotated[OAuth2PasswordRequestForm, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
@@ -181,7 +202,7 @@ def post_clinician(clinician: Clinician, token: Annotated[OAuth2PasswordRequestF
         raise server_exception
 
 @app.post("/api/patient")
-def post_patient(patient: Patient, token: Annotated[OAuth2PasswordRequestForm, Depends(oauth2_scheme)]):
+def post_patient(patient: Patient, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -203,28 +224,14 @@ def post_patient(patient: Patient, token: Annotated[OAuth2PasswordRequestForm, D
     
     return patient
 
+
+
+
 ###############
 # GET METHODS #
 ###############
-@app.get('/api/logout')
-def logout(token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
-    session = sessions.validate_session(token=token)
-
-    if not session:
-        raise credentials_exception
-    
-    account = get_account(session.id)
-    
-    if not account:
-        raise server_exception
-
-    sessions.delete_session(session)
-    return 200
-
-
-
 @app.get('/api/me')
-def get_me(token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+def get_me(token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -238,7 +245,7 @@ def get_me(token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
     return account
 
 @app.get("/api/clinicians/{clinician_id}")
-def get_clinician(clinician_id: str, token: Annotated[Clinician, Depends(oauth2_scheme)]):
+def get_clinician(clinician_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -266,7 +273,7 @@ def get_clinician(clinician_id: str, token: Annotated[Clinician, Depends(oauth2_
         raise server_exception
 
 @app.get("/api/clinicians")
-def get_clinicians(token: Annotated[Clinician, Depends(oauth2_scheme)]):
+def get_clinicians(token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -287,7 +294,7 @@ def get_clinicians(token: Annotated[Clinician, Depends(oauth2_scheme)]):
         raise server_exception
     
 @app.get("/api/patients/{patient_id}")
-def get_patient(patient_id: str, token: Annotated[Patient, Depends(oauth2_scheme)]):
+def get_patient(patient_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -324,7 +331,7 @@ def get_patient(patient_id: str, token: Annotated[Patient, Depends(oauth2_scheme
             raise server_exception
         
 @app.get("/api/patients")
-def get_patients(token: Annotated[list[Patient], Depends(oauth2_scheme)]):
+def get_patients(token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -346,7 +353,7 @@ def get_patients(token: Annotated[list[Patient], Depends(oauth2_scheme)]):
             raise server_exception
 
 @app.get("/api/patients/{patient_id}/activities")
-def get_activities(patient_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
+def get_activities(patient_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -375,7 +382,7 @@ def get_activities(patient_id: str, token: Annotated[Activity, Depends(oauth2_sc
         raise server_exception
 
 @app.get("/api/patients/{patient_id}/activities/{activity_id}")
-def get_activity(patient_id: str, activity_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
+def get_activity(patient_id: str, activity_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -405,7 +412,7 @@ def get_activity(patient_id: str, activity_id: str, token: Annotated[Activity, D
 
 
 @app.get("/api/patients/{patient_id}/sensors/{sensor_id}")
-def get_sensor(patient_id: str, sensor_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
+def get_sensor(patient_id: str, sensor_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -434,7 +441,7 @@ def get_sensor(patient_id: str, sensor_id: str, token: Annotated[Activity, Depen
         raise server_exception
 
 @app.get("/api/patients/{patient_id}/sensors")
-def get_sensors(patient_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
+def get_sensors(patient_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -464,7 +471,7 @@ def get_sensors(patient_id: str, token: Annotated[Activity, Depends(oauth2_schem
 
 
 @app.get("/api/patients/{patient_id}/activities/{activity_id}/readings/")
-def get_activity_readings(patient_id: str, activity_id: str, token: Annotated[list[ActivityReading], Depends(oauth2_scheme)]):
+def get_activity_readings(patient_id: str, activity_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -494,7 +501,7 @@ def get_activity_readings(patient_id: str, activity_id: str, token: Annotated[li
     
 
 @app.get("/api/patients/{patient_id}/activities/{activity_id}/readings/{reading_id}/pressure")
-def get_pressure_readings(patient_id: str, activity_id: str, reading_id: str, token: Annotated[list[ActivityReading], Depends(oauth2_scheme)]):
+def get_pressure_readings(patient_id: str, activity_id: str, reading_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -521,10 +528,38 @@ def get_pressure_readings(patient_id: str, activity_id: str, reading_id: str, to
         return database.get_pressure_readings_from_reading_series_id(reading_id)
     except:
         raise server_exception  
+
+@app.get("/api/graph_data")
+def get_graph_data(activity_id: str, patient_id: str, token: Annotated[str, Depends(oauth2_scheme)]):
+    session = sessions.validate_session(token=token)
+
+    if not session:
+        raise credentials_exception
     
+    account = get_account(session.id)
+    if not account:
+        raise server_exception
+
+    if type(account) == Clinician:
+        patients = get_patients(token=token)
+
+        found = False
+        
+        for patient in patients:
+            if patient.patient_id == patient_id:
+                found = True
+                break
+
+        if not found:
+            raise unauthorized_exception
+
+    try:
+        return database.get_pressure_readings_for_activities(activity_id, patient_id)
+    except:
+        raise server_exception     
 
 @app.put("/api/me")
-def put_me(updated_account: Clinician | Admin, token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+def put_me(updated_account: Clinician | Admin, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -547,7 +582,7 @@ def put_me(updated_account: Clinician | Admin, token: Annotated[Clinician | Admi
             raise server_exception
         
 @app.put("/api/patient/{patient_id}")
-def put_patient(patient_id: str, updated_patient: Patient, token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+def put_patient(patient_id: str, updated_patient: Patient, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -577,7 +612,7 @@ def put_patient(patient_id: str, updated_patient: Patient, token: Annotated[Clin
         raise server_exception
     
 @app.put("/api/patient/{patient_id}")
-def put_clinician(clinician_id: str, updated_clinician: Clinician, token: Annotated[Clinician | Admin, Depends(oauth2_scheme)]):
+def put_clinician(clinician_id: str, updated_clinician: Clinician, token: Annotated[str, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:

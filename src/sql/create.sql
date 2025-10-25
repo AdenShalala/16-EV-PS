@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS Session (
     session_id VARCHAR(50) PRIMARY KEY,
     id VARCHAR(50) NOT NULL,
     account_type VARCHAR(50) NOT NULL,
-    secret_hash BLOB NOT NULL,
+    secret_hash TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     last_verified_at TIMESTAMP NOT NULL
 );

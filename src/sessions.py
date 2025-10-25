@@ -8,10 +8,10 @@ from schema import Session
 def generate_token() -> str:
     return secrets.token_urlsafe(24)
 
-def hash_secret(secret: str) -> bytes:
+def hash_secret(secret: str) -> str:
     hash_object = hashlib.sha256()
     hash_object.update(secret.encode('utf-8'))
-    return hash_object.digest()
+    return hash_object.hexdigest()
 
 def validate_session(token: str) -> Session:
     split: list[str] = token.split('.')

@@ -77,14 +77,21 @@ def create() -> None:
                         activity_types = ('Walking', 'Running', 'Jumping', 'Swimming')
 
                         times = []
+                        sensors_used = []
 
                         total_iterations = (admins + clinicians + patients + sensors + activities) - 1
                         for i in range(activities):
+                            n = fake.random_int(1, sensors)
+                            total_iterations += n
+                            sensors_used.append(n)
+
                             start_time = int(fake.unix_time(start_datetime=datetime.fromtimestamp(1704067200), end_datetime=datetime.now()))
-                            end_time = start_time + fake.random_int(min=180, max=800)
+                            end_time = start_time + fake.random_int(min=90, max=240)
                             times.append([start_time, end_time])
                             for i in range(start_time, end_time + 1):
                                 total_iterations += 1
+
+                        print(sensors_used)
 
                         value = 0
                         with tqdm(total=total_iterations) as pbar:
@@ -174,7 +181,8 @@ def create() -> None:
                                     download_bar.value = value / total_iterations
 
                             if pressure_readings:
-                                for i, activity in enumerate(Activities):
+                                for i, activity in enumerate(Activities):  
+                                    print(i)
 
                                     patient
 
@@ -190,21 +198,20 @@ def create() -> None:
                                             patients_sensors.append(sensor)
 
                                     
-                                    n = max(1, min(sensors - i, sensors))
-                                    sensor = patients_sensors[n - 1]
-
-                                    for _ in range(n):
+                                    n = sensors_used[max(0, min(i - 1, sensors))]
+                                    
+                                    for j in range(n):
+                                        sensor = patients_sensors[j]
                                         start_time, end_time = activity.start_time, activity.end_time
                                         id = str(uuid4())
 
                                         xml += database.get_activity_reading_xml(ActivityReading(activity.activity_id, id, sensor.sensor_id))
 
-
-
+                                        pressure_value = 37.5
                                         for timestamp in range(start_time, end_time + 1):
                                             pressure_reading_id = str(uuid4())
-                                            pressure_value = fake.random_int(min=0, max=100)
-                                            pressure_value += fake.random_int(min=-45, max=45)
+                                            change = fake.pyfloat(min_value=-2, max_value=2)
+                                            pressure_value = max(0, min(75, pressure_value + change))
 
                                             xml += database.get_pressure_reading_xml(PressureReading(pressure_reading_id, pressure_value, timestamp, True, id))
 
@@ -247,7 +254,7 @@ def create() -> None:
                                 last_verified_at = item.find('last_verified_at').text
 
                                 session = Session(id, account_type, secret_hash, created_at, last_verified_at)
-                                database.write_session(admin)
+                                database.write_session(session)
                                 value += 1
                                 progress_bar.value = value / lenx
                                 pbar.update(1)
@@ -347,6 +354,7 @@ def create() -> None:
 
                             cursor.executemany("INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES (%s, %s, %s, %s, %s)", items)
                             connection.commit()
+                            connection.close()
 
                             for item in root.findall('ActivityReading'):
                                 activity_id = item.find('activity_id').text

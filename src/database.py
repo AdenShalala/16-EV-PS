@@ -667,6 +667,29 @@ def get_pressure_readings():
 
     return pressure_readings
 
+def get_pressure_readings_for_activities(activity_id, patient_id):
+    database = get_database()
+    cursor = database.cursor()
+    cursor.execute("""
+        SELECT
+            ar.reading_series_id,
+            ar.sensor_id,
+            s.location_name,
+            s.sensor_type,
+            pr.time,
+            pr.pressure_value
+        FROM Activity a
+        INNER JOIN ActivityReading ar ON a.activity_id = ar.activity_id
+        INNER JOIN Sensor s ON ar.sensor_id = s.sensor_id
+        INNER JOIN PressureReading pr ON ar.reading_series_id = pr.reading_series_id
+        WHERE a.activity_id = %s AND a.patient_id = %s
+        ORDER BY ar.reading_series_id, pr.time ASC
+    """, (activity_id, patient_id))
+
+    result = cursor.fetchall()
+    return result
+
+
 def get_pressure_readings_from_reading_series_id(reading_series_id: str):
     """
     Gets all PressureReadings from a reading_series_id
@@ -674,7 +697,7 @@ def get_pressure_readings_from_reading_series_id(reading_series_id: str):
     database = get_database()
     cursor = database.cursor()
 
-    cursor.execute("SELECT * FROM PressureReading WHERE reading_series_id = %s", (reading_series_id,))
+    cursor.execute("SELECT * FROM PressureReading WHERE reading_series_id = %s ORDER BY time ASC;", (reading_series_id,))
     result = cursor.fetchall()
 
     pressure_readings = [create_pressure_reading(i) for i in result]
@@ -777,7 +800,7 @@ def get_activity_xml(activity: Activity):
     xml += '\n\t\t<start_time>' + str(activity.start_time) + '</start_time>'
     xml += '\n\t\t<end_time>' + str(activity.end_time) + '</end_time>'
     xml += '\n\t\t<is_uploaded>' + str(activity.is_uploaded).upper() + '</is_uploaded>'
-    xml += '\n\t\t<patient_id>' + activity.activity_id + '</patient_id>'
+    xml += '\n\t\t<patient_id>' + activity.patient_id + '</patient_id>'
     xml += '\n\t</Activity>'
 
     return xml

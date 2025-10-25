@@ -6,13 +6,14 @@ import plotly.colors as pc
 import api
 colors = pc.qualitative.Plotly
 
-# get display values based on selected unit
-def get_display_values(timestamps_in_seconds, unit):
-    if unit == 'minutes':
-        return [t / 60 for t in timestamps_in_seconds]
-    return timestamps_in_seconds
+import database
 
-# set figure styling based on dark mode
+def format_current_time(current_time):
+    current_hours = int(current_time // 3600)
+    current_minutes = int((current_time % 3600) // 60)
+    current_seconds = int(current_time % 60)
+    return f"{current_hours:02}:{current_minutes:02}:{current_seconds:02}"
+
 def setFigStyling(fig):
     fig.update_layout(
         hovermode='x unified',
@@ -37,46 +38,25 @@ def setFigStyling(fig):
         fig.update_xaxes(linecolor='black', gridcolor='lightgrey', zeroline=True, zerolinecolor='black', zerolinewidth=1)
         fig.update_yaxes(linecolor='black', gridcolor='lightgrey', zeroline=True, zerolinecolor='black', zerolinewidth=1)
 
-# format current time for display
-def format_current_time(current_time):
-    current_hours = int(current_time // 3600)
-    current_minutes = int((current_time % 3600) // 60)
-    current_seconds = int(current_time % 60)
-    return f"{current_hours:02}:{current_minutes:02}:{current_seconds:02}"
+sensor_types = ['Cushion','FSR']
+def makeGraph(activity, fig, data):
+    plot_data = {
+        'playing': False,
+        'current_time': 0,
+        'unit': 'seconds',
+        'speed': 1.0,
+    }
 
-# make graph for activity
-def makeGraph(activity, fig, graph_data):
-    start = datetime.fromtimestamp(activity.start_time)
-    dt_str_1 = start.strftime("%A, %B %d, %Y at %I:%M %p")
-    end = datetime.fromtimestamp(activity.end_time)
-    dt_format = "%d-%b-%Y %H:%M:%S"
-    total_seconds = int((end - start).total_seconds())
-
-    hours = total_seconds // 3600
-    minutes = (total_seconds % 3600) // 60
-    seconds = total_seconds % 60
-
-    state = {'playing': False, 'current_time': 0}
-    x_axis_unit = {'current': 'seconds'}
-    speed_value = {'current': 1.0}
     updates_per_second = 10
     base_time_increment = 1.0 / updates_per_second    
     ui_elements = {}
-    
-    
-    plot_container = ui.column().classes('w-full p-4 rounded-md border border-[#3545FF] bg-[#F5F5F5] dark:bg-[#1d1d1d] relative')
 
-    sensor_types = [
-        'Cushion',
-        'FSR'
-    ]
-
-    dot_trace_indices = []
+    total_seconds = (activity.end_time - activity.start_time)
 
     # toggle play/pause of graph
     def toggle_play():
-        state['playing'] = not state['playing']
-        if state['playing']:
+        plot_data['playing'] = not plot_data['playing']
+        if plot_data['playing']:
             ui_elements['timer'].activate()
             ui_elements['play_pause_icon'].set_name('pause_circle')
         else:
@@ -84,55 +64,47 @@ def makeGraph(activity, fig, graph_data):
             ui_elements['play_pause_icon'].set_name('play_circle')
 
     # get display values based on selected unit
-    def get_display_values(timestamps_in_seconds, unit):
-        if unit == 'minutes':
+    def get_display_values(timestamps_in_seconds):
+        if plot_data["unit"] == 'minutes':
             return [t / 60 for t in timestamps_in_seconds]
         return timestamps_in_seconds
 
-    # get axis label based on unit
-    def get_axis_label(unit):
-        return f"Time ({unit})"
 
     # get axis range based on unit
-    def get_axis_range(unit):
-        if unit == 'minutes':
+    def get_axis_range():
+        if plot_data["unit"] == 'minutes':
             return [0, total_seconds / 60]
         return [0, total_seconds]
 
-    # toggle x-axis unit between seconds and minutes
-    def toggle_x_axis_unit(e):
-        if x_axis_unit['current'] == 'seconds':
-            x_axis_unit['current'] = 'minutes'
-        else:
-            x_axis_unit['current'] = 'seconds'
-        update_x_axis()
-
-    # update x-axis based on selected unit
     def update_x_axis():
-        current_unit = x_axis_unit['current']
-
-        for i, (index, sensor_data) in enumerate(graph_data[activity.activity_id].items()):
+        for i, (_, sensor_data) in enumerate(info["sensors"].items()):
             line_idx = i * 2
-            display_timestamps = get_display_values(sensor_data['timestamps'], current_unit)
+            display_timestamps = get_display_values(sensor_data['timestamps'])
             fig.data[line_idx].x = display_timestamps
         
-        current_time = state["current_time"]
-        display_current_time = current_time / 60 if current_unit == 'minutes' else current_time
+        current_time = plot_data["current_time"]
+        display_current_time = current_time / 60 if plot_data["unit"] == 'minutes' else current_time
         
-        for i, (index, sensor_data) in enumerate(graph_data[activity.activity_id].items()):
+        for i, (_, sensor_data) in enumerate(info["sensors"].items()):
             if i < len(dot_trace_indices):
                 dot_idx = dot_trace_indices[i]
                 fig.data[dot_idx].x = [display_current_time]
         
-        fig.update_layout(xaxis_title=get_axis_label(current_unit))
-        fig.update_xaxes(range=get_axis_range(current_unit))
+        fig.update_layout(xaxis_title=f"Time ({plot_data["unit"]})")
+        fig.update_xaxes(range=get_axis_range())
         
         ui_elements['plot'].update()
 
         # removing unwanted plotly buttons
         ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
-    # interpolate signal value at target time
+    def toggle_x_axis_unit(e):
+        if plot_data["unit"] == 'seconds':
+            plot_data["unit"] = 'minutes'
+        else:
+            plot_data["unit"] = 'seconds'
+        update_x_axis()
+
     def interpolate_signal(timestamps, signals, target_time):
         if not timestamps or not signals:
             return 0
@@ -150,34 +122,28 @@ def makeGraph(activity, fig, graph_data):
         
         return signals[-1] if signals else 0
 
-    # update dot positions based on current time
     def update_dots():
-        if not state or not state.get('playing'):
-            return
-
-        current_speed = speed_value["current"]
+        current_speed = plot_data["speed"]
         time_increment = base_time_increment * current_speed
 
-        current_time = state['current_time']
+        current_time = plot_data['current_time']
         current_time += time_increment
         
         if current_time >= total_seconds:
             current_time = 0
         
-        state['current_time'] = current_time
+        plot_data['current_time'] = current_time
 
         ui_elements['current_time_label'].text = format_current_time(current_time)
+        display_current_time = current_time / 60 if plot_data["unit"] == 'minutes' else current_time
 
-        current_unit = x_axis_unit['current']
-        display_current_time = current_time / 60 if current_unit == 'minutes' else current_time
-
-        for i, (index, sensor_data) in enumerate(graph_data[activity.activity_id].items()):
+        for i, (_, sensor_data) in enumerate(info["sensors"].items()):
             if i < len(dot_trace_indices):
                 dot_idx = dot_trace_indices[i]
                 
                 signal_value = interpolate_signal(
                     sensor_data["timestamps"],
-                    sensor_data['signals'], 
+                    sensor_data["signals"], 
                     current_time
                 )
                 
@@ -187,6 +153,20 @@ def makeGraph(activity, fig, graph_data):
         ui_elements['plot'].update()
         ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
+
+
+    info = data[activity.activity_id]
+    unit = 'seconds'
+    dot_trace_indices = []
+
+    plot_container = ui.column().classes('w-full p-4 rounded-md border border-[#3545FF] bg-[#F5F5F5] dark:bg-[#1d1d1d] relative')
+    fig = go.Figure()
+
+    setFigStyling(fig)
+    fig.update_layout(xaxis_title=f"Time ({unit})")
+    fig.update_xaxes(range=get_axis_range())
+    fig.update_yaxes(title_text='Pressure (kPa)')                        
+
     timer = ui.timer(interval=0.1, callback=update_dots, active=False)
     ui_elements['timer'] = timer
 
@@ -194,21 +174,19 @@ def makeGraph(activity, fig, graph_data):
     with plot_container:
         with ui.row().classes('w-full flex items-center justify-between'):
             with ui.grid(rows=2, columns=1).classes(replace=''):
-                ui.label(f'{activity.activity_type} - {dt_str_1}').classes('text-lg font-semibold')      
+                ui.label(f'{activity.activity_type} - {datetime.fromtimestamp(activity.start_time).strftime("%A, %B %d, %Y at %I:%M %p")}').classes('text-lg font-semibold')      
                 ui.label(activity.activity_id).classes('py-2 text-xs text-grey')
-
-                                 
+                                
             with ui.grid(rows=1, columns=2).classes(replace='w-full flex justify-between'):
                 with ui.row().classes('items-center gap-2 w-4/6'):
                     ui.label('Speed:').classes('text-sm')
                     
-                    # updating playing speed
                     def update_speed(e):
                         if e.args:
                             new = float(e.args)
                         else:
                             new = 0.0
-                        speed_value["current"] = new
+                        plot_data["speed"] = new
                         ui_elements['speed_label'].text = f"{new}x"
                     speed_slider = ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-1/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
                     speed_label = ui.number(value=1.0, precision=1, min=0.1, max=100).classes('text-sm min-w-12 w-12').bind_value(speed_slider).on('update:model-value', update_speed)
@@ -223,76 +201,60 @@ def makeGraph(activity, fig, graph_data):
                     with ui.grid(columns=2).classes('w-full'):
                         with ui.column().classes('gap-0 items-start w-full'):
                             ui.label('Activity').classes('text-sm leading-tight m-0')
-                            current_time_label = ui.label(format_current_time(state['current_time'])).classes('text-sm leading-tight m-0')
+                            current_time_label = ui.label(format_current_time(plot_data['current_time'])).classes('text-sm leading-tight m-0')
                             ui_elements['current_time_label'] = current_time_label
                         with ui.column().classes('items-end'):
                             play_pause_icon = ui.icon('play_circle').classes('text-4xl text-right').style('font-size: 40px;')
                             ui_elements['play_pause_icon'] = play_pause_icon
                 
 
-
-        current_unit = 'seconds'
-        
-        # getting readings for activity
-        activity_readings = api.get_activity_readings(
-            app.storage.user.get("selected_patient"), 
-            activity.activity_id, 
-            app.storage.user.get("token")
-        )
-
-        for i, activity_reading in enumerate(activity_readings):
-            sensor = api.get_sensor(
-                app.storage.user.get("selected_patient"), 
-                activity_reading.sensor_id, 
-                app.storage.user.get("token")
-            )
-            
-            sensor_name = f"{sensor.location_name.capitalize() + " " + str(i + 1)} ({sensor_types[sensor.sensor_type]})"
+        for i, (_, sensor_data) in enumerate(info["sensors"].items()):     
             color = colors[i % len(colors)]
-            timestamps = graph_data[activity.activity_id][activity_reading.reading_series_id]["timestamps"]
-            display_timestamps = get_display_values(timestamps, current_unit)
-            pressures = graph_data[activity.activity_id][activity_reading.reading_series_id]["signals"]
+            sensor_name = f"{sensor_data["location_name"].capitalize() + " " + str(i + 1)} ({sensor_types[sensor_data["sensor_type"]]})"
+
             fig.add_trace(go.Scatter(
-                x=display_timestamps,
-                y=pressures,
+                x=sensor_data["timestamps"],
+                y=sensor_data["signals"],
                 name=sensor_name,
                 line=dict(color=color)
-            ))
+            ))       
 
-            if display_timestamps and pressures:
-                fig.add_trace(go.Scatter(
-                    x=[display_timestamps[0]],
-                    y=[pressures[0]],
-                    mode='markers',
-                    marker=dict(size=10, color=color),
-                    name=sensor_name,
-                    showlegend=False
-                ))
-                dot_trace_indices.append(len(fig.data) - 1)
+            fig.add_trace(go.Scatter(
+                x=[sensor_data["timestamps"][0]],
+                y=[sensor_data["signals"][0]],
+                mode='markers',
+                marker=dict(size=10, color=color),
+                name=sensor_name,
+                showlegend=False
+            ))                                            
 
-        # setting figure styling 
-        setFigStyling(fig)
-        fig.update_layout(xaxis_title=get_axis_label(current_unit))
-        fig.update_xaxes(range=get_axis_range(current_unit))
-        fig.update_yaxes(title_text='Pressure (kPa)')
+            dot_trace_indices.append(len(fig.data) - 1)             
+            
 
         plot = ui.plotly(fig).classes('w-full h-[500px]')  
         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
         ui_elements['plot'] = plot
-
-    return plot_container, plot
+        return plot_container, plot
 
 def create() -> None:
     # dashboard page
     @ui.page("/dashboard")
     def dashboard():
+        def toggle_graph_visibility(e):
+            plot = plot_containers[activity_checkboxes[e.sender]]
+            if e.value:
+                plot.move(graphsContainer)
+            else:
+                plot.move(invisibleContainer)
+        
         # setting current page in storage
         app.storage.user['current_page'] = '/dashboard'
         # adding in page title
         ui.page_title("SocketFit Dashboard")
 
-        figs = {}
-        plots = {}
+        token = app.storage.user.get("token")
+        selected_patient = app.storage.user.get("selected_patient")
+        patient = api.get_patient(selected_patient, token)
 
         def handle_dark(data):
             for id, fig in figs.items():
@@ -336,14 +298,14 @@ def create() -> None:
                             dark_button.name='dark_mode'
 
         header()
-
-        # setting up sidebar and arrow
         left_drawer = utilities.sidebar() 
         arrow = utilities.arrow(left_drawer)
 
+        xt = datetime.now()
+
         # updating plots on sidebar toggle
         def update_plots():
-            def test():
+            def update():
                 for i in range(100):
                     for id, plot in plots.items():
                         plot.update()
@@ -351,122 +313,63 @@ def create() -> None:
                 
                 timer.cancel()
 
-            timer = ui.timer(interval=0.01, callback=test, immediate=True)
+            timer = ui.timer(interval=0.01, callback=update, immediate=True)
 
 
         arrow.on_click(lambda: update_plots())
-                      
-        # {activity_id: {activity_reading_id: {timestamps, signals, name}}}
-        graph_data = {}
-        # {activity_id: {pressure_min, pressure_max, duration}}
+
         activity_data = {}
-        # checkboxes, for binding visibility of the graphs to
         activity_checkboxes = {}
-        # plot cotnainer dictionary
+
+        figs = {}
+        plots = {}
         plot_containers = {}
 
         filter_icons = {}
-
         filter_data = {'current': "", 'descending': True}
 
-        # toggle graph visibility
-        def toggle_graph_visibility(e):
-            plot = plot_containers[activity_checkboxes[e.sender]]
-            if e.value:
-                plot.move(graphsContainer)
-            else:
-                plot.move(invisibleContainer)
+
+        data = {}
 
         # title bar
         with ui.row().classes('w-full'):
-            patient = api.get_patient(
-                patient_id=app.storage.user.get("selected_patient"), 
-                token=app.storage.user.get('token')
-            )
-
             with ui.row().classes('items-center gap-2 w-full'):
                 ui.label(f"{patient.first_name} {patient.last_name}'s Activities").classes('text-xl font-semibold')  
         
-        time = datetime.now()
-
         # get graph data
-        activities = api.get_activities(
-            patient_id=app.storage.user.get("selected_patient"), 
-            token=app.storage.user.get("token")
-        )
+        activities = api.get_activities(selected_patient, token)
 
         for activity in activities:
-            start = datetime.fromtimestamp(activity.start_time)
-            end = datetime.fromtimestamp(activity.end_time)
+            id = activity.activity_id
+            
+            # really unfortunate to not use api call here
+            # Super bad but  its like 4x slower with the api request
+            result = database.get_pressure_readings_for_activities(activity.activity_id, selected_patient)
 
-            total = (end - start).total_seconds()
-            graph_data[activity.activity_id] = {}
+            start_time = activity.start_time
+
+            total = (activity.end_time - start_time)
 
             hours = int(total // 3600)
             minutes = int((total % 3600) // 60)
             seconds = int(total % 60)
 
-            pressure_min, pressure_max = None, None
+            data[id] = {"sensors": {}, "min": None, "max": None, "duration": f'{hours}h{minutes}m{seconds}s'}
 
-            activity_readings = api.get_activity_readings(
-                app.storage.user.get("selected_patient"), 
-                activity.activity_id, 
-                app.storage.user.get("token")
-            )
+            for i in result:
+                reading_series_id, sensor_id, location_name, sensor_type, time, pressure_value = i
 
-            for activity_reading in activity_readings:
-                sensor = api.get_sensor(
-                    app.storage.user.get("selected_patient"), 
-                    activity_reading.sensor_id, 
-                    app.storage.user.get("token")
-                )
-                
-                sensor_name = f"{sensor.location_name.capitalize()} ({sensor.sensor_type})"
+                if not reading_series_id in data[id]["sensors"]:
+                    data[id]["sensors"][reading_series_id] = {"timestamps": [], "signals": [], "sensor_id": sensor_id, "location_name": location_name, "sensor_type": sensor_type}
 
-                pressure_readings = api.get_pressure_readings(
-                    app.storage.user.get("selected_patient"), 
-                    activity.activity_id, 
-                    activity_reading.reading_series_id, 
-                    app.storage.user.get("token")
-                )
+                if data[id]["min"] is None or pressure_value < data[id]["min"]:
+                    data[id]["min"] = int(round(pressure_value, 1))
+                if data[id]["max"] is None or pressure_value > data[id]["max"]:
+                    data[id]["max"] = int(round(pressure_value, 1))
 
-                timestamps = []
-                pressures = []
-
-                for pressure_reading in pressure_readings:
-                    value = pressure_reading.pressure_value
-                    if pressure_min is None or value < pressure_min:
-                        pressure_min = round(value, 1)
-                    if pressure_max is None or value > pressure_max:
-                        pressure_max = round(value, 1)
-
-                    time = datetime.fromtimestamp(pressure_reading.time)
-                    time_from_start_seconds = (time - start).total_seconds()
-                    time_from_start_seconds = max(0, min(time_from_start_seconds, total))
-
-                    timestamps.append(time_from_start_seconds)
-                    pressures.append(float(value))
-                    
-                combined = list(zip(timestamps, pressures))
-                combined.sort(key=lambda x: x[0])
-                timestamps, pressures = zip(*combined) if combined else ([], [])
-                
-                timestamps = list(timestamps)
-                pressures = list(pressures)
-
-                graph_data[activity.activity_id][activity_reading.reading_series_id] = {
-                    "timestamps": timestamps,
-                    'signals': pressures,
-                    'name': sensor_name
-                }
-
-            activity_data[activity.activity_id] = {
-                "pressure_min": pressure_min,
-                "pressure_max": pressure_max,
-                "duration": f'{hours}h{minutes}m{seconds}s',
-            }
-
-        # filtering activities
+                data[id]["sensors"][reading_series_id]["timestamps"].append(time - start_time)
+                data[id]["sensors"][reading_series_id]["signals"].append(float(pressure_value))           
+        
         def filter_activities(filter_type: str):
             if filter_data['current'] == filter_type:
                 filter_data['descending'] = not filter_data['descending']
@@ -503,7 +406,7 @@ def create() -> None:
                 )
             elif filter_type == "Pressure":
                 filtered_activities.sort(
-                    key=lambda a: activity_data[a.activity_id]['pressure_max'] if activity_data[a.activity_id]['pressure_max'] is not None else 0,
+                    key=lambda a: data[a.activity_id]['max'] if data[a.activity_id]['max'] is not None else 0,
                     reverse=filter_data['descending']
                 )
             elif filter_type == "Display":
@@ -519,14 +422,14 @@ def create() -> None:
 
             with activity_container:
                 for activity in filtered_activities:
-                    data = activity_data[activity.activity_id]
+                    info = data[activity.activity_id]
                     visible = visibility_state.get(activity.activity_id, False)
             
                     with ui.grid(columns=14).classes('px-2 border-[1.5px] w-full border-[#3545FF] rounded items-center'):
                         ui.label(datetime.fromtimestamp(activity.start_time).strftime("%A, %B %d, %Y at %I:%M %p")).classes('col-span-4')
                         ui.label(activity.activity_type).classes('col-span-2')
-                        ui.label(data["duration"]).classes('col-span-2')
-                        ui.label(f"{data["pressure_min"]} - {data["pressure_max"]}").classes('col-span-3')
+                        ui.label(info["duration"]).classes('col-span-2')
+                        ui.label(f"{info["min"]} - {info["max"]}").classes('col-span-3')
                         
                         # create a closure to capture the correct activity_id
                         def make_toggle_handler(activity_id):
@@ -545,9 +448,8 @@ def create() -> None:
                         ).style('--q-primary: #FFB030').classes('col-span-3')
                         
                         activity_checkboxes[checkbox] = activity.activity_id
-            
 
-        # qctivity container
+        # activity container
         with ui.column().classes('w-full'):
             with ui.row().classes('w-full'):
                 with ui.card().classes('w-full border rounded-md bg-[#F5F5F5] dark:bg-[#1d1d1d] border-[#2C25B2] no-shadow'):
@@ -566,7 +468,7 @@ def create() -> None:
                                 filter_icons["Duration"] = ui.icon('arrow_drop_down').classes('dark:!text-white')
                                 filter_icons["Duration"].set_visibility(False)
                             with ui.button(on_click=lambda: filter_activities("Pressure")).classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
-                                ui.label("Pressure").classes('font-bold dark:text-white')
+                                ui.label("Pressure (kPa)").classes('font-bold dark:text-white')
                                 filter_icons["Pressure"] = ui.icon('arrow_drop_down').classes('dark:!text-white')
                                 filter_icons["Pressure"].set_visibility(False)
                             with ui.button(on_click=lambda: filter_activities("Display")).classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
@@ -577,16 +479,16 @@ def create() -> None:
                     activity_container = ui.row().classes('w-full')
                     filter_activities("Date")
 
-                    ui.space()
-            
-                # make graphs
+                    ui.space()        
+
                 graphsContainer = ui.column().classes('w-full flex flex-row mt-4')
                 invisibleContainer = ui.column().classes('w-full flex flex-row mt-4')
                 invisibleContainer.set_visibility(False)
                 with invisibleContainer:
-                    for activity in activities: 
+                    for activity in activities:
                             fig = go.Figure()
                             figs[activity.activity_id] = fig
-                            plot_container, plot = makeGraph(activity, fig, graph_data)
+                            plot_container, plot = makeGraph(activity, fig, data)
                             plots[activity.activity_id] = plot
                             plot_containers[activity.activity_id] = plot_container
+        print(datetime.now() - xt)
