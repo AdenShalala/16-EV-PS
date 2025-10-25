@@ -240,27 +240,12 @@ def create() -> None:
     # dashboard page
     @ui.page("/dashboard")
     def dashboard():
-        def toggle_graph_visibility(e):
-            plot = plot_containers[activity_checkboxes[e.sender]]
-            if e.value:
-                plot.move(graphsContainer)
-            else:
-                plot.move(invisibleContainer)
-        
-        # setting current page in storage
         app.storage.user['current_page'] = '/dashboard'
-        # adding in page title
         ui.page_title("SocketFit Dashboard")
 
         token = app.storage.user.get("token")
         selected_patient = app.storage.user.get("selected_patient")
         patient = api.get_patient(selected_patient, token)
-
-        def handle_dark(data):
-            for id, fig in figs.items():
-                setFigStyling(fig)
-                plots[id].update()
-                plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
         # GOD THIS IS ANNOYING
         # We have to replace the header in THIS SPECIFIC PAGE BECAUSE OF PLOTLY :)
@@ -274,7 +259,10 @@ def create() -> None:
                 dark.enable()
                 button.name='light_mode'
                 
-            handle_dark(value)
+            for id, fig in figs.items():
+                setFigStyling(fig)
+                plots[id].update()
+                plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
         # setting up header
         def header():
