@@ -16,6 +16,7 @@ from tqdm import tqdm
 MultiPartParser.spool_max_size = 1024 * 1024 * 5  
 
 
+
 def navigate_clinician(clinician):
     app.storage.user['selected_clinician'] = clinician.clinician_id
     ui.navigate.to("/clinician")
@@ -40,8 +41,6 @@ def create() -> None:
                     sensors = ui.number('Sensors', value=0, min=0)
                     activities = ui.number('Activities', value=0, min=0)
                     pressure_readings = ui.checkbox('Pressure Readings').classes('col-span-2')
-
-                
 
                 def generate_xml():
                     if int(patients.value) >= 1 and int(clinicians.value) < 1:
@@ -95,12 +94,8 @@ def create() -> None:
                                 last_name = fake.last_name()
                                 email = first_name.lower() + '.' + last_name.lower() + '@admin.com'
 
-                                xml += '\t<Admin>\n\t\t<admin_id>' + id + '</admin_id>'
-                                xml += '\n\t\t<first_name>' + first_name + '</first_name>'
-                                xml += '\n\t\t<last_name>' + last_name + '</last_name>'
-                                xml += '\n\t\t<email>' + email + '</email>'
-                                xml += '\n\t\t<password>' + password + '</password>'
-                                xml += '\n\t</Admin>'
+
+                                xml += database.get_admin_xml(Admin(id, first_name, last_name, email, password))
 
                                 value += 1
                                 pbar.update(1)
@@ -114,12 +109,7 @@ def create() -> None:
                                 
                                 clinician = Clinician(id, first_name, last_name, email, password)
 
-                                xml += '\n\t<Clinician>\n\t\t<clinician_id>' + id + '</clinician_id>'
-                                xml += '\n\t\t<first_name>' + first_name + '</first_name>'
-                                xml += '\n\t\t<last_name>' + last_name + '</last_name>'
-                                xml += '\n\t\t<email>' + email + '</email>'
-                                xml += '\n\t\t<password>' + password + '</password>'
-                                xml += '\n\t</Clinician>'
+                                xml += database.get_clinician_xml(clinician)
 
                                 Clinicians.append(clinician)
 
@@ -142,18 +132,7 @@ def create() -> None:
 
                                     patient = Patient(id, first_name, last_name, height, weight, amputation_type, prosthetic_type, email, password, user_id, clinician_id)
 
-                                    xml += '\n\t<Patient>\n\t\t<patient_id>' + id + '</patient_id>'
-                                    xml += '\n\t\t<first_name>' + first_name + '</first_name>'
-                                    xml += '\n\t\t<last_name>' + last_name + '</last_name>'
-                                    xml += '\n\t\t<height>' + height + '</height>'
-                                    xml += '\n\t\t<weight>' + weight + '</weight>'
-                                    xml += '\n\t\t<amputation_type>' + amputation_type + '</amputation_type>'
-                                    xml += '\n\t\t<prosthetic_type>' + prosthetic_type + '</prosthetic_type>'
-                                    xml += '\n\t\t<email>' + email + '</email>'
-                                    xml += '\n\t\t<password>' + password + '</password>'
-                                    xml += '\n\t\t<user_id>USER' + user_id + '</user_id>'
-                                    xml += '\n\t\t<clinician_id>' + clinician_id + '</clinician_id>'
-                                    xml += '\n\t</Patient>'
+                                    xml += database.get_patient_xml(patient)
 
                                     Patients.append(patient)
 
@@ -166,20 +145,13 @@ def create() -> None:
                                 for i in range(sensors):
                                     
                                     id = str(uuid4())
-                                    sensor_type = str(uuid4())
+                                    sensor_type = str(fake.random_int(0, 1))
                                     sensor_location = fake.random_element(elements=sensor_locations)
                                     sensor_location_id = str(uuid4())
 
                                     sensor = Sensor(id, patient_id, sensor_type, sensor_location, sensor_type, sensor_location_id, True)
 
-                                    xml += '\n\t<Sensor>\n\t\t<sensor_id>' + id + '</sensor_id>'
-                                    xml += '\n\t\t<patient_id>' + patient_id + '</patient_id>'
-                                    xml += '\n\t\t<sensor_type>' + sensor_type + '</sensor_type>'
-                                    xml += '\n\t\t<location_name>' + sensor_location + '</location_name>'
-                                    xml += '\n\t\t<location_id>' + sensor_type + '</location_id>'
-                                    xml += '\n\t\t<sensor_location_id>' + sensor_location_id + '</sensor_location_id>'
-                                    xml += '\n\t\t<is_connected>TRUE</is_connected>'
-                                    xml += '\n\t</Sensor>'
+                                    xml += database.get_sensor_xml(sensor)
 
                                     Sensors.append(sensor)
                                     value += 1
@@ -193,14 +165,8 @@ def create() -> None:
                                     end_time = times[i][1]
 
                                     activity = Activity(id, activity_type, start_time, end_time, True, patient_id)
-                                    
-                                    xml += '\n\t<Activity>\n\t\t<activity_id>' + id + '</activity_id>'
-                                    xml += '\n\t\t<activity_type>' + activity_type + '</activity_type>'
-                                    xml += '\n\t\t<start_time>' + str(start_time) + '</start_time>'
-                                    xml += '\n\t\t<end_time>' + str(end_time) + '</end_time>'
-                                    xml += '\n\t\t<is_uploaded>TRUE</is_uploaded>'
-                                    xml += '\n\t\t<patient_id>' + patient_id + '</patient_id>'
-                                    xml += '\n\t</Activity>'
+                                
+                                    xml += database.get_activity_xml(activity)
 
                                     Activities.append(activity)
                                     value += 1
@@ -230,24 +196,18 @@ def create() -> None:
                                     for _ in range(n):
                                         start_time, end_time = activity.start_time, activity.end_time
                                         id = str(uuid4())
-                                        pressure_value = fake.random_int(min=0, max=100)
-                                        pressure_value += fake.random_int(min=-45, max=45)
+
+                                        xml += database.get_activity_reading_xml(ActivityReading(activity.activity_id, id, sensor.sensor_id))
 
 
-                                        xml += '\n\t<ActivityReading>\n\t\t<activity_id>' + activity.activity_id + '</activity_id>'
-                                        xml += '\n\t\t<reading_series_id>' + id + '</reading_series_id>'
-                                        xml += '\n\t\t<sensor_id>' + sensor.sensor_id + '</sensor_id>'
-                                        xml += '\n\t</ActivityReading>'  
 
                                         for timestamp in range(start_time, end_time + 1):
                                             pressure_reading_id = str(uuid4())
+                                            pressure_value = fake.random_int(min=0, max=100)
+                                            pressure_value += fake.random_int(min=-45, max=45)
 
-                                            xml += '\n\t<PressureReading>\n\t\t<pressure_reading_id>' + pressure_reading_id + '</pressure_reading_id>'
-                                            xml += '\n\t\t<pressure_value>' + str(pressure_value) + '</pressure_value>'
-                                            xml += '\n\t\t<time>' + str(timestamp) + '</time>'
-                                            xml += '\n\t\t<is_uploaded>TRUE</is_uploaded>'
-                                            xml += '\n\t\t<reading_series_id>' + id + '</reading_series_id>'
-                                            xml += '\n\t</PressureReading>'        
+                                            xml += database.get_pressure_reading_xml(PressureReading(pressure_reading_id, pressure_value, timestamp, True, id))
+
                                             value += 1
                                             pbar.update(1)    
                                             download_bar.value = value / total_iterations
@@ -279,6 +239,19 @@ def create() -> None:
                         lenx = len(list(root))
 
                         with tqdm(total=len(list(root))) as pbar:
+                            for item in root.findall('Session'):
+                                id = item.find('id').text
+                                account_type = item.find('account_type').text
+                                secret_hash = item.find('secret_hash').text
+                                created_at = item.find('created_at').text
+                                last_verified_at = item.find('last_verified_at').text
+
+                                session = Session(id, account_type, secret_hash, created_at, last_verified_at)
+                                database.write_session(admin)
+                                value += 1
+                                progress_bar.value = value / lenx
+                                pbar.update(1)
+
                             for item in root.findall('Admin'):
                                 admin_id = item.find('admin_id').text
                                 first_name = item.find('first_name').text
@@ -353,6 +326,11 @@ def create() -> None:
                                 progress_bar.value = value / lenx
                                 pbar.update(1)
 
+                            connection = database.get_database()
+                            cursor = connection.cursor()
+                            
+                            items = []
+
                             for item in root.findall('PressureReading'):
                                 pressure_reading_id = item.find('pressure_reading_id').text
                                 pressure_value = item.find('pressure_value').text
@@ -360,11 +338,15 @@ def create() -> None:
                                 is_uploaded = item.find('is_uploaded').text
                                 reading_series_id = item.find('reading_series_id').text
 
-                                pressure_reading = PressureReading(pressure_reading_id, pressure_value, time, bool(is_uploaded), reading_series_id)
-                                database.write_pressure_reading(pressure_reading)   
+                                #pressure_reading = PressureReading(pressure_reading_id, pressure_value, time, bool(is_uploaded), reading_series_id)
+                                ##database.write_pressure_reading(pressure_reading)   
+                                items.append((pressure_reading_id, pressure_value, time, bool(is_uploaded), reading_series_id))
                                 value += 1
                                 progress_bar.value = value / lenx
                                 pbar.update(1)
+
+                            cursor.executemany("INSERT INTO PressureReading (pressure_reading_id, pressure_value, time, is_uploaded, reading_series_id) VALUES (%s, %s, %s, %s, %s)", items)
+                            connection.commit()
 
                             for item in root.findall('ActivityReading'):
                                 activity_id = item.find('activity_id').text
@@ -381,10 +363,82 @@ def create() -> None:
                     thread.start()
 
                 with ui.row().classes('w-full justify justify-center'):
-                    ui.upload(on_upload=handle_upload, max_file_size=10_485_760).props('accept=.xml').classes('max-w-full flat').style('--q-primary: #FFB030')
+                    ui.upload(on_upload=handle_upload, max_file_size=104857600).props('accept=.xml').classes('max-w-full flat').style('--q-primary: #FFB030')
                     progress_bar = ui.linear_progress(value=0, color="#FFB030", show_value=False).classes('w-full rounded') 
                 
+                ui.separator()
+                ui.label("Export Database as XML").classes('font-bold text-xl dark:text-white')  
+
+                def export():
+                    sessions = database.get_sessions()
+                    admins = database.get_admins()
+                    clinicians = database.get_clinicians()
+                    patients = database.get_patients()
+                    sensors = database.get_sensors()
+                    activities = database.get_activities()
+                    activity_readings = database.get_activity_readings()
+                    pressure_readings = database.get_pressure_readings()
 
 
+                    total_iterations = len(sessions) + len(admins) + len(clinicians) + len(patients) + len(sensors) + len(activities) + len(activity_readings) + len(pressure_readings)
+
+                    value = 0
+                    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<root>\n'
+                    with tqdm(total=total_iterations) as pbar:
+                        for session in sessions:
+                            xml += database.get_session_xml(session)
+                            value += 1
+                            pbar.update(1)
+                            export_bar.value = value / total_iterations                                
+
+                        for admin in admins:
+                            xml += database.get_admin_xml(admin)
+                            value += 1
+                            pbar.update(1)
+                            export_bar.value = value / total_iterations                            
+
+                        for clinician in clinicians:
+                            xml += database.get_clinician_xml(clinician)
+                            value += 1
+                            pbar.update(1)
+                            export_bar.value = value / total_iterations     
+
+                        for patient in patients:
+                            xml += database.get_patient_xml(patient)
+                            value += 1
+                            pbar.update(1)
+                            export_bar.value = value / total_iterations     
+
+                        for sensor in sensors:
+                            xml += database.get_sensor_xml(sensor)
+                            value += 1
+                            pbar.update(1)
+                            export_bar.value = value / total_iterations  
+
+                        for activity in activities:
+                            xml += database.get_activity_xml(activity)
+                            value += 1
+                            pbar.update(1)
+                            export_bar.value = value / total_iterations  
+
+                        for activity_reading in activity_readings:
+                            xml += database.get_activity_reading_xml(activity_reading)
+                            value += 1
+                            pbar.update(1)
+                            export_bar.value = value / total_iterations  
+
+                        for pressure_reading in pressure_readings:
+                            xml += database.get_pressure_reading_xml(pressure_reading)
+                            value += 1
+                            pbar.update(1)
+                            export_bar.value = value / total_iterations  
+
+                    xml += '\n</root>'                 
+                    ui.download.content(xml, 'export.xml')   
+
+
+                with ui.row().classes('w-full justify justify-center'):
+                    ui.button('Export Database', color='#FFB030', on_click=lambda: export()).classes('text-white')
+                    export_bar = ui.linear_progress(value=0, color="#FFB030", show_value=False).classes('w-full rounded') 
 
             

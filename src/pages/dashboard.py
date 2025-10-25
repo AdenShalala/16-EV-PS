@@ -387,6 +387,8 @@ def create() -> None:
             with ui.row().classes('items-center gap-2 w-full'):
                 ui.label(f"{patient.first_name} {patient.last_name}'s Activities").classes('text-xl font-semibold')  
         
+        time = datetime.now()
+
         # get graph data
         activities = api.get_activities(
             patient_id=app.storage.user.get("selected_patient"), 

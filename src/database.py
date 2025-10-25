@@ -66,6 +66,25 @@ def get_session(session_id: str):
     else:
         database.close()
         return None
+    
+def get_sessions():
+    """
+    Gets all Sessions
+    """         
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Session;")
+    result = cursor.fetchall()
+
+    sessions = []
+
+    for i in result:
+        sessions.append(create_session(i))
+
+    database.close()
+
+    return sessions
 
 def update_session_verified_at(session: Session):
     """
@@ -125,6 +144,25 @@ def get_admin(admin_id: str):
     else:
         database.close()
         return None
+    
+def get_admins():
+    """
+    Gets all Admins
+    """         
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Admin;")
+    result = cursor.fetchall()
+
+    admins = []
+
+    for i in result:
+        admins.append(create_admin(i))
+
+    database.close()
+
+    return admins
     
 def get_admin_from_email(email: str):
     """
@@ -329,7 +367,7 @@ def get_patient_from_clinician(patient_id: str, clinician: Clinician):
 
 def get_patients():
     """
-    Gets all patients.
+    Gets all Patients.
     """      
     database = get_database()
     cursor = database.cursor()
@@ -508,6 +546,25 @@ def get_sensor(sensor_id: str):
         database.close()
         return None        
     
+def get_sensors():
+    """
+    Gets all Sensors
+    """         
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM Sensor;")
+    result = cursor.fetchall()
+
+    sensors = []
+
+    for i in result:
+        sensors.append(create_sensor(i))
+
+    database.close()
+
+    return sensors
+
 def get_sensors_from_patient_id(patient_id: str):
     """
     Gets all Sensors from a patient_id
@@ -540,6 +597,25 @@ def write_sensor(sensor: Sensor):
 #####################
 # ACTIVITY READINGS #
 #####################
+def get_activity_readings():
+    """
+    Gets all ActivityReadings
+    """         
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM ActivityReading;")
+    result = cursor.fetchall()
+
+    activity_readings = []
+
+    for i in result:
+        activity_readings.append(create_activity_reading(i))
+
+    database.close()
+
+    return activity_readings
+
 def get_activity_readings_from_activity_id(activity_id: str):
     """
     Gets all ActivityReadings from an activity_id
@@ -572,6 +648,25 @@ def write_activity_reading(activity_reading: ActivityReading):
 #####################
 # PRESSURE READINGS #
 #####################
+def get_pressure_readings():
+    """
+    Gets all PressureReadings
+    """         
+    database = get_database()
+    cursor = database.cursor()
+
+    cursor.execute("SELECT * FROM PressureReading;")
+    result = cursor.fetchall()
+
+    pressure_readings = []
+
+    for i in result:
+        pressure_readings.append(create_pressure_reading(i))
+
+    database.close()
+
+    return pressure_readings
+
 def get_pressure_readings_from_reading_series_id(reading_series_id: str):
     """
     Gets all PressureReadings from a reading_series_id
@@ -600,3 +695,111 @@ def write_pressure_reading(pressure_reading: PressureReading):
     
     database.commit()
     database.close()
+
+
+#################
+# XML Functions #
+#################
+def get_session_xml(session: Session):
+    xml = ""
+
+    xml += '\t<Session>\n\t\t<session_id>' + session.session_id + '</session_id>'
+    xml += '\n\t\t<id>' + session.id + '</id>'
+    xml += '\n\t\t<account_type>' + session.account_type + '</account_type>'
+    xml += '\n\t\t<secret_hash>' + str(session.secret_hash) + '</secret_hash>'
+    xml += '\n\t\t<created_at>' + str(session.created_at) + '</created_at>'
+    xml += '\n\t\t<last_verified_at>' + str(session.last_verified_at) + '</last_verified_at>'
+    xml += '\n\t</Session>'
+
+    return xml    
+
+def get_admin_xml(admin: Admin):
+    xml = ""
+
+    xml += '\t<Admin>\n\t\t<admin_id>' + admin.admin_id + '</admin_id>'
+    xml += '\n\t\t<first_name>' + admin.first_name + '</first_name>'
+    xml += '\n\t\t<last_name>' + admin.last_name + '</last_name>'
+    xml += '\n\t\t<email>' + admin.email + '</email>'
+    xml += '\n\t\t<password>' + admin.email + '</password>'
+    xml += '\n\t</Admin>'
+
+    return xml
+
+def get_clinician_xml(clinician: Clinician):
+    xml = ""
+
+    xml += '\n\t<Clinician>\n\t\t<clinician_id>' + clinician.clinician_id + '</clinician_id>'
+    xml += '\n\t\t<first_name>' + clinician.first_name + '</first_name>'
+    xml += '\n\t\t<last_name>' + clinician.last_name + '</last_name>'
+    xml += '\n\t\t<email>' + clinician.email + '</email>'
+    xml += '\n\t\t<password>' + clinician.password + '</password>'
+    xml += '\n\t</Clinician>'
+
+    return xml
+
+def get_patient_xml(patient: Patient):
+    xml = ""
+
+    xml += '\n\t<Patient>\n\t\t<patient_id>' + patient.patient_id + '</patient_id>'
+    xml += '\n\t\t<first_name>' + patient.first_name + '</first_name>'
+    xml += '\n\t\t<last_name>' + patient.last_name + '</last_name>'
+    xml += '\n\t\t<height>' + patient.height + '</height>'
+    xml += '\n\t\t<weight>' + patient.weight + '</weight>'
+    xml += '\n\t\t<amputation_type>' + patient.amputation_type + '</amputation_type>'
+    xml += '\n\t\t<prosthetic_type>' + patient.prosthetic_type + '</prosthetic_type>'
+    xml += '\n\t\t<email>' + patient.email + '</email>'
+    xml += '\n\t\t<password>' + patient.password + '</password>'
+    xml += '\n\t\t<user_id>USER' + patient.user_id + '</user_id>'
+    xml += '\n\t\t<clinician_id>' + patient.clinician_id + '</clinician_id>'
+    xml += '\n\t</Patient>'
+
+    return xml
+
+def get_sensor_xml(sensor: Sensor):
+    xml = ""
+
+    xml += '\n\t<Sensor>\n\t\t<sensor_id>' + sensor.sensor_id + '</sensor_id>'
+    xml += '\n\t\t<patient_id>' + sensor.patient_id + '</patient_id>'
+    xml += '\n\t\t<sensor_type>' + str(sensor.sensor_type) + '</sensor_type>'
+    xml += '\n\t\t<location_name>' + sensor.location_name + '</location_name>'
+    xml += '\n\t\t<location_id>' + str(sensor.location_id) + '</location_id>'
+    xml += '\n\t\t<sensor_location_id>' + sensor.sensor_location_id + '</sensor_location_id>'
+    xml += '\n\t\t<is_connected>' + str(sensor.is_connected).upper() + '</is_connected>'
+    xml += '\n\t</Sensor>'
+
+    return xml
+
+def get_activity_xml(activity: Activity):
+    xml = ""
+
+    xml += '\n\t<Activity>\n\t\t<activity_id>' + activity.activity_id + '</activity_id>'
+    xml += '\n\t\t<activity_type>' + activity.activity_type + '</activity_type>'
+    xml += '\n\t\t<start_time>' + str(activity.start_time) + '</start_time>'
+    xml += '\n\t\t<end_time>' + str(activity.end_time) + '</end_time>'
+    xml += '\n\t\t<is_uploaded>' + str(activity.is_uploaded).upper() + '</is_uploaded>'
+    xml += '\n\t\t<patient_id>' + activity.activity_id + '</patient_id>'
+    xml += '\n\t</Activity>'
+
+    return xml
+
+def get_activity_reading_xml(activity_reading: ActivityReading):
+    xml = ""
+
+    xml += '\n\t<ActivityReading>\n\t\t<activity_id>' + activity_reading.activity_id + '</activity_id>'
+    xml += '\n\t\t<reading_series_id>' + activity_reading.reading_series_id + '</reading_series_id>'
+    xml += '\n\t\t<sensor_id>' + activity_reading.sensor_id + '</sensor_id>'
+    xml += '\n\t</ActivityReading>'  
+
+    return xml
+
+def get_pressure_reading_xml(pressure_reading: PressureReading):
+    xml = ""
+
+    xml += '\n\t<PressureReading>\n\t\t<pressure_reading_id>' + pressure_reading.pressure_reading_id + '</pressure_reading_id>'
+    xml += '\n\t\t<pressure_value>' + str(pressure_reading.pressure_value) + '</pressure_value>'
+    xml += '\n\t\t<time>' + str(pressure_reading.time) + '</time>'
+    xml += '\n\t\t<is_uploaded>' + str(pressure_reading.is_uploaded).upper() + '</is_uploaded>'
+    xml += '\n\t\t<reading_series_id>' + pressure_reading.reading_series_id + '</reading_series_id>'
+    xml += '\n\t</PressureReading>'        
+
+    return xml

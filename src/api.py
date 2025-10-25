@@ -434,7 +434,7 @@ def get_sensor(patient_id: str, sensor_id: str, token: Annotated[Activity, Depen
         raise server_exception
 
 @app.get("/api/patients/{patient_id}/sensors")
-def get_sensors(patient_id: str, sensor_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
+def get_sensors(patient_id: str, token: Annotated[Activity, Depends(oauth2_scheme)]):
     session = sessions.validate_session(token=token)
 
     if not session:
@@ -457,7 +457,6 @@ def get_sensors(patient_id: str, sensor_id: str, token: Annotated[Activity, Depe
         if not found:
             raise unauthorized_exception
     
-
     try:
         return database.get_sensors_from_patient_id(patient_id)
     except:
