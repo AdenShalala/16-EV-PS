@@ -73,7 +73,7 @@ def create() -> None:
                                 ui.label('Height').classes('font-bold')
                                 ui.label('Weight').classes('font-bold')
                                 ui.label('Amputation Type').classes('font-bold')
-                                ui.label('Prosthetic Type').classes('font-bold')
+                                ui.label('Socket Type').classes('font-bold')
                                 ui.label(patient.height + "cm")
                                 ui.label(patient.weight + "kg")
                                 ui.label(patient.amputation_type)

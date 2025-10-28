@@ -392,7 +392,7 @@ def create() -> None:
                     key=lambda a: (datetime.fromtimestamp(a.end_time) - datetime.fromtimestamp(a.start_time)).total_seconds(),
                     reverse=filter_data['descending']
                 )
-            elif filter_type == "Pressure":
+            elif filter_type == "Pressure (Min - Max)":
                 filtered_activities.sort(
                     key=lambda a: data[a.activity_id]['max'] if data[a.activity_id]['max'] is not None else 0,
                     reverse=filter_data['descending']
@@ -456,7 +456,7 @@ def create() -> None:
                                 filter_icons["Duration"] = ui.icon('arrow_drop_down').classes('dark:!text-white')
                                 filter_icons["Duration"].set_visibility(False)
                             with ui.button(on_click=lambda: filter_activities("Pressure")).classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):
-                                ui.label("Pressure (kPa)").classes('font-bold dark:text-white')
+                                ui.label("Pressure (Min - Max)").classes('font-bold dark:text-white')
                                 filter_icons["Pressure"] = ui.icon('arrow_drop_down').classes('dark:!text-white')
                                 filter_icons["Pressure"].set_visibility(False)
                             with ui.button(on_click=lambda: filter_activities("Display")).classes('px-0 col-span-3').props('flat no-caps color=black align="left"'):

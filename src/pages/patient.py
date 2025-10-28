@@ -39,7 +39,7 @@ def create() -> None:
                         weight = ui.number(label='Weight (kg)', value=patient.weight).classes('w-full border rounded-md border-[#3545FF] p-1').props('no-spinners')
                         height = ui.number(label='Height (cm)', value=patient.height).classes('w-full border rounded-md border-[#3545FF] p-1').props('no-spinners')
                         amputation = ui.input(label='Amputation Type', value=patient.amputation_type).classes('w-full border rounded-md border-[#3545FF] p-1')
-                        prosthetic = ui.input(label='Prosthetic Type', value=patient.prosthetic_type).classes('w-full border rounded-md border-[#3545FF] p-1')
+                        prosthetic = ui.input(label='Socket Type', value=patient.prosthetic_type).classes('w-full border rounded-md border-[#3545FF] p-1')
                         
                         # saving updated patient information
                         def save():
