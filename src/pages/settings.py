@@ -86,12 +86,10 @@ def create() -> None:
                             sensors_used.append(n)
 
                             start_time = int(fake.unix_time(start_datetime=datetime.fromtimestamp(1704067200), end_datetime=datetime.now()))
-                            end_time = start_time + fake.random_int(min=90, max=240)
+                            end_time = start_time + fake.random_int(min=90, max=480)
                             times.append([start_time, end_time])
                             for i in range(start_time, end_time + 1):
                                 total_iterations += 1
-
-                        print(sensors_used)
 
                         value = 0
                         with tqdm(total=total_iterations) as pbar:
@@ -182,8 +180,6 @@ def create() -> None:
 
                             if pressure_readings:
                                 for i, activity in enumerate(Activities):  
-                                    print(i)
-
                                     patient
 
                                     for x in Patients:
@@ -207,11 +203,11 @@ def create() -> None:
 
                                         xml += database.get_activity_reading_xml(ActivityReading(activity.activity_id, id, sensor.sensor_id))
 
-                                        pressure_value = 37.5
+                                        pressure_value = fake.random_int(-100, 100)
                                         for timestamp in range(start_time, end_time + 1):
                                             pressure_reading_id = str(uuid4())
                                             change = fake.pyfloat(min_value=-2, max_value=2)
-                                            pressure_value = max(0, min(75, pressure_value + change))
+                                            pressure_value = max(-35, min(75, pressure_value + change))
 
                                             xml += database.get_pressure_reading_xml(PressureReading(pressure_reading_id, pressure_value, timestamp, True, id))
 
