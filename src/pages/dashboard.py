@@ -43,7 +43,6 @@ def makeGraph(activity, figure, data):
     plot_data = {
         'playing': False,
         'current_time': 0,
-        'unit': 'seconds',
         'speed': 1.0,
     }
 
@@ -63,47 +62,6 @@ def makeGraph(activity, figure, data):
             ui_elements['timer'].deactivate()
             ui_elements['play_pause_icon'].set_name('play_circle')
 
-    # get display values based on selected unit
-    def get_display_values(timestamps_in_seconds):
-        if plot_data["unit"] == 'minutes':
-            return [t / 60 for t in timestamps_in_seconds]
-        return timestamps_in_seconds
-
-
-    # get axis range based on unit
-    def get_axis_range():
-        if plot_data["unit"] == 'minutes':
-            return [0, total_seconds / 60]
-        return [0, total_seconds]
-
-    def update_x_axis():
-        for i, (_, sensor_data) in enumerate(info["sensors"].items()):
-            line_idx = i * 2
-            display_timestamps = get_display_values(sensor_data['timestamps'])
-            figure.data[line_idx].x = display_timestamps
-        
-        current_time = plot_data["current_time"]
-        display_current_time = current_time / 60 if plot_data["unit"] == 'minutes' else current_time
-        
-        for i, (_, sensor_data) in enumerate(info["sensors"].items()):
-            if i < len(dot_trace_indices):
-                dot_idx = dot_trace_indices[i]
-                figure.data[dot_idx].x = [display_current_time]
-        
-        figure.update_layout(xaxis_title=f"Time ({plot_data["unit"]})")
-        figure.update_xaxes(range=get_axis_range())
-        
-        ui_elements['plot'].update()
-
-        # removing unwanted plotly buttons
-        ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
-
-    def toggle_x_axis_unit(e):
-        if plot_data["unit"] == 'seconds':
-            plot_data["unit"] = 'minutes'
-        else:
-            plot_data["unit"] = 'seconds'
-        update_x_axis()
 
     def interpolate_signal(timestamps, signals, target_time):
         if not timestamps or not signals:
@@ -135,7 +93,6 @@ def makeGraph(activity, figure, data):
         plot_data['current_time'] = current_time
 
         ui_elements['current_time_label'].text = format_current_time(current_time)
-        display_current_time = current_time / 60 if plot_data["unit"] == 'minutes' else current_time
 
         for i, (_, sensor_data) in enumerate(info["sensors"].items()):
             if i < len(dot_trace_indices):
@@ -147,23 +104,26 @@ def makeGraph(activity, figure, data):
                     current_time
                 )
                 
-                figure.data[dot_idx].x = [display_current_time]
+                figure.data[dot_idx].x = [current_time]
                 figure.data[dot_idx].y = [signal_value]
 
+        ui_elements['playback_slider'].value = current_time
         ui_elements['plot'].update()
         ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
 
 
+    def update_playback_slider(e):
+        plot_data['current_time'] = e.args
+        update_dots()
 
     info = data[activity.activity_id]
-    unit = 'seconds'
     dot_trace_indices = []
 
     plot_container = ui.column().classes('w-full p-4 rounded-md border border-[#3545FF] bg-[#F5F5F5] dark:bg-[#1d1d1d] relative')
 
     setFigStyling(figure)
-    figure.update_layout(xaxis_title=f"Time ({unit})")
-    figure.update_xaxes(range=get_axis_range())
+    figure.update_layout(xaxis_title=f"Time (seconds)")
+    figure.update_xaxes(range=[0, total_seconds])
     figure.update_yaxes(title_text='Pressure (kPa)')                        
 
     timer = ui.timer(interval=0.1, callback=update_dots, active=False)
@@ -190,11 +150,6 @@ def makeGraph(activity, figure, data):
                     speed_slider = ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-1/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
                     speed_label = ui.number(value=1.0, precision=1, min=0.1, max=100).classes('text-sm min-w-12 w-12').bind_value(speed_slider).on('update:model-value', update_speed)
                     ui_elements['speed_label'] = speed_label
-
-                    with ui.row().classes('items-center gap-2'):
-                        ui.label('Seconds').classes('text-sm')
-                        ui.switch(value=False).on('update:model-value', toggle_x_axis_unit).style('--q-primary: #FFB030')
-                        ui.label('Minutes').classes('text-sm')
 
                 with ui.button(color='#FFB030').classes('rounded-md text-white flex justify-between w-[230px] p-2').on_click(toggle_play):
                     with ui.grid(columns=2).classes('w-full'):
@@ -235,6 +190,9 @@ def makeGraph(activity, figure, data):
         plot.classes('w-full h-[500px]')  
         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
         ui_elements['plot'] = plot
+        playback_slider = ui.slider(min=0, max=total_seconds).classes('w-full').style('--q-primary: #FFB030')
+        playback_slider.on('update:model-value', lambda e: update_playback_slider(e), trailing_events=False)
+        ui_elements['playback_slider'] = playback_slider
         return plot_container, plot
 
 def create() -> None:
