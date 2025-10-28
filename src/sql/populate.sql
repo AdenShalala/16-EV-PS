@@ -6,10 +6,10 @@ INSERT INTO Clinician (clinician_id, first_name, last_name, email, password) VAL
 ('90709f2c-d75e-447a-86e5-c7592ebf5d83', 'Craig', 'Jones', 'craig.jones@clinician.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE');
 
 INSERT INTO Patient (patient_id, first_name, last_name, height, weight, amputation_type, prosthetic_type, email, password, user_id, clinician_id) VALUES
-('84ec8239-b141-48d0-ae68-fe9439863286', 'Eric', 'King', '181', '72', 'Anterior', 'Titanium', 'eric.king@patient.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE', 'USER01', '5854e7d9-a2c3-4af1-bb87-bbe393dd65b2'),
-('5cc124e9-0db5-4d21-8bbc-3f073c015fa6', 'Sasha', 'Burev', '168', '59', 'Posterior', 'Carbon-Fiber', 'sasha.burev@patient.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE',  'USER02', '5854e7d9-a2c3-4af1-bb87-bbe393dd65b2'),
-('515c01a6-81cb-4855-ba5b-1aa466fa41e7', 'Chris', 'Redfield', '192', '91', 'Posterior', 'Fiber-Glass', 'chris.redfield@patient.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE', 'USER03', '90709f2c-d75e-447a-86e5-c7592ebf5d83'),
-('240b6600-f21e-4667-9428-5732f11d1a25', 'Sheva', 'Alomar', '166', '61', 'Posterior', 'Carbon-Fiber', 'sheva.alomar@patient.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE', 'USER04', '90709f2c-d75e-447a-86e5-c7592ebf5d83');
+('84ec8239-b141-48d0-ae68-fe9439863286', 'Eric', 'King', '181', '72', 'Below Knee', 'Transtibial', 'eric.king@patient.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE', 'USER01', '5854e7d9-a2c3-4af1-bb87-bbe393dd65b2'),
+('5cc124e9-0db5-4d21-8bbc-3f073c015fa6', 'Sasha', 'Burev', '168', '59', 'Below Ankle', 'Transtalial', 'sasha.burev@patient.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE',  'USER02', '5854e7d9-a2c3-4af1-bb87-bbe393dd65b2'),
+('515c01a6-81cb-4855-ba5b-1aa466fa41e7', 'Chris', 'Redfield', '192', '91', 'Below Hip', 'Transacetabulial', 'chris.redfield@patient.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE', 'USER03', '90709f2c-d75e-447a-86e5-c7592ebf5d83'),
+('240b6600-f21e-4667-9428-5732f11d1a25', 'Sheva', 'Alomar', '166', '61', 'Below Knee', 'Transtibial', 'sheva.alomar@patient.com', '$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE', 'USER04', '90709f2c-d75e-447a-86e5-c7592ebf5d83');
 
 INSERT INTO Activity (activity_id, activity_type, start_time, end_time, is_uploaded, patient_id) VALUES
 ('62028bf5-4eb2-4e7a-bf28-c94a622564b4', 'Running', '1759769820', '1759770000', TRUE, '84ec8239-b141-48d0-ae68-fe9439863286'),
