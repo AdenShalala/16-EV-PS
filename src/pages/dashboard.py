@@ -96,7 +96,7 @@ def makeGraph(activity, figure, data):
         ui_elements['plot'].update()
 
         # removing unwanted plotly buttons
-        ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
+        ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
 
     def toggle_x_axis_unit(e):
         if plot_data["unit"] == 'seconds':
@@ -151,7 +151,7 @@ def makeGraph(activity, figure, data):
                 figure.data[dot_idx].y = [signal_value]
 
         ui_elements['plot'].update()
-        ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
+        ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
 
 
 
@@ -222,6 +222,7 @@ def makeGraph(activity, figure, data):
                 x=[sensor_data["timestamps"][0]],
                 y=[sensor_data["signals"][0]],
                 mode='markers',
+                hoverinfo='skip',
                 marker=dict(size=10, color=color),
                 name=sensor_name,
                 showlegend=False
@@ -232,7 +233,7 @@ def makeGraph(activity, figure, data):
 
         plot = ui.plotly(figure)
         plot.classes('w-full h-[500px]')  
-        plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
+        plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
         ui_elements['plot'] = plot
         return plot_container, plot
 
@@ -263,7 +264,7 @@ def create() -> None:
                 if container.visible:
                     setFigStyling(figs[id])
                     plots[id].update()
-                    plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
+                    plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
 
     
         # setting up header 
@@ -298,7 +299,7 @@ def create() -> None:
                     if container.visible:
                         for i in range(100):
                             plots[id].update()
-                            plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
+                            plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
                 
                 timer.cancel()
 
