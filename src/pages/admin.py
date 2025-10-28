@@ -19,6 +19,7 @@ def create() -> None:
     def admin():
         # setting current page in storage
         app.storage.user['current_page'] = '/admin'
+        app.storage.user['selected_clinican'] = None
         # adding in title, header and sidebar
         ui.page_title('SocketFit Admin')
         utilities.header()

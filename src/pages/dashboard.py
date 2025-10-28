@@ -129,6 +129,13 @@ def makeGraph(activity, figure, data):
     timer = ui.timer(interval=0.1, callback=update_dots, active=False)
     ui_elements['timer'] = timer
 
+    def update_speed(e):
+        if e.args:
+            new = float(e.args)
+        else:
+            new = 0.0
+        plot_data["speed"] = new
+
     # building plot container
     with plot_container:
         with ui.row().classes('w-full flex items-center justify-between'):
@@ -136,30 +143,29 @@ def makeGraph(activity, figure, data):
                 ui.label(f'{activity.activity_type} - {datetime.fromtimestamp(activity.start_time).strftime("%A, %B %d, %Y at %I:%M %p")}').classes('text-lg font-semibold')      
                 ui.label(activity.activity_id).classes('py-2 text-xs text-grey')
                                 
-            with ui.grid(rows=1, columns=2).classes(replace='w-full flex justify-between'):
-                with ui.row().classes('items-center gap-2 w-4/6'):
-                    ui.label('Speed:').classes('text-sm')
-                    
-                    def update_speed(e):
-                        if e.args:
-                            new = float(e.args)
-                        else:
-                            new = 0.0
-                        plot_data["speed"] = new
-                        ui_elements['speed_label'].text = f"{new}x"
-                    speed_slider = ui.slider(min=0.1, max=100.0, step=0.1, value=1.0).props('label-always snap markers="[1, 5, 10, 25, 50, 100]"').classes('w-1/5').style('--q-primary: #FFB030').on('update:model-value', update_speed)
-                    speed_label = ui.number(value=1.0, precision=1, min=0.1, max=100).classes('text-sm min-w-12 w-12').bind_value(speed_slider).on('update:model-value', update_speed)
-                    ui_elements['speed_label'] = speed_label
+            with ui.grid(rows=1, columns=1).classes(replace='w-full flex'):
+                with ui.row().classes('items-center gap-2 w-full'):
+                    with ui.button(color='#FFB030').classes('rounded-md text-white flex justify-between w-[230px] p-2').on_click(toggle_play):
+                        with ui.grid(columns=2).classes('w-full'):
+                            with ui.column().classes('gap-0 items-start w-full'):
+                                ui.label('Activity').classes('text-sm leading-tight m-0')
+                                current_time_label = ui.label(format_current_time(plot_data['current_time'])).classes('text-sm leading-tight m-0')
+                                ui_elements['current_time_label'] = current_time_label
+                            with ui.column().classes('items-end'):
+                                play_pause_icon = ui.icon('play_circle').classes('text-4xl text-right').style('font-size: 40px;')
+                                ui_elements['play_pause_icon'] = play_pause_icon
 
-                with ui.button(color='#FFB030').classes('rounded-md text-white flex justify-between w-[230px] p-2').on_click(toggle_play):
-                    with ui.grid(columns=2).classes('w-full'):
-                        with ui.column().classes('gap-0 items-start w-full'):
-                            ui.label('Activity').classes('text-sm leading-tight m-0')
-                            current_time_label = ui.label(format_current_time(plot_data['current_time'])).classes('text-sm leading-tight m-0')
-                            ui_elements['current_time_label'] = current_time_label
-                        with ui.column().classes('items-end'):
-                            play_pause_icon = ui.icon('play_circle').classes('text-4xl text-right').style('font-size: 40px;')
-                            ui_elements['play_pause_icon'] = play_pause_icon
+                with ui.row().classes('items-center gap-2 w-[350px]'):
+                    ui.label('Speed:').classes('text-sm w-[50px]')
+                    
+
+                        #ui_elements['speed_label'].text = f"{new}x"
+                    s = ui.slider(min=1, max=10, step=1, value=1).props('label-always snap switch-label-side').classes('w-[150px]').style('--q-primary: #FFB030').on('update:model-value', update_speed)
+                    s.bind_value_to(s.props, 'label-value', lambda x: f'{x}x')
+                    # speed_label = ui.number(value=1.0, precision=1, min=0.1, max=100).classes('text-sm min-w-12 w-12').bind_value(speed_slider).on('update:model-value', update_speed)
+                    # ui_elements['speed_label'] = speed_label
+
+
                 
 
         for i, (_, sensor_data) in enumerate(info["sensors"].items()):     
@@ -190,8 +196,9 @@ def makeGraph(activity, figure, data):
         plot.classes('w-full h-[500px]')  
         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
         ui_elements['plot'] = plot
-        playback_slider = ui.slider(min=0, max=total_seconds).classes('w-full').style('--q-primary: #FFB030')
+        playback_slider = ui.slider(min=0, max=total_seconds, step=1, value=0).classes('w-full').style('--q-primary: #FFB030').props('label')
         playback_slider.on('update:model-value', lambda e: update_playback_slider(e), trailing_events=False)
+        playback_slider.bind_value_to(playback_slider.props, 'label-value', lambda x: f'{int(x)}s')
         ui_elements['playback_slider'] = playback_slider
         return plot_container, plot
 
@@ -233,9 +240,13 @@ def create() -> None:
             with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
                 with ui.row().classes('w-full justify-between items-center px-2'):
                     with ui.row().classes('items-center gap-4'):
-                        with ui.link(target='/'):
-                            ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
+                            with ui.link(target='/'):
+                                ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
 
+                            ui.space()
+                        
+                            with ui.button().classes('').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
+                                ui.label(f"{patient.first_name} {patient.last_name}'s Details").classes(' font-bold !text-gray-600 dark:!text-gray-400')
 
                     with ui.row().classes('items-center gap-4'):
                         with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):

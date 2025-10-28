@@ -23,6 +23,7 @@ def create() -> None:
     def root():
         # setting current page in storage
         app.storage.user['current_page'] = '/'
+        app.storage.user["selected_patient"] = None
 
         # getting patients
         patients = api.get_patients(app.storage.user.get("token"))
