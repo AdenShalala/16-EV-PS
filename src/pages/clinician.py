@@ -50,7 +50,7 @@ def create() -> None:
                             clinician.first_name = first_name.value
                             clinician.last_name = last_name.value
                             clinician.email = email.value
-                            api.put_clinician(clinician_id=clinician.patient_id, updated_clinician=clinician, token=app.storage.user.get("token"))
+                            api.put_clinician(clinician_id=clinician.clinician_id, updated_clinician=clinician, token=app.storage.user.get("token"))
                             ui.run_javascript('location.reload();')
 
                         ui.button('Save', on_click=save, color='#FFB030').classes('text-white rounded-md px-6 py-2')

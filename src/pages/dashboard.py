@@ -21,7 +21,7 @@ def setFigStyling(fig):
         showlegend=True,
     )
 
-    if app.storage.user.get('dark_mode') == True:
+    if app.storage.user.get("dark_mode", False) == True:
         fig.update_layout(
             plot_bgcolor='#1d1d1d',
             paper_bgcolor='#1d1d1d',
@@ -39,7 +39,7 @@ def setFigStyling(fig):
         fig.update_yaxes(linecolor='black', gridcolor='lightgrey', zeroline=True, zerolinecolor='black', zerolinewidth=1)
 
 sensor_types = ['Cushion','FSR']
-def makeGraph(activity, fig, data):
+def makeGraph(activity, figure, data):
     plot_data = {
         'playing': False,
         'current_time': 0,
@@ -80,7 +80,7 @@ def makeGraph(activity, fig, data):
         for i, (_, sensor_data) in enumerate(info["sensors"].items()):
             line_idx = i * 2
             display_timestamps = get_display_values(sensor_data['timestamps'])
-            fig.data[line_idx].x = display_timestamps
+            figure.data[line_idx].x = display_timestamps
         
         current_time = plot_data["current_time"]
         display_current_time = current_time / 60 if plot_data["unit"] == 'minutes' else current_time
@@ -88,10 +88,10 @@ def makeGraph(activity, fig, data):
         for i, (_, sensor_data) in enumerate(info["sensors"].items()):
             if i < len(dot_trace_indices):
                 dot_idx = dot_trace_indices[i]
-                fig.data[dot_idx].x = [display_current_time]
+                figure.data[dot_idx].x = [display_current_time]
         
-        fig.update_layout(xaxis_title=f"Time ({plot_data["unit"]})")
-        fig.update_xaxes(range=get_axis_range())
+        figure.update_layout(xaxis_title=f"Time ({plot_data["unit"]})")
+        figure.update_xaxes(range=get_axis_range())
         
         ui_elements['plot'].update()
 
@@ -147,8 +147,8 @@ def makeGraph(activity, fig, data):
                     current_time
                 )
                 
-                fig.data[dot_idx].x = [display_current_time]
-                fig.data[dot_idx].y = [signal_value]
+                figure.data[dot_idx].x = [display_current_time]
+                figure.data[dot_idx].y = [signal_value]
 
         ui_elements['plot'].update()
         ui_elements['plot']._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
@@ -160,12 +160,11 @@ def makeGraph(activity, fig, data):
     dot_trace_indices = []
 
     plot_container = ui.column().classes('w-full p-4 rounded-md border border-[#3545FF] bg-[#F5F5F5] dark:bg-[#1d1d1d] relative')
-    fig = go.Figure()
 
-    setFigStyling(fig)
-    fig.update_layout(xaxis_title=f"Time ({unit})")
-    fig.update_xaxes(range=get_axis_range())
-    fig.update_yaxes(title_text='Pressure (kPa)')                        
+    setFigStyling(figure)
+    figure.update_layout(xaxis_title=f"Time ({unit})")
+    figure.update_xaxes(range=get_axis_range())
+    figure.update_yaxes(title_text='Pressure (kPa)')                        
 
     timer = ui.timer(interval=0.1, callback=update_dots, active=False)
     ui_elements['timer'] = timer
@@ -212,14 +211,14 @@ def makeGraph(activity, fig, data):
             color = colors[i % len(colors)]
             sensor_name = f"{sensor_data["location_name"].capitalize() + " " + str(i + 1)} ({sensor_types[sensor_data["sensor_type"]]})"
 
-            fig.add_trace(go.Scatter(
+            figure.add_trace(go.Scatter(
                 x=sensor_data["timestamps"],
                 y=sensor_data["signals"],
                 name=sensor_name,
                 line=dict(color=color)
             ))       
 
-            fig.add_trace(go.Scatter(
+            figure.add_trace(go.Scatter(
                 x=[sensor_data["timestamps"][0]],
                 y=[sensor_data["signals"][0]],
                 mode='markers',
@@ -228,10 +227,11 @@ def makeGraph(activity, fig, data):
                 showlegend=False
             ))                                            
 
-            dot_trace_indices.append(len(fig.data) - 1)             
+            dot_trace_indices.append(len(figure.data) - 1)             
             
 
-        plot = ui.plotly(fig).classes('w-full h-[500px]')  
+        plot = ui.plotly(figure)
+        plot.classes('w-full h-[500px]')  
         plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
         ui_elements['plot'] = plot
         return plot_container, plot
@@ -259,15 +259,17 @@ def create() -> None:
                 dark.enable()
                 button.name='light_mode'
                 
-            for id, fig in figs.items():
-                setFigStyling(fig)
-                plots[id].update()
-                plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
+            for id, container in plot_containers.items():
+                if container.visible:
+                    setFigStyling(figs[id])
+                    plots[id].update()
+                    plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
 
-        # setting up header
+    
+        # setting up header 
         def header():
-            dark = ui.dark_mode(app.storage.user.get("dark_mode", False))            
             me = api.get_me(token=app.storage.user.get("token"))
+            dark = ui.dark_mode(app.storage.user.get("dark_mode", False))
 
             with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
                 with ui.row().classes('w-full justify-between items-center px-2'):
@@ -289,15 +291,14 @@ def create() -> None:
         left_drawer = utilities.sidebar() 
         arrow = utilities.arrow(left_drawer)
 
-        xt = datetime.now()
-
         # updating plots on sidebar toggle
         def update_plots():
             def update():
-                for i in range(100):
-                    for id, plot in plots.items():
-                        plot.update()
-                        plot._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
+                for id, container in plot_containers.items():
+                    if container.visible:
+                        for i in range(100):
+                            plots[id].update()
+                            plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d', 'autoscale'], 'displaylogo': False}
                 
                 timer.cancel()
 
@@ -306,7 +307,6 @@ def create() -> None:
 
         arrow.on_click(lambda: update_plots())
 
-        activity_data = {}
         activity_checkboxes = {}
 
         figs = {}
@@ -315,7 +315,6 @@ def create() -> None:
 
         filter_icons = {}
         filter_data = {'current': "", 'descending': True}
-
 
         data = {}
 
@@ -424,9 +423,13 @@ def create() -> None:
                             def handler(e):
                                 plot = plot_containers[activity_id]
                                 if e.value:
+                                    plot.set_visibility(True)
                                     plot.move(graphsContainer)
+                                    plot.update()
                                 else:
+                                    plot.set_visibility(False)
                                     plot.move(invisibleContainer)
+                                    plot.update()
                             return handler
                         
                         checkbox = ui.checkbox(
@@ -479,4 +482,4 @@ def create() -> None:
                             plot_container, plot = makeGraph(activity, fig, data)
                             plots[activity.activity_id] = plot
                             plot_containers[activity.activity_id] = plot_container
-        print(datetime.now() - xt)
+                            plot_container.set_visibility(False)
