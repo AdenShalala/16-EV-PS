@@ -36,7 +36,9 @@ class Patient:
     height: str
     weight: str
     amputation_type: str
-    prosthetic_type: str
+    socket_type: str
+    amputation_date: datetime
+    prosthetic_fitting_date: datetime
     email: str
     password: str
     # legacy

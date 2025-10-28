@@ -39,8 +39,26 @@ def create() -> None:
                         weight = ui.number(label='Weight (kg)', value=patient.weight).classes('w-full border rounded-md border-[#3545FF] p-1').props('no-spinners')
                         height = ui.number(label='Height (cm)', value=patient.height).classes('w-full border rounded-md border-[#3545FF] p-1').props('no-spinners')
                         amputation = ui.input(label='Amputation Type', value=patient.amputation_type).classes('w-full border rounded-md border-[#3545FF] p-1')
-                        prosthetic = ui.input(label='Socket Type', value=patient.prosthetic_type).classes('w-full border rounded-md border-[#3545FF] p-1')
+                        socket = ui.input(label='Socket Type', value=patient.socket_type).classes('w-full border rounded-md border-[#3545FF] p-1')
                         
+                        amputation_date = patient.amputation_date.strftime("%Y-%m-%d")
+                        with ui.input(label='Amputation Date', value=amputation_date).classes('w-full border rounded-md border-[#3545FF] p-1') as date1:
+                            with ui.menu().props('no-parent-event') as menu:
+                                with ui.date(value=amputation_date).bind_value(date1):
+                                    with ui.row().classes('justify-end'):
+                                        ui.button('Close', on_click=menu.close).props('flat')
+                            with date1.add_slot('append'):
+                                ui.icon('edit_calendar').on('click', menu.open).classes('cursor-pointer')
+
+                        prosthetic_fitting_date = patient.prosthetic_fitting_date.strftime("%Y-%m-%d")
+                        with ui.input(label='Prosthetic Fitting Date', value=prosthetic_fitting_date).classes('w-full border rounded-md border-[#3545FF] p-1') as date2:
+                            with ui.menu().props('no-parent-event') as menu:
+                                with ui.date(value=prosthetic_fitting_date).bind_value(date2):
+                                    with ui.row().classes('justify-end'):
+                                        ui.button('Close', on_click=menu.close).props('flat')
+                            with date2.add_slot('append'):
+                                ui.icon('edit_calendar').on('click', menu.open).classes('cursor-pointer')
+
                         # saving updated patient information
                         def save():
                             if not utilities.validate_email(email.value):
@@ -71,8 +89,8 @@ def create() -> None:
                                 ui.notify('Invalid amputation type', color='red')
                                 return      
 
-                            if len(prosthetic.value) < 1:
-                                ui.notify('Invalid prosthetic type', color='red')
+                            if len(socket.value) < 1:
+                                ui.notify('Invalid socket type', color='red')
                                 return                                          
 
                             patient.first_name = first_name.value
@@ -81,7 +99,9 @@ def create() -> None:
                             patient.weight = str(int(weight.value))
                             patient.height = str(int(height.value))
                             patient.amputation_type = amputation.value
-                            patient.prosthetic_type = prosthetic.value
+                            patient.socket_type = socket.value
+                            patient.amputation_date = date1.value
+                            patient.prosthetic_fitting_date = date2.value
                             api.put_patient(patient_id=patient.patient_id, updated_patient=patient, token=app.storage.user.get("token"))
                             ui.run_javascript('location.reload();')
 

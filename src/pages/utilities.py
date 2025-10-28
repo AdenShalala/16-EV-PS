@@ -61,9 +61,7 @@ def sidebar():
         patients = ui.button('Patients', icon='groups', on_click=lambda: ui.navigate.to('/')).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
-        details = ui.button('Details', icon='person', on_click=lambda: navigate_patient_details()).props('flat no-caps align=left').classes(
-            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
-        )        
+
         dashboard = ui.button('Dashboard', icon='dashboard', on_click=lambda: navigatePatient()).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
@@ -73,9 +71,7 @@ def sidebar():
 
     # highlighting current page in sidebar
     if app.storage.user.get('current_page') == '/':
-        patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
-    elif app.storage.user['current_page'] == '/patient':
-        details.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')        
+        patients.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')      
     elif app.storage.user['current_page'] == '/dashboard':
         dashboard.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == '/account':
@@ -99,9 +95,6 @@ def admin_sidebar():
         clinicians = ui.button('Clinicians', icon='groups', on_click=lambda: ui.navigate.to('/admin')).props('flat no-caps align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
-        details = ui.button('Details', icon='person', on_click=lambda: navigate_clinician_details()).props('flat no-caps align=left').classes(
-            'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
-        )
         account = ui.button('Account', icon='account_circle', on_click=lambda: ui.navigate.to('/account')).props('flat no-caps color=grey-8 align=left').classes(
             'w-full justify-start rounded-none hover:bg-primary/10 transition-colors text-base m-0 !text-gray-600 dark:!text-gray-400'
         )
@@ -112,8 +105,6 @@ def admin_sidebar():
     # highlighting current page in sidebar
     if app.storage.user.get('current_page') == '/admin':
         clinicians.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
-    elif app.storage.user['current_page'] == '/clinician':
-        details.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == '/account':
         account.classes(remove='!text-gray-600 dark:!text-gray-400', add='!text-[#3545FF]')
     elif app.storage.user['current_page'] == "/settings":
@@ -130,9 +121,20 @@ def header():
     with ui.header(elevated=False).classes('bg-[#ffffff] dark:bg-[#1d1d1d] shadow-xl'):
         with ui.row().classes('w-full justify-between items-center px-2'):
             with ui.row().classes('items-center gap-4'):
-                with ui.link(target='/'):
-                    ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
+                    with ui.link(target='/'):
+                        ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
 
+                    ui.space()
+                    
+                    if app.storage.user.get("selected_patient", None) != None:
+                        patient = api.get_patient(app.storage.user.get("selected_patient"), app.storage.user.get("token"))
+                        with ui.button().classes('').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
+                            ui.label(f"{patient.first_name} {patient.last_name}'s Details").classes(' font-bold !text-gray-600 dark:!text-gray-400')
+
+                    if app.storage.user.get("selected_clinician", None) != None:
+                        clinician = api.get_clinician(app.storage.user.get("selected_clinician"), app.storage.user.get("token"))
+                        with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
+                            ui.label(f"{clinician.first_name} {clinician.last_name}").classes(' font-bold !text-gray-600 dark:!text-gray-400')
 
             with ui.row().classes('items-center gap-4'):
                 with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):

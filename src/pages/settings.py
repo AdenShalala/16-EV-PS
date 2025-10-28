@@ -72,7 +72,7 @@ def create() -> None:
 
                         password = "$argon2id$v=19$m=65536,t=3,p=4$FAFD4TpX4HPVRZjT/4NxtA$ehY7Wx6ZeKzLGt4sl62xZeIiRhvAuXkV3RAe5Pi/TaE"
                         amputation_types = ('Below Knee', 'Above Knee', 'Below Elbow', 'Above Elbow')
-                        prosthetic_types = ('Carbon', 'Steel', 'Aluminium', 'Bionic')
+                        socket_types = ('Carbon', 'Steel', 'Aluminium', 'Bionic')
                         sensor_locations = ('upper', 'lower', 'left', 'right')
                         activity_types = ('Walking', 'Running', 'Jumping', 'Swimming')
 
@@ -132,10 +132,12 @@ def create() -> None:
                                     height = str(fake.random_int(min=150, max=200))
                                     weight = str(fake.random_int(min=50, max=120))
                                     amputation_type = fake.random_element(elements=amputation_types)
-                                    prosthetic_type = fake.random_element(elements=prosthetic_types)
+                                    socket_type = fake.random_element(elements=socket_types)
+                                    amputation_date = fake.date_between_dates(datetime.fromtimestamp(0), datetime.fromtimestamp(1640955600))
+                                    prosthetic_fitting_date = fake.date_between_dates(amputation_date, datetime.fromtimestamp(1672491600))
                                     clinician_id = clinician.clinician_id
 
-                                    patient = Patient(id, first_name, last_name, height, weight, amputation_type, prosthetic_type, email, password, user_id, clinician_id)
+                                    patient = Patient(id, first_name, last_name, height, weight, amputation_type, socket_type, amputation_date, prosthetic_fitting_date, email, password, user_id, clinician_id)
 
                                     xml += database.get_patient_xml(patient)
 
@@ -288,14 +290,16 @@ def create() -> None:
                                 height = item.find('height').text
                                 weight = item.find('weight').text
                                 amputation_type = item.find('amputation_type').text
-                                prosthetic_type = item.find('prosthetic_type').text
+                                socket_type = item.find('socket_type').text
+                                amputation_date = item.find('amputation_date').text
+                                prosthetic_fitting_date = item.find('prosthetic_fitting_date').text
 
                                 email = item.find('email').text
                                 password = item.find('password').text
                                 user_id = item.find('user_id').text
                                 clinician_id = item.find('clinician_id').text
 
-                                patient = Patient(patient_id, first_name, last_name, height, weight, amputation_type, prosthetic_type, email, password, user_id, clinician_id)
+                                patient = Patient(patient_id, first_name, last_name, height, weight, amputation_type, socket_type, amputation_date, prosthetic_fitting_date, email, password, user_id, clinician_id)
                                 database.write_patient(patient)
                                 value += 1
                                 progress_bar.value = value / lenx

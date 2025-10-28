@@ -391,8 +391,8 @@ def write_patient(patient: Patient):
     database = get_database()
 
     cursor = database.cursor()
-    cursor.execute("INSERT INTO Patient (patient_id, first_name, last_name, height, weight, amputation_type, prosthetic_type, email, password, user_id, clinician_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
-                           (patient.patient_id, patient.first_name, patient.last_name, patient.height, patient.weight, patient.amputation_type, patient.prosthetic_type, patient.email, patient.password, patient.user_id, patient.clinician_id,))
+    cursor.execute("INSERT INTO Patient (patient_id, first_name, last_name, height, weight, amputation_type, socket_type, amputation_date, prosthetic_fitting_date, email, password, user_id, clinician_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                           (patient.patient_id, patient.first_name, patient.last_name, patient.height, patient.weight, patient.amputation_type, patient.socket_type, patient.amputation_date, patient.prosthetic_fitting_date, patient.email, patient.password, patient.user_id, patient.clinician_id,))
     
     database.commit()
     database.close()    
@@ -404,8 +404,8 @@ def update_patient(patient: Patient):
     database = get_database()
 
     cursor = database.cursor()
-    cursor.execute("UPDATE Patient SET first_name = %s, last_name = %s, height = %s, weight = %s, amputation_type = %s, prosthetic_type = %s, email = %s WHERE patient_id = %s;", 
-                           (patient.first_name, patient.last_name, int(patient.height), int(patient.weight), patient.amputation_type, patient.prosthetic_type, patient.email, patient.patient_id))
+    cursor.execute("UPDATE Patient SET first_name = %s, last_name = %s, height = %s, weight = %s, amputation_type = %s, socket_type = %s, amputation_date = %s, prosthetic_fitting_date = %s, email = %s WHERE patient_id = %s;", 
+                           (patient.first_name, patient.last_name, int(patient.height), int(patient.weight), patient.amputation_type, patient.socket_type, patient.amputation_date, patient.prosthetic_fitting_date, patient.email, patient.patient_id))
     
     database.commit()
     database.close()        
@@ -769,7 +769,9 @@ def get_patient_xml(patient: Patient):
     xml += '\n\t\t<height>' + patient.height + '</height>'
     xml += '\n\t\t<weight>' + patient.weight + '</weight>'
     xml += '\n\t\t<amputation_type>' + patient.amputation_type + '</amputation_type>'
-    xml += '\n\t\t<prosthetic_type>' + patient.prosthetic_type + '</prosthetic_type>'
+    xml += '\n\t\t<socket_type>' + patient.socket_type + '</socket_type>'
+    xml += '\n\t\t<amputation_date>' + str(patient.amputation_date) + '</amputation_date>'
+    xml += '\n\t\t<prosthetic_fitting_date>' + str(patient.prosthetic_fitting_date) + '</prosthetic_fitting_date>'
     xml += '\n\t\t<email>' + patient.email + '</email>'
     xml += '\n\t\t<password>' + patient.password + '</password>'
     xml += '\n\t\t<user_id>USER' + patient.user_id + '</user_id>'

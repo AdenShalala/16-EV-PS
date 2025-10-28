@@ -69,14 +69,18 @@ def create() -> None:
                                     ui.label(patient.patient_id).classes('text-xs text-grey')
                         ui.separator()
                         with ui.row().classes('items-center w-full -my-2'):
-                            with ui.grid(columns='auto auto auto auto').classes('w-full'):
+                            with ui.grid(columns='auto auto auto auto auto auto').classes('w-full'):
                                 ui.label('Height').classes('font-bold')
                                 ui.label('Weight').classes('font-bold')
                                 ui.label('Amputation Type').classes('font-bold')
                                 ui.label('Socket Type').classes('font-bold')
+                                ui.label('Amputation Date').classes('font-bold')
+                                ui.label('Prosthetic Fitting Date').classes('font-bold')
                                 ui.label(patient.height + "cm")
                                 ui.label(patient.weight + "kg")
                                 ui.label(patient.amputation_type)
-                                ui.label(patient.prosthetic_type)        
+                                ui.label(patient.socket_type)        
+                                ui.label(patient.amputation_date.strftime("%Y-%m-%d"))
+                                ui.label(patient.prosthetic_fitting_date.strftime("%Y-%m-%d"))
 
         patients_display()
