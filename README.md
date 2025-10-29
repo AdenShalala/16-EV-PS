@@ -28,6 +28,8 @@ sudo mysql -u root
 CREATE DATABASE socketfit;
 // Note, you can create a user here opposed to altering root.
 ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'password';
+// If you made a new user, make sure to give them appropriate permissions
+GRANT ALL PRIVILEGES ON *.* TO 'username'@'localhost';
 FLUSH PRIVILEGES;
 use socketfit;
 SOURCE /src/sql/create.sql;

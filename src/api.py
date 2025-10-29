@@ -10,6 +10,8 @@ import database
 from schema import *
 
 '''
+THIS IS NOT ACCURATE; THIS IS WHAT A PROPOSED REDESIGN IS
+PLEASE VISIT /docs FOR THE REAL API
 POST
 /login -> Creates a Session and returns it
 /logout -> Deletes current session
