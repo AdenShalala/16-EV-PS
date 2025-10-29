@@ -226,10 +226,9 @@ def create() -> None:
                 button.name='light_mode'
                 
             for id, container in plot_containers.items():
-                if container.visible:
-                    setFigStyling(figs[id])
-                    plots[id].update()
-                    plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
+                setFigStyling(figs[id])
+                plots[id].update()
+                plots[id]._props['options']['config'] = {'modeBarButtonsToRemove': ['select2d', 'lasso2d'], 'displaylogo': False}
 
     
         # setting up header 
