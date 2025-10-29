@@ -64,7 +64,7 @@ DELETE
 
 api_version = "/api/v1/"
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=api_version + "token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
 # exceptions
 credentials_exception = HTTPException(
