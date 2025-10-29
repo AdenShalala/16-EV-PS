@@ -386,7 +386,7 @@ def create() -> None:
                         ui.label(datetime.fromtimestamp(activity.start_time).strftime("%A, %B %d, %Y at %I:%M %p")).classes('col-span-4')
                         ui.label(activity.activity_type).classes('col-span-2')
                         ui.label(info["duration"]).classes('col-span-2')
-                        ui.label(f"{info["min"]} - {info["max"]}").classes('col-span-3')
+                        ui.label(f"{info["min"]}kPa - {info["max"]}kPa").classes('col-span-3')
                         
                         # create a closure to capture the correct activity_id
                         def make_toggle_handler(activity_id):

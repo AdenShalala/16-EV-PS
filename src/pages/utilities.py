@@ -128,13 +128,13 @@ def header():
                     
                     if app.storage.user.get("selected_patient", None) != None:
                         patient = api.get_patient(app.storage.user.get("selected_patient"), app.storage.user.get("token"))
-                        with ui.button().classes('').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
+                        with ui.button().classes('').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/patient')):
                             ui.label(f"{patient.first_name} {patient.last_name}'s Details").classes(' font-bold !text-gray-600 dark:!text-gray-400')
 
                     if app.storage.user.get("selected_clinician", None) != None:
                         clinician = api.get_clinician(app.storage.user.get("selected_clinician"), app.storage.user.get("token"))
-                        with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
-                            ui.label(f"{clinician.first_name} {clinician.last_name}").classes(' font-bold !text-gray-600 dark:!text-gray-400')
+                        with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/clinician')):
+                            ui.label(f"{clinician.first_name} {clinician.last_name}'s Details").classes(' font-bold !text-gray-600 dark:!text-gray-400')
 
             with ui.row().classes('items-center gap-4'):
                 with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):

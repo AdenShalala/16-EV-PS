@@ -10,12 +10,11 @@ from schema import *
 import database
 from uuid import uuid4
 from faker import Faker
+import random
 
 from tqdm import tqdm
 
 MultiPartParser.spool_max_size = 1024 * 1024 * 5  
-
-
 
 def navigate_clinician(clinician):
     app.storage.user['selected_clinician'] = clinician.clinician_id
@@ -208,7 +207,13 @@ def create() -> None:
                                         pressure_value = fake.random_int(-100, 100)
                                         for timestamp in range(start_time, end_time + 1):
                                             pressure_reading_id = str(uuid4())
-                                            change = fake.pyfloat(min_value=-2, max_value=2)
+                                            
+                                            # Add occasional spikes/drops (10% chance)
+                                            if random.random() < 0.1:
+                                                change = fake.pyfloat(min_value=-15, max_value=15)
+                                            else:
+                                                change = fake.pyfloat(min_value=-5, max_value=5)
+                                            
                                             pressure_value = max(-35, min(75, pressure_value + change))
 
                                             xml += database.get_pressure_reading_xml(PressureReading(pressure_reading_id, pressure_value, timestamp, True, id))
