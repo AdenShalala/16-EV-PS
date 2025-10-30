@@ -243,9 +243,16 @@ def create() -> None:
                                 ui.image('/assets/dashboard.png').classes('h-[40px] w-[150px]')
 
                             ui.space()
-                        
-                            with ui.button().classes('').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
-                                ui.label(f"{patient.first_name} {patient.last_name}'s Details").classes(' font-bold !text-gray-600 dark:!text-gray-400')
+                            
+                            if app.storage.user.get("selected_patient", None) != None:
+                                patient = api.get_patient(app.storage.user.get("selected_patient"), app.storage.user.get("token"))
+                                with ui.button().classes('').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/patient')):
+                                    ui.label(f"{patient.first_name} {patient.last_name}'s Details").classes(' font-bold !text-gray-600 dark:!text-gray-400')
+
+                            if app.storage.user.get("selected_clinician", None) != None:
+                                clinician = api.get_clinician(app.storage.user.get("selected_clinician"), app.storage.user.get("token"))
+                                with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/clinician')):
+                                    ui.label(f"{clinician.first_name} {clinician.last_name}'s Details").classes(' font-bold !text-gray-600 dark:!text-gray-400')
 
                     with ui.row().classes('items-center gap-4'):
                         with ui.button().classes('px-0').props('flat no-caps color=black align="left"').on_click(lambda: ui.navigate.to('/account')):
@@ -255,6 +262,7 @@ def create() -> None:
                             dark_button.name='light_mode'
                         elif app.storage.user.get('dark_mode') == False:
                             dark_button.name='dark_mode'
+
 
         header()
         left_drawer = utilities.sidebar() 
